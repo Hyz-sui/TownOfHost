@@ -47,9 +47,8 @@ namespace TownOfHost
             static void Postfix(VersionShower __instance)
             {
                 Main.credentialsText = $"\r\n<color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginVersion}";
-#if DEBUG
-                Main.credentialsText += $"\r\n<color={Main.ModColor}>{ThisAssembly.Git.Branch}({ThisAssembly.Git.Commit})</color>";
-#endif
+                if (ThisAssembly.Git.Branch.Contains('/'))
+                    Main.credentialsText += $"\r\n<color={Main.ModColor}>{ThisAssembly.Git.Branch}({ThisAssembly.Git.Commit})</color>";
                 var credentials = UnityEngine.Object.Instantiate<TMPro.TextMeshPro>(__instance.text);
                 credentials.text = Main.credentialsText;
                 credentials.alignment = TMPro.TextAlignmentOptions.TopRight;
