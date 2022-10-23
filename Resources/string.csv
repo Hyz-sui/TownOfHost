@@ -323,6 +323,8 @@ MadmateCanSeeKillFlash,Madmates Can See Kill Flash,マッド系役職にキル�
 MadmateCanSeeOtherVotes,Madmates Can See Other Votes,マッド系役職に他人の投票先が分かる,叛徒可以看到其他人所投的票,,Madmates Может Видеть Цвета Голосов
 MadmateVentCooldown,Madmates Vent Cooldown,マッド系役職のベントクールダウン,叛徒职业跳管道冷却时间,叛徒職業的玩家跳管道冷卻,Откат Вентиляции Madmates
 MadmateVentMaxTime,Madmates Max Time In Vents(s),マッド系役職のベント内での最大時間,叛徒职业在管道中停留的最大时间,叛徒職業的玩家在管道中可以停留的最大時間,Время Использования Вентиляции Madmates
+MadmateIsBlackCat,,マッド系役職の追放時にクルーを道連れにする,,,
+MadmateCanExileNeutral,,第三陣営を道連れ対象に含める,,,
 EvilWatcherChance,EvilWatcher Chance,イビルウォッチャーになる確率,窥视者成为内鬼阵营的概率,成為邪惡觀察者的機率,EvilWatcher Шанс
 LighterTaskCompletedVision,Expanded Vision,タスク完了時の視界,完成任务后的视野,做完任務的視野,Дальность Обзора
 LighterTaskCompletedDisableLightOut,Lighter Gains Impostor Vision,タスク完了時に停電を無効にする,完成任务的执灯人不受熄灯影响,完成任務的小燈人視野不受關燈影響,Имеет Дальность Обзора Предателя
@@ -388,6 +390,7 @@ DeathReason.Misfire,Misfire,誤爆,走火,走火,Убился
 DeathReason.Torched,Torched,焼殺,烧死,燒死,Сожжен
 DeathReason.Sniped,Sniped,狙撃,狙杀,被狙,Застрелен
 DeathReason.Execution,Executed,処刑,处决,處刑,Казнен
+DeathReason.Revenged,Revenged,道連れ,,,
 DeathReason.Disconnected,Disconnected,回線切断,断连,斷線,Отсоеденился
 DeathReason.Fall,Fall,転落,摔死,摔死,Упал
 DeathReason.etc,etc,その他,其他,其他,ТакДалее

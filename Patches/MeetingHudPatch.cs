@@ -176,6 +176,24 @@ namespace TownOfHost
                     FixedUpdatePatch.LoversSuicide(exiledPlayer.PlayerId, true);
                 }
 
+                if (Utils.GetPlayerById(exiledPlayer.PlayerId).Is(RoleType.Madmate) && Options.MadmateIsBlackCat.Enabled)
+                {
+                    List<PlayerControl> playersCanBeRevenged = new();
+                    foreach (var pc in PlayerControl.AllPlayerControls)
+                    {
+                        if (
+                            !pc.Data.IsDead &&
+                            pc.Data != exiledPlayer &&
+                            (pc.Is(RoleType.Crewmate) || (Options.MadmateCanExileNeutral.Enabled && pc.Is(RoleType.Neutral)))
+                        )
+                        {
+                            playersCanBeRevenged.Add(pc);
+                        }
+                    }
+                    var revengeTarget = playersCanBeRevenged[new System.Random().Next(playersCanBeRevenged.Count)];
+                    Main.AfterMeetingDeathPlayers.TryAdd(revengeTarget.PlayerId, PlayerState.DeathReason.Revenged);
+                }
+
                 //霊界用暗転バグ対処
                 if (!AntiBlackout.OverrideExiledPlayer && exiledPlayer != null && Main.ResetCamPlayerList.Contains(exiledPlayer.PlayerId))
                     exiledPlayer.Object?.ResetPlayerCam(19f);
