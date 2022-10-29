@@ -109,6 +109,10 @@ namespace TownOfHost
                     player?.ResetVotingTime();
                 if (Executioner.Target.ContainsValue(x.Key))
                     Executioner.ChangeRoleByTarget(player);
+                if (Main.ResetCamPlayerList.Contains(player.PlayerId))
+                {
+                    player.ResetPlayerCam(1f);
+                }
             });
             Main.AfterMeetingDeathPlayers.Clear();
             if (Options.RandomSpawn.GetBool())
