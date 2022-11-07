@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using AmongUs.Data;
@@ -1002,6 +1004,50 @@ namespace TownOfHost
                 obj.SetActive(t != 1f);
                 obj.GetComponent<SpriteRenderer>().color = new(color.r, color.g, color.b, Mathf.Clamp01((-2f * Mathf.Abs(t - 0.5f) + 1) * color.a)); //アルファ値を0→目標→0に変化させる
             })));
+        }
+        public static void MakeWebhookUrlFile()
+        {
+            Logger.Info("WebhookUrl.txtを作成", "Webhook");
+            try
+            {
+                File.WriteAllText("WebhookUrl.txt", "この文章を削除してウェブフックのURLを記述/Remove this text and enter Webhook url");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.ToString(), "Webhook");
+            }
+        }
+        public static void SendWebhook(string text, string userName = "Town Of Host")
+        {
+            if (!File.Exists("WebhookUrl.txt"))
+                MakeWebhookUrlFile();
+            HttpClient client = new();
+            Dictionary<string, string> message = new()
+            {
+                { "content", text },
+                { "username", userName },
+                { "avatar_url", "https://raw.githubusercontent.com/tukasa0001/TownOfHost/main/Resources/TabIcon.png" }
+            };
+            using StreamReader sr = new("WebhookUrl.txt", Encoding.UTF8);
+            string webhookUrl = sr.ReadLine();
+            if (!Regex.IsMatch(webhookUrl, "^(https://(ptb.|canary.)?discord(app)?.com/api/webhooks/)"))  // ptbとcanaryとappはあってもなくてもいい
+            {
+                Logger.Info("WebhookUrl.txtの内容がdiscordのウェブフックurlではなかったためウェブフックの送信をキャンセル", "Webhook");
+                return;
+            }
+            try
+            {
+                TaskAwaiter<HttpResponseMessage> awaiter = client.PostAsync(webhookUrl, new FormUrlEncodedContent(message)).GetAwaiter();
+                var response = awaiter.GetResult();
+                Logger.Info("ウェブフックを送信しました", "Webhook");
+                if (!response.IsSuccessStatusCode)
+                    Logger.Warn("応答が異常です", "Webhook");
+                Logger.Info($"{(int)response.StatusCode} {response.ReasonPhrase}", "Webhook");  // 正常な応答: 204 No Content
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.ToString(), "Webhook");
+            }
         }
     }
 }
