@@ -519,6 +519,7 @@ BountyHunterChangeButtonText,Swap,変更,变更,變更,Смена
 DefaultShapeshiftText,SHIFT,変身,变形,變身,Превращение
 All,All,すべて,全部,全部,Все
 Archive,Archive,アーカイブ,文件,檔案,Архив
+DiscordResultButtonText,"Send Results To Discord",Discordに試合結果を送信,,,
 DisabledBySettings,Disabled by setting,設定で無効化されています,已在设置被中禁用,在設定中被禁用,Отключено настройкой
 Disabled,Disabled,無効,,,Неполноценный
 

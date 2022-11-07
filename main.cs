@@ -47,6 +47,7 @@ namespace TownOfHost
         public static ConfigEntry<string> HideColor { get; private set; }
         public static ConfigEntry<bool> ForceJapanese { get; private set; }
         public static ConfigEntry<bool> JapaneseRoleName { get; private set; }
+        public static ConfigEntry<bool> SendResultToDiscord { get; private set; }
         public static ConfigEntry<bool> AmDebugger { get; private set; }
         public static ConfigEntry<string> ShowPopUpVersion { get; private set; }
         public static ConfigEntry<int> MessageWait { get; private set; }
@@ -132,6 +133,7 @@ namespace TownOfHost
             HideColor = Config.Bind("Client Options", "Hide Game Code Color", $"{ModColor}");
             ForceJapanese = Config.Bind("Client Options", "Force Japanese", false);
             JapaneseRoleName = Config.Bind("Client Options", "Japanese Role Name", true);
+            SendResultToDiscord = Config.Bind("Client Options", "Send Game Result To Discord", false);
             Logger = BepInEx.Logging.Logger.CreateLogSource("TownOfHost");
             TownOfHost.Logger.Enable();
             TownOfHost.Logger.Disable("NotifyRoles");
