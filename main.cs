@@ -269,6 +269,9 @@ namespace TownOfHost
                 }
             }
 
+            if (!File.Exists("WebhookUrl.txt"))
+                Utils.MakeWebhookUrlFile();
+
             Harmony.PatchAll();
         }
     }
