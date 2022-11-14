@@ -278,6 +278,32 @@ namespace TownOfHost
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+            //#######################################
+            //         ==Discordに結果を送信==
+            //#######################################
+
+            if (PlayerControl.LocalPlayer.PlayerId == 0 && Main.SendResultToDiscord.Value)
+            {
+                if (CustomWinnerHolder.WinnerTeam == CustomWinner.Draw)
+                    Logger.Info("廃村のため試合結果の送信をキャンセル", "Webhook");
+                else
+                {
+                    var resultMessage = "";
+                    foreach (var id in Main.winnerList)
+                    {
+                        resultMessage += Utils.ColorIdToDiscordEmoji(Palette.PlayerColors.IndexOf(Main.PlayerColors[id]), !PlayerState.isDead[id]) + ":star:" + EndGamePatch.SummaryText[id].RemoveHtmlTags() + "\n";
+                    }
+                    foreach (var kvp in cloneRoles)
+                    {
+                        var id = kvp.Key;
+                        resultMessage += Utils.ColorIdToDiscordEmoji(Palette.PlayerColors.IndexOf(Main.PlayerColors[id]), !PlayerState.isDead[id]) + "\u3000" + EndGamePatch.SummaryText[id].RemoveHtmlTags() + "\n";
+                    }
+                    Utils.SendWebhook(resultMessage, GetString("LastResult"));
+                }
+            }
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
             //Utils.ApplySuffix();
         }
     }
