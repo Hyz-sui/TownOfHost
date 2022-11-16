@@ -14,6 +14,7 @@ namespace TownOfHost
         public static CustomOption CanSeeDeadPos;
         public static CustomOption CanSeeOtherImp;
         public static CustomOption CanSeeKillFlash;
+        public static CustomOption CanSeeImpArrow;
 
         public static Dictionary<SystemTypes, int> PlayerCount = new();
         public static Dictionary<SystemTypes, int> DeadCount = new();
@@ -25,6 +26,7 @@ namespace TownOfHost
             CanSeeDeadPos = CustomOption.Create(Id + 10, TabGroup.ImpostorRoles, Color.white, "CanSeeDeadPos", true, CustomRoleSpawnChances[CustomRoles.EvilHacker]);
             CanSeeOtherImp = CustomOption.Create(Id + 11, TabGroup.ImpostorRoles, Color.white, "CanSeeOtherImp", true, CustomRoleSpawnChances[CustomRoles.EvilHacker]);
             CanSeeKillFlash = CustomOption.Create(Id + 12, TabGroup.ImpostorRoles, Color.white, "CanSeeKillFlash", true, CustomRoleSpawnChances[CustomRoles.EvilHacker]);
+            CanSeeImpArrow = CustomOption.Create(Id + 13, TabGroup.ImpostorRoles, Color.white, "CanSeeImpArrow", true, CustomRoleSpawnChances[CustomRoles.EvilHacker]);
         }
         public static void Init()
         {
@@ -94,5 +96,47 @@ namespace TownOfHost
         }
         public static bool KillFlashCheck(PlayerControl killer, PlayerState.DeathReason deathReason)
             => CanSeeKillFlash.GetBool() && Utils.IsImpostorKill(killer, deathReason);
+        public static string UtilsGetTargetArrow(bool isMeeting, PlayerControl seer)
+        {
+            //ミーティング以外では矢印表示
+            if (isMeeting || !CanSeeImpArrow.GetBool()) return "";
+            string SelfSuffix = "";
+            foreach (var arrow in Main.targetArrows)
+            {
+                var target = Utils.GetPlayerById(arrow.Key.Item2);
+                if (arrow.Key.Item1 == seer.PlayerId && !PlayerState.isDead[arrow.Key.Item2] && target.GetCustomRole().IsImpostor())
+                    SelfSuffix += arrow.Value;
+            }
+            return SelfSuffix;
+        }
+        public static string PCGetTargetArrow(PlayerControl seer, PlayerControl target)
+        {
+            if (!CanSeeImpArrow.GetBool()) return "";
+            var update = false;
+            string Suffix = "";
+            foreach (var pc in PlayerControl.AllPlayerControls)
+            {
+                bool foundCheck =
+                    pc != target && pc.GetCustomRole().IsImpostor();
+
+                //発見対象じゃ無ければ次
+                if (!foundCheck) continue;
+
+                update = FixedUpdatePatch.CheckArrowUpdate(target, pc, update, pc.GetCustomRole().IsImpostor());
+                var key = (target.PlayerId, pc.PlayerId);
+                var arrow = Main.targetArrows[key];
+                if (target.AmOwner)
+                {
+                    //MODなら矢印表示
+                    Suffix += arrow;
+                }
+            }
+            if (AmongUsClient.Instance.AmHost && seer.PlayerId != target.PlayerId && update)
+            {
+                //更新があったら非Modに通知
+                Utils.NotifyRoles(SpecifySeer: target);
+            }
+            return Suffix;
+        }
     }
 }
