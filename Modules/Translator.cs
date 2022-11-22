@@ -20,7 +20,7 @@ namespace TownOfHost
         public static void LoadLangs()
         {
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            var stream = assembly.GetManifestResourceStream("TownOfHost.Resources.string.csv");
+            var stream = assembly.GetManifestResourceStream("TownOfHost-H.Resources.string.csv");
             var sr = new StreamReader(stream);
             tr = new Dictionary<string, Dictionary<int, string>>();
 

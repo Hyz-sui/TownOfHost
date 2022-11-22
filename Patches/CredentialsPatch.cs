@@ -47,7 +47,7 @@ namespace TownOfHost
             static void Postfix(VersionShower __instance)
             {
                 Main.credentialsText = $"\r\n<color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginVersion}";
-                if (ThisAssembly.Git.Branch != "main")
+                if (ThisAssembly.Git.Branch.Contains('/'))
                     Main.credentialsText += $"\r\n<color={Main.ModColor}>{ThisAssembly.Git.Branch}({ThisAssembly.Git.Commit})</color>";
                 var credentials = UnityEngine.Object.Instantiate<TMPro.TextMeshPro>(__instance.text);
                 credentials.text = Main.credentialsText;
@@ -92,7 +92,7 @@ namespace TownOfHost
                 tohLogo.transform.position = Vector3.up;
                 tohLogo.transform.localScale *= 1.2f;
                 var renderer = tohLogo.AddComponent<SpriteRenderer>();
-                renderer.sprite = Helpers.LoadSpriteFromResources("TownOfHost.Resources.TownOfHost-Logo.png", 300f);
+                renderer.sprite = Helpers.LoadSpriteFromResources("TownOfHost-H.Resources.TownOfHost-Logo.png", 300f);
             }
         }
     }

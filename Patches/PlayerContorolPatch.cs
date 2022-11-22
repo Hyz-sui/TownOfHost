@@ -365,6 +365,7 @@ namespace TownOfHost
                     Main.AllPlayerKillCooldown[pc.PlayerId] = Options.LastImpostorKillCooldown.GetFloat();
             }
             FixedUpdatePatch.LoversSuicide(target.PlayerId);
+            EvilHacker.OnMurder(target);
 
             PlayerState.SetDead(target.PlayerId);
             Utils.CountAliveImpostors();
@@ -816,16 +817,16 @@ namespace TownOfHost
                     }
 
                     else if ((seer.Is(CustomRoles.EgoSchrodingerCat) && target.Is(CustomRoles.Egoist)) || //エゴ猫 --> エゴイスト
-                             (seer.Is(CustomRoles.JSchrodingerCat) && target.Is(CustomRoles.Jackal)) //J猫 --> ジャッカル
+                             (seer.Is(CustomRoles.JSchrodingerCat) && target.Is(CustomRoles.Jackal)) || //J猫 --> ジャッカル
+                             (seer.Is(CustomRoles.MSchrodingerCat) && target.Is(RoleType.Impostor)) //M猫 --> インポスター
                     )
                         RealName = Helpers.ColorString(target.GetRoleColor(), RealName); //targetの名前をtargetの役職の色で表示
                     else if (target.Is(CustomRoles.Mare) && Utils.IsActive(SystemTypes.Electrical))
                         RealName = Helpers.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), RealName); //targetの赤色で表示
-                    else if (seer != null)
-                    {//NameColorManager準拠の処理
-                        var ncd = NameColorManager.Instance.GetData(seer.PlayerId, target.PlayerId);
-                        RealName = ncd.OpenTag + RealName + ncd.CloseTag;
-                    }
+
+                    //NameColorManager準拠の処理
+                    var ncd = NameColorManager.Instance.GetData(seer.PlayerId, target.PlayerId);
+                    if (ncd.color != null) RealName = ncd.OpenTag + RealName + ncd.CloseTag;
 
                     //インポスター/キル可能な第三陣営がタスクが終わりそうなSnitchを確認できる
                     var canFindSnitchRole = seer.GetCustomRole().IsImpostor() || //LocalPlayerがインポスター
@@ -936,6 +937,7 @@ namespace TownOfHost
                         }
                     }
                     if (GameStates.IsInTask && target.Is(CustomRoles.EvilTracker)) Suffix += EvilTracker.PCGetTargetArrow(seer, target);
+                    if (GameStates.IsInTask && target.Is(CustomRoles.EvilHacker)) Suffix += EvilHacker.PCGetTargetArrow(seer, target);
 
                     /*if(main.AmDebugger.Value && main.BlockKilling.TryGetValue(target.PlayerId, out var isBlocked)) {
                         Mark = isBlocked ? "(true)" : "(false)";

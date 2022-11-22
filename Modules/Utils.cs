@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using AmongUs.Data;
@@ -100,6 +102,8 @@ namespace TownOfHost
             {
                 case CustomRoles.EvilTracker:
                     return EvilTracker.KillFlashCheck(killer, deathReason);
+                case CustomRoles.EvilHacker:
+                    return EvilHacker.KillFlashCheck(killer, deathReason);
                 case CustomRoles.Seer:
                     return true;
                 default:
@@ -142,6 +146,24 @@ namespace TownOfHost
                 opt.CrewLightMod = 0.0f;
             }
             return;
+        }
+        public static bool IsImpostorKill(PlayerControl killer, PlayerState.DeathReason deathReason)
+        {
+            switch (deathReason) //死因での判別
+            {
+                case PlayerState.DeathReason.Bite:
+                case PlayerState.DeathReason.Sniped:
+                case PlayerState.DeathReason.Bombed:
+                    return true;
+                case PlayerState.DeathReason.Suicide:
+                case PlayerState.DeathReason.FollowingSuicide:
+                case PlayerState.DeathReason.Misfire:
+                case PlayerState.DeathReason.Torched:
+                    return false;
+                default:
+                    bool PuppeteerCheck = CustomRoles.Puppeteer.IsEnable() && !killer.GetCustomRole().IsImpostor() && Main.PuppeteerList.ContainsKey(killer.PlayerId);
+                    return killer.GetCustomRole().IsImpostor() || PuppeteerCheck; //インポスターのノーマルキル || パペッティアキル
+            }
         }
         public static string GetOnOff(bool value) => value ? "ON" : "OFF";
         public static int SetRoleCountToggle(int currentCount) => currentCount > 0 ? 0 : 1;
@@ -554,6 +576,8 @@ namespace TownOfHost
             }
             else
             {
+                if (AmongUsClient.Instance.IsGamePublic)
+                    name = $"<color={Main.ModColor}>TownOfHost v{Main.PluginVersion}</color>\r\n" + name;
                 switch (Options.GetSuffixMode())
                 {
                     case SuffixModes.None:
@@ -715,6 +739,7 @@ namespace TownOfHost
                 }
 
                 if (seer.Is(CustomRoles.EvilTracker)) SelfSuffix += EvilTracker.UtilsGetTargetArrow(isMeeting, seer);
+                if (seer.Is(CustomRoles.EvilHacker)) SelfSuffix += EvilHacker.UtilsGetTargetArrow(isMeeting, seer);
 
                 //RealNameを取得 なければ現在の名前をRealNamesに書き込む
                 string SeerRealName = seer.GetRealName(isMeeting);
@@ -737,6 +762,7 @@ namespace TownOfHost
                     || seer.GetCustomRole().IsImpostor() //seerがインポスター
                     || seer.Is(CustomRoles.EgoSchrodingerCat) //seerがエゴイストのシュレディンガーの猫
                     || seer.Is(CustomRoles.JSchrodingerCat) //seerがJackal陣営のシュレディンガーの猫
+                    || seer.Is(CustomRoles.MSchrodingerCat) //seerがインポスター陣営のシュレディンガーの猫
                     || NameColorManager.Instance.GetDataBySeer(seer.PlayerId).Count > 0 //seer視点用の名前色データが一つ以上ある
                     || seer.Is(CustomRoles.Arsonist)
                     || seer.Is(CustomRoles.Lovers)
@@ -828,7 +854,8 @@ namespace TownOfHost
                         else if (seer.GetCustomRole().IsImpostor() && target.Is(CustomRoles.Egoist))
                             TargetPlayerName = Helpers.ColorString(GetRoleColor(CustomRoles.Egoist), TargetPlayerName);
                         else if ((seer.Is(CustomRoles.EgoSchrodingerCat) && target.Is(CustomRoles.Egoist)) || //エゴ猫 --> エゴイスト
-                                 (seer.Is(CustomRoles.JSchrodingerCat) && target.Is(CustomRoles.Jackal))) // J猫 --> ジャッカル
+                                 (seer.Is(CustomRoles.JSchrodingerCat) && target.Is(CustomRoles.Jackal)) || // J猫 --> ジャッカル
+                                 (seer.Is(CustomRoles.MSchrodingerCat) && target.Is(RoleType.Impostor))) // M猫 --> インポスター
                             TargetPlayerName = Helpers.ColorString(target.GetRoleColor(), TargetPlayerName);
                         else if (Utils.IsActive(SystemTypes.Electrical) && target.Is(CustomRoles.Mare) && !isMeeting)
                             TargetPlayerName = Helpers.ColorString(GetRoleColor(CustomRoles.Impostor), TargetPlayerName); //targetの赤色で表示
@@ -998,6 +1025,103 @@ namespace TownOfHost
                 obj.SetActive(t != 1f);
                 obj.GetComponent<SpriteRenderer>().color = new(color.r, color.g, color.b, Mathf.Clamp01((-2f * Mathf.Abs(t - 0.5f) + 1) * color.a)); //アルファ値を0→目標→0に変化させる
             })));
+        }
+        public static void MakeWebhookUrlFile()
+        {
+            Logger.Info("WebhookUrl.txtを作成", "Webhook");
+            try
+            {
+                File.WriteAllText("WebhookUrl.txt", "この文章を削除してウェブフックのURLを記述/Remove this text and enter Webhook url");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.ToString(), "Webhook");
+            }
+        }
+        public static void SendWebhook(string text, string userName = "Town Of Host")
+        {
+            if (!File.Exists("WebhookUrl.txt"))
+                MakeWebhookUrlFile();
+            HttpClient client = new();
+            Dictionary<string, string> message = new()
+            {
+                { "content", text },
+                { "username", userName },
+                { "avatar_url", "https://raw.githubusercontent.com/tukasa0001/TownOfHost/main/Resources/TabIcon.png" }
+            };
+            using StreamReader sr = new("WebhookUrl.txt", Encoding.UTF8);
+            string webhookUrl = sr.ReadLine();
+            if (!Regex.IsMatch(webhookUrl, "^(https://(ptb.|canary.)?discord(app)?.com/api/webhooks/)"))  // ptbとcanaryとappはあってもなくてもいい
+            {
+                Logger.Info("WebhookUrl.txtの内容がdiscordのウェブフックurlではなかったためウェブフックの送信をキャンセル", "Webhook");
+                return;
+            }
+            try
+            {
+                TaskAwaiter<HttpResponseMessage> awaiter = client.PostAsync(webhookUrl, new FormUrlEncodedContent(message)).GetAwaiter();
+                var response = awaiter.GetResult();
+                Logger.Info("ウェブフックを送信しました", "Webhook");
+                if (!response.IsSuccessStatusCode)
+                    Logger.Warn("応答が異常です", "Webhook");
+                Logger.Info($"{(int)response.StatusCode} {response.ReasonPhrase}", "Webhook");  // 正常な応答: 204 No Content
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.ToString(), "Webhook");
+            }
+        }
+        public static string ColorIdToDiscordEmoji(int colorId, bool alive)
+        {
+            if (alive)
+            {
+                return colorId switch
+                {
+                    0 => "<:aured:866558066921177108>",
+                    1 => "<:aublue:866558066484183060>",
+                    2 => "<:augreen:866558066568986664>",
+                    3 => "<:aupink:866558067004538891>",
+                    4 => "<:auorange:866558066902958090>",
+                    5 => "<:auyellow:866558067243221002>",
+                    6 => "<:aublack:866558066442895370>",
+                    7 => "<:auwhite:866558067026165770>",
+                    8 => "<:aupurple:866558066966396928>",
+                    9 => "<:aubrown:866558066564136970>",
+                    10 => "<:aucyan:866558066525601853>",
+                    11 => "<:aulime:866558066963382282>",
+                    12 => "<:aumaroon:866558066917113886>",
+                    13 => "<:aurose:866558066921439242>",
+                    14 => "<:aubanana:866558065917558797>",
+                    15 => "<:augray:866558066174459905>",
+                    16 => "<:autan:866558066820382721>",
+                    17 => "<:aucoral:866558066552209448>",
+                    _ => "?"
+                };
+            }
+            else
+            {
+                return colorId switch
+                {
+                    0 => "<:aureddead:866558067255279636>",
+                    1 => "<:aubluedead:866558066660999218>",
+                    2 => "<:augreendead:866558067088949258>",
+                    3 => "<:aupinkdead:866558066945556512>",
+                    4 => "<:auorangedead:866558067508510730>",
+                    5 => "<:auyellowdead:866558067206520862>",
+                    6 => "<:aublackdead:866558066668339250>",
+                    7 => "<:auwhitedead:866558067231293450>",
+                    8 => "<:aupurpledead:866558067223298048>",
+                    9 => "<:aubrowndead:866558066945163304>",
+                    10 => "<:aucyandead:866558067051200512>",
+                    11 => "<:aulimedead:866558067344408596>",
+                    12 => "<:aumaroondead:866558067238895626>",
+                    13 => "<:aurosedead:866558067083444225>",
+                    14 => "<:aubananadead:866558066342625350>",
+                    15 => "<:augraydead:866558067049758740>",
+                    16 => "<:autandead:866558067230638120>",
+                    17 => "<:aucoraldead:866558067024723978>",
+                    _ => "?"
+                };
+            }
         }
     }
 }
