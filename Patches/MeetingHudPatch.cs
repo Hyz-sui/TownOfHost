@@ -492,6 +492,7 @@ namespace TownOfHost
             if (AmongUsClient.Instance.AmHost)
             {
                 AntiBlackout.SetIsDead();
+                RandomSpawn.InitAirshipSpawnState();
                 Main.AllPlayerControls.Do(pc => RandomSpawn.CustomNetworkTransformPatch.NumOfTP[pc.PlayerId] = 0);
             }
         }

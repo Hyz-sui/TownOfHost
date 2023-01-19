@@ -9,10 +9,16 @@ namespace TownOfHost
 {
     class RandomSpawn
     {
+        private static int AirshipSpawnedPlayerCount;
+        // 生存プレイヤーが全員スポーン選択を終えたときにスポーンの準備が完了します
+        // 死亡済みプレイヤーは準備完了まで待機しますが，条件には含まれません
+        public static bool IsSpawnReady => AirshipSpawnedPlayerCount >= Main.AllAlivePlayerControls.Count();
+
         [HarmonyPatch(typeof(CustomNetworkTransform), nameof(CustomNetworkTransform.SnapTo), typeof(Vector2), typeof(ushort))]
         public class CustomNetworkTransformPatch
         {
             public static Dictionary<byte, int> NumOfTP = new();
+            private static Dictionary<byte, float> CloneSpeed;
             public static void Postfix(CustomNetworkTransform __instance, [HarmonyArgument(0)] Vector2 position)
             {
                 if (!AmongUsClient.Instance.AmHost) return;
@@ -35,11 +41,60 @@ namespace TownOfHost
                         player.RpcResetAbilityCooldown();
                         if (Options.FixFirstKillCooldown.GetBool() && !MeetingStates.MeetingCalled) player.SetKillCooldown(Main.AllPlayerKillCooldown[player.PlayerId]);
                         if (!Options.RandomSpawn.GetBool()) return; //ランダムスポーンが無効ならreturn
-                        new AirshipSpawnMap().RandomTeleport(player);
+
+                        if (player.IsAlive()) AirshipSpawnedPlayerCount++;
+                        if (Options.AirshipSynchronizeSpawn.GetBool()) AirshipSynchronizedRandomTeleport(player);
+                        else new AirshipSpawnMap().RandomTeleport(player);
                     }
                 }
             }
+
+            private static void AirshipSynchronizedRandomTeleport(PlayerControl player)
+            {
+                CloneSpeed ??= new(Main.AllPlayerSpeed);
+                if (!IsSpawnReady)
+                {
+                    Main.PlayerStates[player.PlayerId].IsBlackOut = true;
+                    // 後で戻すので代入
+                    Main.AllPlayerSpeed[player.PlayerId] = Main.MinSpeed;
+                    player.MarkDirtySettings();
+                    return;
+                }
+
+                foreach (var target in Main.AllPlayerControls)
+                {
+                    // 最後にスポーンしたプレイヤーはクールリセットの必要がない
+                    if (target != player && player.IsAlive())
+                    {
+                        target.SetKillCooldown(
+                            MeetingStates.MeetingCalled || Options.FixFirstKillCooldown.GetBool() ? -1f : 10f);
+                        // アビリティクールに固有の処理がある役職を除外
+                        if (target.GetCustomRole() is not CustomRoles.BountyHunter or CustomRoles.SerialKiller)
+                        {
+                            target.RpcResetAbilityCooldown();
+                        }
+                    }
+                    Utils.AfterMeetingTasks();
+
+                    new AirshipSpawnMap().RandomTeleport(target);
+
+                    var isBlackOut = Main.PlayerStates[target.PlayerId].IsBlackOut;
+                    var isMinSpeed = Main.AllPlayerSpeed[target.PlayerId] == Main.MinSpeed;
+                    if (isBlackOut || isMinSpeed)
+                    {
+                        if (isBlackOut) Main.PlayerStates[target.PlayerId].IsBlackOut = false;
+                        if (isMinSpeed) Main.AllPlayerSpeed[target.PlayerId] = CloneSpeed[target.PlayerId];
+                        target.MarkDirtySettings();
+                    }
+                }
+                CloneSpeed = null;
+            }
         }
+        public static void InitAirshipSpawnState()
+        {
+            if (Main.NormalOptions.MapId == 4) AirshipSpawnedPlayerCount = new();
+        }
+
         public static void TP(CustomNetworkTransform nt, Vector2 location)
         {
             if (AmongUsClient.Instance.AmHost) nt.SnapTo(location);
