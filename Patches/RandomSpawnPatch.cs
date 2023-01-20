@@ -74,7 +74,6 @@ namespace TownOfHost
                             target.RpcResetAbilityCooldown();
                         }
                     }
-                    Utils.AfterMeetingTasks();
 
                     new AirshipSpawnMap().RandomTeleport(target);
 
@@ -87,6 +86,7 @@ namespace TownOfHost
                         target.MarkDirtySettings();
                     }
                 }
+                Utils.AfterMeetingTasks();
                 CloneSpeed = null;
             }
         }
