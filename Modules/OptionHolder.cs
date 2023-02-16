@@ -162,7 +162,6 @@ namespace TownOfHost
         // ランダムスポーン
         public static OptionItem RandomSpawn;
         public static OptionItem AirshipAdditionalSpawn;
-        public static OptionItem AirshipSynchronizeSpawn;
 
         // 投票モード
         public static OptionItem VoteMode;
@@ -571,8 +570,6 @@ namespace TownOfHost
                 .SetHeader(true)
                 .SetGameMode(CustomGameMode.All);
             AirshipAdditionalSpawn = BooleanOptionItem.Create(101301, "AirshipAdditionalSpawn", false, TabGroup.MainSettings, false).SetParent(RandomSpawn)
-                .SetGameMode(CustomGameMode.All);
-            AirshipSynchronizeSpawn = BooleanOptionItem.Create(101302, "AirshipSynchronizeSpawn", false, TabGroup.MainSettings, false).SetParent(RandomSpawn)
                 .SetGameMode(CustomGameMode.All);
 
             // ボタン回数同期
