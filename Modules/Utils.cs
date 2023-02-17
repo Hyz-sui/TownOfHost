@@ -698,7 +698,7 @@ namespace TownOfHost
                 if (seer == null || seer.Data.Disconnected) continue;
 
                 if (seer.IsModClient()) continue;
-                string fontSize = "1.5";
+                string fontSize = "2.0";
                 if (isMeeting && (seer.GetClient().PlatformData.Platform.ToString() == "Playstation" || seer.GetClient().PlatformData.Platform.ToString() == "Switch")) fontSize = "70%";
                 logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":START");
 
