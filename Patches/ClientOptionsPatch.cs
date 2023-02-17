@@ -11,6 +11,7 @@ namespace TownOfHost
         private static ToggleButtonBehaviour ForceJapanese;
         private static ToggleButtonBehaviour JapaneseRoleName;
         private static ToggleButtonBehaviour SendResultToDiscord;
+        private static ToggleButtonBehaviour ShowLobbySummary;
         public static float xOffset = 1.75f;
         public static float yOffset = -0.25f;
         private static void UpdateToggle(ToggleButtonBehaviour button, string text, bool on)
@@ -94,6 +95,26 @@ namespace TownOfHost
                 {
                     Main.SendResultToDiscord.Value = !Main.SendResultToDiscord.Value;
                     UpdateToggle(SendResultToDiscord, buttonText, Main.SendResultToDiscord.Value);
+                }
+            }
+            if (ShowLobbySummary == null || ShowLobbySummary.gameObject == null)
+            {
+                var buttonText = "ロビーで前の試合の結果を表示: ";
+                ShowLobbySummary = CreateCustomToggle(
+                    buttonText,
+                    Main.ShowLobbySummary.Value,
+                    new(-0.375f, yOffset * 2f - 0.08f, 0f),
+                    (UnityEngine.Events.UnityAction)LobbySummaryButtonToggle,
+                    __instance);
+
+                void LobbySummaryButtonToggle()
+                {
+                    Main.ShowLobbySummary.Value = !Main.ShowLobbySummary.Value;
+                    UpdateToggle(ShowLobbySummary, buttonText, Main.ShowLobbySummary.Value);
+                    if (DestroyableSingleton<GameStartManager>.InstanceExists)
+                    {
+                        LobbySummary.Show();
+                    }
                 }
             }
         }

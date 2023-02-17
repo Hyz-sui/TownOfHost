@@ -47,6 +47,8 @@ namespace TownOfHost
                 AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
                 if (AURoleOptions.ShapeshifterCooldown == 0f)
                     AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
+
+                LobbySummary.Show();
             }
         }
 
@@ -171,6 +173,15 @@ namespace TownOfHost
         {
             __result = Main.NormalOptions.NumImpostors;
             return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.OnDestroy))]
+    public static class GameStartManagerOnDestroyPatch
+    {
+        public static void Postfix()
+        {
+            LobbySummary.Hide();
         }
     }
 }
