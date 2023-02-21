@@ -367,11 +367,21 @@ namespace TownOfHost
                         var info = GetPlayerInfoById(playerId);
                         var TaskCompleteColor = HasTasks(info) ? Color.green : GetRoleColor(role).ShadeColor(0.5f); //タスク完了後の色
                         var NonCompleteColor = HasTasks(info) ? Color.yellow : Color.white; //カウントされない人外は白色
+                        var isQualifiedMadSnitch =
+                            GetPlayerById(playerId) is PlayerControl player &&
+                            player.Is(CustomRoles.MadSnitch) &&
+                            Options.MadSnitchSpecifyNumRequiredTasks.GetBool() &&
+                            taskState.CompletedTasksCount >= Options.MadSnitchNumRequiredTasks.GetInt();
 
                         if (Workhorse.IsThisRole(playerId))
                             NonCompleteColor = Workhorse.RoleColor;
 
-                        var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
+                        var NormalColor =
+                            taskState.IsTaskFinished
+                                ? TaskCompleteColor
+                                : isQualifiedMadSnitch
+                                    ? GetRoleColor(role).ShadeColor(0.5f)
+                                    : NonCompleteColor;
 
                         TextColor = comms ? Color.gray : NormalColor;
                         string Completed = comms ? "?" : $"{taskState.CompletedTasksCount}";

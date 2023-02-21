@@ -353,6 +353,8 @@
 "CanMakeMadmateCount","Sidekick Madmate Max Count","サイドキックマッドメイト(人)","变形者可以招募叛徒的数量","變形者招募叛徒最大人數","Максимум SidekickMadmate","Máximo de Tripulantes Loucos Ajudantes"
 "MadSnitchTasks","Mad Snitch Tasks","マッドスニッチのタスク数","背叛的告密者任务数","背叛告密者任務數量","Задания MadSnitch","Tarefas do Dedo-Duro Louco"
 "MadSnitchCanAlsoBeExposedToImpostor","Known to Impostors","インポスターからも視認できる","对内鬼同样可见","對狼人同樣可見","Также Не Защищен Предателем","Visível Para Impostor"
+"MadSnitchSpecifyTasks","Specify Number Of Required Tasks","必要なタスク数を指定する","","","",""
+"MadSnitchNumRequiredTasks","Number Of Required Tasks","タスク数","","","",""
 "MadGuardianCanSeeWhoTriedToKill","Can See Attempted Murderer","自身の殺害未遂者を知ることができる","背叛的守卫可以得知尝试对其击杀的玩家","背叛天使可以看到是誰嘗試殺害自己","MadGuardian Видит Кто Пытался Его Убить","Pode Ver Quem Tentou Matar"
 "MadmateCanFixLightsOut","Mad Roles Can Fix Lights","マッドメイト系役職が停電を直せる","叛徒系职业可以修理照明破坏","叛徒職業的玩家可以修理電燈","Madmates Могут Чинить Свет","Loucos Podem Consertar Luzes"
 "MadmateCanFixComms","Mad Roles Can Fix Comms","マッドメイト系役職が通信障害を直せる","叛徒系职业可以修理通讯","叛徒職業的玩家可以修理通訊","Madmates Могут Чинить Связь","Loucos Podem Consertar Comunicações"

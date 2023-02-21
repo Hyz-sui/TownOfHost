@@ -1009,8 +1009,13 @@ namespace TownOfHost
             var pc = __instance;
             Snitch.OnCompleteTask(pc);
 
-            var isTaskFinish = pc.GetPlayerTaskState().IsTaskFinished;
-            if (isTaskFinish && pc.Is(CustomRoles.MadSnitch))
+            var taskState = pc.GetPlayerTaskState();
+            var isTaskFinish = taskState.IsTaskFinished;
+            var completedNum = taskState.CompletedTasksCount;
+            var knowsViaTaskNum =
+                Options.MadSnitchSpecifyNumRequiredTasks.GetBool() &&
+                completedNum >= Options.MadSnitchNumRequiredTasks.GetInt();
+            if ((isTaskFinish || knowsViaTaskNum) && pc.Is(CustomRoles.MadSnitch))
             {
                 foreach (var impostor in Main.AllAlivePlayerControls.Where(pc => pc.Is(RoleType.Impostor)))
                 {

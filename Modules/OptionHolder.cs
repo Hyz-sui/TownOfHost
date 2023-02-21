@@ -83,6 +83,8 @@ namespace TownOfHost
         public static OptionItem MadGuardianCanSeeWhoTriedToKill;
         public static OptionItem MadSnitchCanVent;
         public static OptionItem MadSnitchCanAlsoBeExposedToImpostor;
+        public static OptionItem MadSnitchSpecifyNumRequiredTasks;
+        public static OptionItem MadSnitchNumRequiredTasks;
         public static OptionItem MadmateCanFixLightsOut; // TODO:mii-47 マッド役職統一
         public static OptionItem MadmateCanFixComms;
         public static OptionItem MadmateHasImpostorVision;
@@ -371,6 +373,19 @@ namespace TownOfHost
             MadSnitchCanAlsoBeExposedToImpostor = BooleanOptionItem.Create(10211, "MadSnitchCanAlsoBeExposedToImpostor", false, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.MadSnitch]);
             //ID10220~10223を使用
             MadSnitchTasks = OverrideTasksData.Create(10220, TabGroup.ImpostorRoles, CustomRoles.MadSnitch);
+            MadSnitchSpecifyNumRequiredTasks = BooleanOptionItem.Create(
+                10224,
+                "MadSnitchSpecifyTasks",
+                false,
+                TabGroup.ImpostorRoles,
+                false).SetParent(CustomRoleSpawnChances[CustomRoles.MadSnitch]);
+            MadSnitchNumRequiredTasks = IntegerOptionItem.Create(
+                10225,
+                "MadSnitchNumRequiredTasks",
+                new(1, 99, 1),
+                1,
+                TabGroup.ImpostorRoles,
+                false).SetParent(MadSnitchSpecifyNumRequiredTasks);
             // Madmate Common Options
             MadmateCanFixLightsOut = BooleanOptionItem.Create(15010, "MadmateCanFixLightsOut", false, TabGroup.ImpostorRoles, false)
                 .SetHeader(true);
