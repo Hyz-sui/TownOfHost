@@ -47,6 +47,9 @@ namespace TownOfHost
 
         // ==========
         //Sorry for many Japanese comments.
+
+        public static readonly string ForkVersion = "H_2022.12.14.6";
+
         public const string PluginGuid = "com.emptybottle.townofhost";
         public const string PluginVersion = "4.1.0";
         public Harmony Harmony { get; } = new Harmony(PluginGuid);
