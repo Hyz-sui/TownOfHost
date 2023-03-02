@@ -758,7 +758,7 @@ namespace TownOfHost
 
                 if (seer.Is(CustomRoles.EvilHacker))
                 {
-                    SelfSuffix.Append(EvilHacker.UtilsGetTargetArrow(isMeeting, seer));
+                    SelfSuffix.Append(EvilHacker.GetArrow(seer, isMeeting));
                 }
 
                 if (seer.Is(CustomRoles.EvilHacker) && !isMeeting)

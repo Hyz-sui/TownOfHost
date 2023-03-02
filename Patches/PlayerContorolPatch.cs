@@ -774,9 +774,9 @@ namespace TownOfHost
 
                     Suffix.Append(EvilTracker.GetTargetArrow(seer, target));
 
-                    if (GameStates.IsInTask && target.Is(CustomRoles.EvilHacker))
+                    if (GameStates.IsInTask && target.Is(CustomRoles.EvilHacker) && seer == target)
                     {
-                        Suffix.Append(EvilHacker.PCGetTargetArrow(seer, target));
+                        Suffix.Append(EvilHacker.GetArrow(seer, false));
                     }
 
                     if (GameStates.IsInTask && target.Is(CustomRoles.EvilHacker) && target.AmOwner)
