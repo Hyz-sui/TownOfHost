@@ -7,7 +7,7 @@ using Hazel;
 using static TownOfHost.Options;
 using static TownOfHost.Translator;
 
-namespace TownOfHost
+namespace TownOfHost.Roles.Impostor
 {
     public static class EvilHacker
     {
@@ -31,6 +31,7 @@ namespace TownOfHost
         private static List<SystemTypes> ImpRooms = new();
         // (キルしたインポスター, 殺害現場の部屋)
         private static List<(byte killerId, SystemTypes room)> KillerIdsAndRooms = new();
+        private static Dictionary<byte, byte[]> ImpostorIds = new();
 
         public static void SetupCustomOption()
         {
@@ -48,6 +49,7 @@ namespace TownOfHost
             DeadCount = new();
             ImpRooms = new();
             KillerIdsAndRooms = new();
+            ImpostorIds = new();
 
             CanSeeDeadPos = OptionCanSeeDeadPos.GetBool();
             CanSeeOtherImp = OptionCanSeeOtherImp.GetBool();
@@ -55,7 +57,21 @@ namespace TownOfHost
             CanSeeMurderScene = OptionCanSeeMurderScene.GetBool();
             CanSeeImpArrow = OptionCanSeeImpArrow.GetBool();
         }
-        public static void Add(byte playerId) => playerIdList.Add(playerId);
+        public static void Add(byte playerId)
+        {
+            playerIdList.Add(playerId);
+
+            var impostorIds = (
+                from player in Main.AllAlivePlayerControls
+                where player.PlayerId != playerId
+                where player.Is(CustomRoleTypes.Impostor)
+                select player.PlayerId).ToArray();
+            foreach (var impostorId in impostorIds)
+            {
+                TargetArrow.Add(playerId, impostorId);
+            }
+            ImpostorIds[playerId] = impostorIds;
+        }
         public static bool IsEnable => playerIdList.Count > 0;
         public static void InitDeadCount()
         {
@@ -93,7 +109,7 @@ namespace TownOfHost
             StringBuilder messageBuilder = new();
             foreach (var kvp in PlayerCount)
             {
-                var roomName = kvp.Key.GetRoomName();
+                var roomName = GetString(kvp.Key.ToString());
                 if (ImpRooms.Contains(kvp.Key))
                 {
                     messageBuilder.Append("★");
@@ -150,47 +166,34 @@ namespace TownOfHost
                 }, 10f, "Remove EvilHacker KillerIdsAndRooms");
             }
         }
-        public static string UtilsGetTargetArrow(bool isMeeting, PlayerControl seer)
+        // 暇なときに書き直したい
+        public static string GetArrow(PlayerControl seer, bool isMeeting)
         {
-            //ミーティング以外では矢印表示
-            if (isMeeting || !CanSeeImpArrow) return "";
-            string SelfSuffix = "";
-            foreach (var arrow in Main.targetArrows)
+            if (isMeeting || !CanSeeImpArrow)
             {
-                var target = Utils.GetPlayerById(arrow.Key.Item2);
-                if (arrow.Key.Item1 == seer.PlayerId && !Main.PlayerStates[arrow.Key.Item2].IsDead && target.GetCustomRole().IsImpostor())
-                    SelfSuffix += arrow.Value;
+                return string.Empty;
             }
-            return SelfSuffix;
+            var impostorIds = GetArrowTargets(seer.PlayerId);
+            if (impostorIds == null)
+            {
+                return "?";
+            }
+            return TargetArrow.GetArrows(seer, impostorIds);
         }
-        public static string PCGetTargetArrow(PlayerControl seer, PlayerControl target)
+        private static byte[] GetArrowTargets(byte seerId)
         {
-            if (!CanSeeImpArrow) return "";
-            var update = false;
-            string Suffix = "";
-            foreach (var pc in PlayerControl.AllPlayerControls)
+            if (!ImpostorIds.TryGetValue(seerId, out var impostorIds))
             {
-                bool foundCheck =
-                    pc != target && pc.GetCustomRole().IsImpostor();
-
-                //発見対象じゃ無ければ次
-                if (!foundCheck) continue;
-
-                update = FixedUpdatePatch.CheckArrowUpdate(target, pc, update, pc.GetCustomRole().IsImpostor());
-                var key = (target.PlayerId, pc.PlayerId);
-                var arrow = Main.targetArrows[key];
-                if (target.AmOwner)
-                {
-                    //MODなら矢印表示
-                    Suffix += arrow;
-                }
+                Logger.Warn($"{Utils.GetPlayerById(seerId)?.GetRealName() ?? $"(null: {seerId})"}からの矢印ターゲットの取得に失敗", "EvilHacker");
+                return null;
             }
-            if (AmongUsClient.Instance.AmHost && seer.PlayerId != target.PlayerId && update)
-            {
-                //更新があったら非Modに通知
-                Utils.NotifyRoles(SpecifySeer: target);
-            }
-            return Suffix;
+            var aliveImpostorIds = (
+                from impostorId in impostorIds
+                let impostor = Utils.GetPlayerById(impostorId)
+                where impostor != null
+                where impostor.IsAlive()
+                select impostorId).ToArray();
+            return aliveImpostorIds;
         }
         public static void RpcSyncMurderScenes()
         {
@@ -225,7 +228,7 @@ namespace TownOfHost
                 from tuple in KillerIdsAndRooms
                     // 自身がキルしたものは除外
                 where tuple.killerId != seer.PlayerId
-                select tuple.room.GetRoomName()).ToArray();
+                select GetString(tuple.room.ToString())).ToArray();
             if (roomNames.Length < 1) return "";
             return $"{GetString("EvilHackerMurderOccurred")}: {string.Join(", ", roomNames)}";
         }

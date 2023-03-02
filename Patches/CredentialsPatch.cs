@@ -17,6 +17,10 @@ namespace TownOfHost
             sb.Clear();
 
             sb.Append(Main.credentialsText);
+            if (GameStates.IsLobby)
+            {
+                sb.AppendLine().Append(Main.ForkVersion);
+            }
 
             if (Options.NoGameEnd.GetBool()) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("NoGameEnd")));
             if (Options.IsStandardHAS) sb.Append($"\r\n").Append(Utils.ColorString(Color.yellow, GetString("StandardHAS")));
@@ -49,6 +53,7 @@ namespace TownOfHost
                 Main.credentialsText += $"\r\n<color={Main.ModColor}>{ThisAssembly.Git.Branch}({ThisAssembly.Git.Commit})</color>";
             var credentials = Object.Instantiate(__instance.text);
             credentials.text = Main.credentialsText;
+            credentials.text += "\n" + Main.ForkVersion;
             credentials.alignment = TMPro.TextAlignmentOptions.TopRight;
             credentials.transform.position = new Vector3(4.6f, 3.2f, 0);
 
