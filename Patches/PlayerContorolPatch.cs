@@ -1043,4 +1043,16 @@ namespace TownOfHost
             return true;
         }
     }
+
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ResetForMeeting))]
+    public static class ResetForMeetingPatch
+    {
+        public static void Postfix(PlayerControl __instance)
+        {
+            if (__instance != null && __instance.onLadder)
+            {
+                __instance.onLadder = false;
+            }
+        }
+    }
 }
