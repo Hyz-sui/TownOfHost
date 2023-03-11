@@ -93,6 +93,7 @@ namespace TownOfHost
         public static OptionItem MadSnitchNumRequiredTasks;
         public static OptionItem MadmateCanFixLightsOut; // TODO:mii-47 マッド役職統一
         public static OptionItem MadmateCanFixComms;
+        public static OptionItem ModdedMadmateCantOpenSabConsoles;
         public static OptionItem MadmateHasImpostorVision;
         public static OptionItem MadmateCanSeeKillFlash;
         public static OptionItem MadmateCanSeeOtherVotes;
@@ -397,6 +398,12 @@ namespace TownOfHost
             MadmateCanFixLightsOut = BooleanOptionItem.Create(15010, "MadmateCanFixLightsOut", false, TabGroup.ImpostorRoles, false)
                 .SetHeader(true);
             MadmateCanFixComms = BooleanOptionItem.Create(15011, "MadmateCanFixComms", false, TabGroup.ImpostorRoles, false);
+            ModdedMadmateCantOpenSabConsoles = BooleanOptionItem.Create(
+                15020,
+                "ModdedMadCantOpen",
+                true,
+                TabGroup.ImpostorRoles,
+                false);
             MadmateHasImpostorVision = BooleanOptionItem.Create(15012, "MadmateHasImpostorVision", false, TabGroup.ImpostorRoles, false);
             MadmateCanSeeKillFlash = BooleanOptionItem.Create(15015, "MadmateCanSeeKillFlash", false, TabGroup.ImpostorRoles, false);
             MadmateCanSeeOtherVotes = BooleanOptionItem.Create(15016, "MadmateCanSeeOtherVotes", false, TabGroup.ImpostorRoles, false);

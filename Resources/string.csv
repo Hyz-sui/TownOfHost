@@ -359,6 +359,7 @@
 "MadGuardianCanSeeWhoTriedToKill","Can See Attempted Murderer","自身の殺害未遂者を知ることができる","背叛的守卫可以得知尝试对其击杀的玩家","背叛天使可以看到是誰嘗試殺害自己","Может видеть кто пытался его убить","Pode Ver Quem Tentou Matar"
 "MadmateCanFixLightsOut","Mad Roles Can Fix Lights","マッドメイト系役職が停電を直せる","叛徒系职业可以修理照明破坏","叛徒職業的玩家可以修理電燈","Безумцы могут чинить Свет","Loucos Podem Consertar Luzes"
 "MadmateCanFixComms","Mad Roles Can Fix Comms","マッドメイト系役職が通信障害を直せる","叛徒系职业可以修理通讯","叛徒職業的玩家可以修理通訊","Безумцы могут чинить Связь","Loucos Podem Consertar Comunicações"
+"ModdedMadCantOpen","Modded Mad Role Players Can't Use Those Consoles","Mod導入済マッド系プレイヤーは開けない","","","",""
 "MadmateHasImpostorVision","Mad Roles Have Impostor Vision","マッドメイト系役職がインポスター視界を持つ","叛徒系职业拥有内鬼视野","叛徒職業的玩家有跟偽裝者一樣的視野","Безумцы имеют дальность Обзора Предателя","Loucos Têm Visão de Impostor"
 "MadmateCanSeeKillFlash","Mad Roles Can See ""Kill Flash""","マッドメイト系役職にキルフラッシュが見える","叛徒系职业可以看到击杀闪光","叛徒職業的玩家可以看到殺人閃光","Безумцы могут видеть Вспышку Убийства","Loucos Podem Ver ""Clarão de Abate"""
 "MadmateCanSeeOtherVotes","Mad Roles Can See Votes","マッドメイト系役職に他人の投票先が分かる","叛徒系职业可以看到其他人所投的票","叛徒可以看到所有人的投票","Безумцы могут видеть цвета Голосов","Loucos Podem Ver Votos"
