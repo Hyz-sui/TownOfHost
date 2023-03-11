@@ -37,6 +37,8 @@ namespace TownOfHost
                         ? $"<color={Main.HideColor.Value}>{Main.HideName.Value}</color>"
                         : $"<color={Main.ModColor}>{Main.HideName.Value}</color>";
 
+                LobbySummary.Show();
+
                 if (!AmongUsClient.Instance.AmHost) return;
 
                 // Make Public Button
@@ -52,8 +54,6 @@ namespace TownOfHost
                 AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
                 if (AURoleOptions.ShapeshifterCooldown == 0f)
                     AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
-
-                LobbySummary.Show();
             }
         }
 
