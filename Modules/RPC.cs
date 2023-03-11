@@ -99,7 +99,8 @@ namespace TownOfHost
                         Version version = Version.Parse(reader.ReadString());
                         string tag = reader.ReadString();
                         string forkId = 3 <= version.Major ? reader.ReadString() : Main.OriginalForkId;
-                        Main.playerVersion[__instance.PlayerId] = new PlayerVersion(version, tag, forkId);
+                        string forkVersion = forkId == Main.ForkId ? reader.ReadString() : "";
+                        Main.playerVersion[__instance.PlayerId] = new PlayerVersion(version, tag, forkId, forkVersion);
                     }
                     catch
                     {
@@ -227,13 +228,15 @@ namespace TownOfHost
         }
         public static async void RpcVersionCheck()
         {
+            // 本家バージョン，git情報，フォークid，フォークバージョン
             while (PlayerControl.LocalPlayer == null) await Task.Delay(500);
             MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VersionCheck, SendOption.Reliable);
             writer.Write(Main.PluginVersion);
             writer.Write($"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})");
             writer.Write(Main.ForkId);
+            writer.Write(Main.ForkVersion);
             writer.EndMessage();
-            Main.playerVersion[PlayerControl.LocalPlayer.PlayerId] = new PlayerVersion(Main.PluginVersion, $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})", Main.ForkId);
+            Main.playerVersion[PlayerControl.LocalPlayer.PlayerId] = new PlayerVersion(Main.PluginVersion, $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})", Main.ForkId, Main.ForkVersion);
         }
         public static void SendDeathReason(byte playerId, PlayerState.DeathReason deathReason)
         {
