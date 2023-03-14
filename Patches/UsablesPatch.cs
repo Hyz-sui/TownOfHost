@@ -77,4 +77,67 @@ namespace TownOfHost
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
     }
+
+    [HarmonyPatch]
+    public static class BlockUseConsoles
+    {
+        private static bool IsUnusable(Console console)
+        {
+            var player = PlayerControl.LocalPlayer;
+
+            if (player.Is(CustomRoleTypes.Madmate))
+            {
+                if (!Options.ModdedMadmateCantOpenSabConsoles.GetBool())
+                {
+                    return false;
+                }
+
+                var taskType = console.FindTask(player)?.TaskType;
+                if (
+                    (taskType == TaskTypes.FixLights && !Options.MadmateCanFixLightsOut.GetBool()) ||
+                    (taskType == TaskTypes.FixComms && !Options.MadmateCanFixComms.GetBool()))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        [HarmonyPatch(typeof(UseButton), nameof(UseButton.SetTarget))]
+        public static class UseButtonSetTargetPatch
+        {
+            public static bool Prefix(UseButton __instance, [HarmonyArgument(0)] IUsable target)
+            {
+                if (
+                    !GameStates.IsInTask ||
+                    target == null ||
+                    target.TryCast<Console>() is not Console console)
+                {
+                    return true;
+                }
+
+                if (IsUnusable(console))
+                {
+                    __instance.SetDisabled();
+                    __instance.SetTarget(null);
+                    __instance.OverrideText("使用不可");
+                    return false;
+                }
+                return true;
+            }
+        }
+        [HarmonyPatch(typeof(Console), nameof(Console.Use))]
+        public static class ConsoleUsePatch
+        {
+            public static bool Prefix(Console __instance)
+            {
+                if (IsUnusable(__instance))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+    }
 }

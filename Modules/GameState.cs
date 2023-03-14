@@ -200,14 +200,14 @@ namespace TownOfHost
         public readonly Version version;
         public readonly string tag;
         public readonly string forkId;
-        [Obsolete] public PlayerVersion(string ver, string tag_str) : this(Version.Parse(ver), tag_str, "") { }
-        [Obsolete] public PlayerVersion(Version ver, string tag_str) : this(ver, tag_str, "") { }
-        public PlayerVersion(string ver, string tag_str, string forkId) : this(Version.Parse(ver), tag_str, forkId) { }
-        public PlayerVersion(Version ver, string tag_str, string forkId)
+        public readonly string forkVersion;
+        public PlayerVersion(string ver, string tag_str, string forkId, string forkVersion) : this(Version.Parse(ver), tag_str, forkId, forkVersion) { }
+        public PlayerVersion(Version ver, string tag_str, string forkId, string forkVersion)
         {
             version = ver;
             tag = tag_str;
             this.forkId = forkId;
+            this.forkVersion = forkVersion;
         }
         public bool IsEqual(PlayerVersion pv)
         {
