@@ -764,6 +764,12 @@ namespace TownOfHost
                 if (seer.Is(CustomRoles.EvilHacker) && !isMeeting)
                     SelfSuffix.Append(EvilHacker.GetMurderSceneText(seer));
 
+                var deviceUnusableNotify = DeviceTimer.GetNameNotifyText(seer);
+                if (deviceUnusableNotify != string.Empty)
+                {
+                    SelfSuffix.Append(deviceUnusableNotify);
+                }
+
                 //RealNameを取得 なければ現在の名前をRealNamesに書き込む
                 string SeerRealName = seer.GetRealName(isMeeting);
 

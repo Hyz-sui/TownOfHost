@@ -1,6 +1,9 @@
-using AmongUs.GameOptions;
 using HarmonyLib;
 using UnityEngine;
+
+using AmongUs.GameOptions;
+
+using TownOfHost.Modules;
 
 namespace TownOfHost
 {
@@ -81,6 +84,22 @@ namespace TownOfHost
     [HarmonyPatch]
     public static class BlockUseConsoles
     {
+        private static bool IsUnusable(IUsable target)
+        {
+            // targetがConsole(タスク系，縁取りが黄色)
+            if (target.TryCast<Console>() is Console console)
+            {
+                return IsUnusable(console);
+            }
+
+            // targetがSystemConsole(それ以外，縁取りが白)
+            if (target.TryCast<SystemConsole>() is SystemConsole systemConsole)
+            {
+                return IsUnusable(systemConsole);
+            }
+
+            return false;
+        }
         private static bool IsUnusable(Console console)
         {
             var player = PlayerControl.LocalPlayer;
@@ -102,21 +121,29 @@ namespace TownOfHost
             }
             return false;
         }
+        private static bool IsUnusable(SystemConsole systemConsole)
+        {
+            //   task_cams: Airship
+            //  Surv_Panel: Polus
+            // SurvConsole: Skeld
+            if (DeviceTimer.CamerasRanOut && systemConsole.name is "task_cams" or "Surv_Panel" or "SurvConsole")
+            {
+                return true;
+            }
+            return false;
+        }
 
         [HarmonyPatch(typeof(UseButton), nameof(UseButton.SetTarget))]
         public static class UseButtonSetTargetPatch
         {
             public static bool Prefix(UseButton __instance, [HarmonyArgument(0)] IUsable target)
             {
-                if (
-                    !GameStates.IsInTask ||
-                    target == null ||
-                    target.TryCast<Console>() is not Console console)
+                if (!GameStates.IsInTask || target == null)
                 {
                     return true;
                 }
 
-                if (IsUnusable(console))
+                if (IsUnusable(target))
                 {
                     __instance.SetDisabled();
                     __instance.SetTarget(null);
@@ -130,6 +157,19 @@ namespace TownOfHost
         public static class ConsoleUsePatch
         {
             public static bool Prefix(Console __instance)
+            {
+                if (IsUnusable(__instance))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+        [HarmonyPatch(typeof(SystemConsole), nameof(SystemConsole.Use))]
+        public static class SystemConsoleUsePatch
+        {
+            public static bool Prefix(SystemConsole __instance)
             {
                 if (IsUnusable(__instance))
                 {
