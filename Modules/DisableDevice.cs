@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+
 using HarmonyLib;
-using Hazel;
-using InnerNet;
 using UnityEngine;
+
+using TownOfHost.Modules;
 
 namespace TownOfHost
 {
@@ -68,7 +69,7 @@ namespace TownOfHost
                             case 0:
                                 if (Options.DisableSkeldAdmin.GetBool())
                                     doComms |= Vector2.Distance(PlayerPos, DevicePos["SkeldAdmin"]) <= UsableDistance();
-                                if (Options.DisableSkeldCamera.GetBool())
+                                if (Options.DisableSkeldCamera.GetBool() || DeviceTimer.CamerasRanOut)
                                     doComms |= Vector2.Distance(PlayerPos, DevicePos["SkeldCamera"]) <= UsableDistance();
                                 break;
                             case 1:
@@ -83,7 +84,7 @@ namespace TownOfHost
                                     doComms |= Vector2.Distance(PlayerPos, DevicePos["PolusLeftAdmin"]) <= UsableDistance();
                                     doComms |= Vector2.Distance(PlayerPos, DevicePos["PolusRightAdmin"]) <= UsableDistance();
                                 }
-                                if (Options.DisablePolusCamera.GetBool())
+                                if (Options.DisablePolusCamera.GetBool() || DeviceTimer.CamerasRanOut)
                                     doComms |= Vector2.Distance(PlayerPos, DevicePos["PolusCamera"]) <= UsableDistance();
                                 if (Options.DisablePolusVital.GetBool())
                                     doComms |= Vector2.Distance(PlayerPos, DevicePos["PolusVital"]) <= UsableDistance();
@@ -93,7 +94,7 @@ namespace TownOfHost
                                     doComms |= Vector2.Distance(PlayerPos, DevicePos["AirshipCockpitAdmin"]) <= UsableDistance();
                                 if (Options.DisableAirshipRecordsAdmin.GetBool())
                                     doComms |= Vector2.Distance(PlayerPos, DevicePos["AirshipRecordsAdmin"]) <= UsableDistance();
-                                if (Options.DisableAirshipCamera.GetBool())
+                                if (Options.DisableAirshipCamera.GetBool() || DeviceTimer.CamerasRanOut)
                                     doComms |= Vector2.Distance(PlayerPos, DevicePos["AirshipCamera"]) <= UsableDistance();
                                 if (Options.DisableAirshipVital.GetBool())
                                     doComms |= Vector2.Distance(PlayerPos, DevicePos["AirshipVital"]) <= UsableDistance();

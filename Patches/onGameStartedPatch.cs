@@ -141,6 +141,7 @@ namespace TownOfHost
             Workhorse.Init();
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
+            DeviceTimer.Init();
             IRandom.SetInstanceById(Options.RoleAssigningAlgorithm.GetValue());
 
             MeetingStates.MeetingCalled = false;

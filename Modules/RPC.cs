@@ -5,6 +5,7 @@ using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
 
+using TownOfHost.Modules;
 using TownOfHost.Roles.Impostor;
 using TownOfHost.Roles.Crewmate;
 using TownOfHost.Roles.Neutral;
@@ -38,6 +39,7 @@ namespace TownOfHost
         SetEvilTrackerTarget,
         SetRealKiller,
         SyncEvilHackerScenes,
+        UpdateCamerasUsable,
     }
     public enum Sounds
     {
@@ -193,6 +195,9 @@ namespace TownOfHost
                     break;
                 case CustomRPC.SyncEvilHackerScenes:
                     EvilHacker.ReceiveRPC(reader);
+                    break;
+                case CustomRPC.UpdateCamerasUsable:
+                    DeviceTimer.UpdateCamerasUsable(reader.ReadSingle());
                     break;
             }
         }
