@@ -544,7 +544,7 @@ namespace TownOfHost
             CamerasMaxTimer = IntegerOptionItem.Create(
                 101281,
                 "CamerasMaxTimer",
-                new(1, 99, 1), 10,
+                new(1, 120, 1), 10,
                 TabGroup.MainSettings,
                 false).SetParent(CamerasTimer).SetGameMode(CustomGameMode.Standard);
             DisableSkeldDevices = BooleanOptionItem.Create(101210, "DisableSkeldDevices", false, TabGroup.MainSettings, false).SetParent(DisableDevices)
