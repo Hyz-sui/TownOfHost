@@ -49,7 +49,7 @@ namespace TownOfHost.Modules
                 return;
             }
             numPlayersWatchingCamera++;
-            Logger.Info($"Begin: {System.DateTime.Now:HH:mm:ss}", "DeviceTimer");
+            Logger.Info($"Begin: {System.DateTime.Now:HH:mm:ss}", nameof(DeviceTimer));
         }
         public static void CloseCamera()
         {
@@ -58,7 +58,7 @@ namespace TownOfHost.Modules
                 return;
             }
             numPlayersWatchingCamera--;
-            Logger.Info($"Close: {System.DateTime.Now:HH:mm:ss}", "DeviceTimer");
+            Logger.Info($"Close: {System.DateTime.Now:HH:mm:ss}", nameof(DeviceTimer));
         }
         public static void ConsumeCamera()
         {
@@ -76,7 +76,7 @@ namespace TownOfHost.Modules
         {
             if (AmongUsClient.Instance.AmHost)
             {
-                Logger.Info("【RpcUpdateCamerasUsable】", nameof(DisableDevice));
+                Logger.Info("【RpcUpdateCamerasUsable】", nameof(DeviceTimer));
                 var writer = AmongUsClient.Instance.StartRpcImmediately(
                     PlayerControl.LocalPlayer.NetId,
                     (byte)CustomRPC.UpdateCamerasUsable,
@@ -96,7 +96,7 @@ namespace TownOfHost.Modules
 
             if (time <= 0f)
             {
-                Logger.Info($"Destroy: {System.DateTime.Now:HH:mm:ss}", "DeviceTimer");
+                Logger.Info($"Destroy: {System.DateTime.Now:HH:mm:ss}", nameof(DeviceTimer));
                 camerasRanOut = true;
             }
         }
