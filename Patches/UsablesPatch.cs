@@ -123,12 +123,17 @@ namespace TownOfHost
         }
         private static bool IsUnusable(SystemConsole systemConsole)
         {
+            var player = PlayerControl.LocalPlayer;
+
             //   task_cams: Airship
             //  Surv_Panel: Polus
             // SurvConsole: Skeld
-            if (DeviceTimer.CamerasRanOut && systemConsole.name is "task_cams" or "Surv_Panel" or "SurvConsole")
+            if (player.IsAlive())
             {
-                return true;
+                if (DeviceTimer.CamerasRanOut && systemConsole.name is "task_cams" or "Surv_Panel" or "SurvConsole")
+                {
+                    return true;
+                }
             }
             return false;
         }
