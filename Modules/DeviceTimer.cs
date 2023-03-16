@@ -8,7 +8,11 @@ namespace TownOfHost.Modules
 {
     public static class DeviceTimer
     {
-        public static bool CamerasRanOut => camerasRanOut && isEnabled;
+        public static bool CamerasRanOut
+        {
+            get => camerasRanOut && isEnabled;
+            private set => camerasRanOut = value;
+        }
         private static bool camerasRanOut;
         private static int numPlayersWatchingCamera;
         private static bool isEnabled;
@@ -18,7 +22,7 @@ namespace TownOfHost.Modules
 
         public static void Init()
         {
-            camerasRanOut = false;
+            CamerasRanOut = false;
             numPlayersWatchingCamera = 0;
             isEnabled = Options.CamerasTimer.GetBool();
             camerasRemaining = Options.CamerasMaxTimer.GetInt();
@@ -97,7 +101,7 @@ namespace TownOfHost.Modules
             if (time <= 0f)
             {
                 Logger.Info($"Destroy: {System.DateTime.Now:HH:mm:ss}", nameof(DeviceTimer));
-                camerasRanOut = true;
+                CamerasRanOut = true;
             }
         }
         public static void UpdateNotifyText()
@@ -109,7 +113,7 @@ namespace TownOfHost.Modules
             var notifyBuilder = new StringBuilder();
 
             notifyBuilder.Append("カメラ: ");
-            if (camerasRanOut)
+            if (CamerasRanOut)
             {
                 notifyBuilder.AppendLine("時間切れ");
             }
@@ -154,7 +158,7 @@ namespace TownOfHost.Modules
             {
                 return string.Empty;
             }
-            if (!camerasRanOut)
+            if (!CamerasRanOut)
             {
                 return string.Empty;
             }
@@ -167,7 +171,7 @@ namespace TownOfHost.Modules
         }
         public static void UpdateUnusableNotify(PlayerControl player)
         {
-            if (!AmongUsClient.Instance.AmHost || !isEnabled || !camerasRanOut)
+            if (!AmongUsClient.Instance.AmHost || !isEnabled || !CamerasRanOut)
             {
                 return;
             }
