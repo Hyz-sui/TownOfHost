@@ -97,10 +97,11 @@ namespace TownOfHost
         public static void Postfix(
             ShipStatus __instance,
             [HarmonyArgument(0)] SystemTypes systemType,
+            [HarmonyArgument(1)] PlayerControl player,
             [HarmonyArgument(2)] byte amount)
         {
             Camouflage.CheckCamouflage();
-            DeviceTimer.HandleRepairSystem(systemType, amount);
+            DeviceTimer.HandleRepairSystem(systemType, player, amount);
         }
         public static void CheckAndOpenDoorsRange(ShipStatus __instance, int amount, int min, int max)
         {

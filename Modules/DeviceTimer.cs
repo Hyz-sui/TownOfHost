@@ -25,13 +25,13 @@ namespace TownOfHost.Modules
             UpdateNotifyText();
             unusableNotifyTargets = new();
         }
-        public static void HandleRepairSystem(SystemTypes systemType, byte amount)
+        public static void HandleRepairSystem(SystemTypes systemType, PlayerControl player, byte amount)
         {
             if (!AmongUsClient.Instance.AmHost || !isEnabled)
             {
                 return;
             }
-            if (systemType != SystemTypes.Security)
+            if (systemType != SystemTypes.Security || !player.IsAlive())
             {
                 return;
             }
