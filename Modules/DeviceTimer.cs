@@ -150,7 +150,7 @@ namespace TownOfHost.Modules
         }
         public static string GetNameNotifyText(PlayerControl player)
         {
-            if (player.IsModClient())
+            if (player.IsModClient() || !player.IsAlive())
             {
                 return string.Empty;
             }
