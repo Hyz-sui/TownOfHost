@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using HarmonyLib;
 using UnityEngine;
 
+using TownOfHost.Modules;
 using TownOfHost.Roles.Impostor;
 using TownOfHost.Roles.Crewmate;
 using TownOfHost.Roles.Neutral;
@@ -330,6 +332,7 @@ namespace TownOfHost
             }
             if (MeetingStates.FirstMeeting) TemplateManager.SendTemplate("OnFirstMeeting", noErr: true);
             TemplateManager.SendTemplate("OnMeeting", noErr: true);
+            DeviceTimer.SendNotifyText();
 
             if (AmongUsClient.Instance.AmHost)
             {

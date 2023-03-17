@@ -1,122 +1,72 @@
 using HarmonyLib;
-using UnityEngine;
-using UnityEngine.UI;
+
+using TownOfHost.Objects;
 
 namespace TownOfHost
 {
     [HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Start))]
     class OptionsMenuBehaviourStartPatch
     {
-        private static Vector3? origin;
-        private static ToggleButtonBehaviour ForceJapanese;
-        private static ToggleButtonBehaviour JapaneseRoleName;
-        private static ToggleButtonBehaviour SendResultToDiscord;
-        private static ToggleButtonBehaviour ShowLobbySummary;
-        public static float xOffset = 1.75f;
-        public static float yOffset = -0.25f;
-        private static void UpdateToggle(ToggleButtonBehaviour button, string text, bool on)
-        {
-            if (button == null || button.gameObject == null) return;
-
-            Color color = on ? new Color(0f, 1f, 0.16470589f, 1f) : Color.white;
-            button.Background.color = color;
-            button.Text.text = $"{text}{(on ? "On" : "Off")}";
-            if (button.Rollover) button.Rollover.ChangeOutColor(color);
-        }
-        private static ToggleButtonBehaviour CreateCustomToggle(string text, bool on, Vector3 offset, UnityEngine.Events.UnityAction onClick, OptionsMenuBehaviour __instance)
-        {
-            if (__instance.CensorChatButton != null)
-            {
-                var button = UnityEngine.Object.Instantiate(__instance.CensorChatButton, __instance.CensorChatButton.transform.parent);
-                button.transform.localPosition = (origin ?? Vector3.zero) + offset;
-                PassiveButton passiveButton = button.GetComponent<PassiveButton>();
-                passiveButton.OnClick = new Button.ButtonClickedEvent();
-                passiveButton.OnClick.AddListener(onClick);
-                UpdateToggle(button, text, on);
-
-                return button;
-            }
-            return null;
-        }
+        private static ClientOptionToggleButton ForceJapanese;
+        private static ClientOptionToggleButton JapaneseRoleName;
+        private static ClientOptionToggleButton SendResultToDiscord;
+        private static ClientOptionToggleButton ShowLobbySummary;
 
         public static void Postfix(OptionsMenuBehaviour __instance)
         {
-            if (__instance.CensorChatButton != null)
+            if (__instance.DisableMouseMovement == null)
             {
-                if (origin == null) origin = __instance.CensorChatButton.transform.localPosition;
-                __instance.CensorChatButton.transform.localPosition = origin.Value + Vector3.left * 0.375f + Vector3.up * 0.08f;
-                __instance.CensorChatButton.transform.localScale = Vector3.one * 0.7f;
-            }
-            if (__instance.EnableFriendInvitesButton != null)
-            {
-                if (origin == null) origin = __instance.EnableFriendInvitesButton.transform.localPosition;
-                __instance.EnableFriendInvitesButton.transform.localPosition = origin.Value + Vector3.right * 3.125f + Vector3.up * 0.08f;
-                __instance.EnableFriendInvitesButton.transform.localScale = Vector3.one * 0.7f;
-            }
-            if (__instance.ColorBlindButton != null)
-            {
-                if (origin == null) origin = __instance.ColorBlindButton.transform.localPosition;
-                __instance.ColorBlindButton.transform.localPosition = origin.Value + Vector3.right * 3.125f + Vector3.up * 0.74f;
-                __instance.ColorBlindButton.transform.localScale = Vector3.one * 0.7f;
-            }
-            if (__instance.StreamerModeButton != null)
-            {
-                if (origin == null) origin = __instance.StreamerModeButton.transform.localPosition;
-                __instance.StreamerModeButton.transform.localPosition = origin.Value + Vector3.right * 1.375f + Vector3.up * 1.071f;
-                __instance.StreamerModeButton.transform.localScale = Vector3.one * 0.7f;
+                return;
             }
 
-            if (ForceJapanese == null || ForceJapanese?.gameObject == null)
+            if (ForceJapanese == null || ForceJapanese.Behaviour == null)
             {
-                ForceJapanese = CreateCustomToggle("Force Japanese: ", Main.ForceJapanese.Value, new Vector3(-0.375f, yOffset, 0), (UnityEngine.Events.UnityAction)ForceJapaneseButtonToggle, __instance);
-
-                void ForceJapaneseButtonToggle()
-                {
-                    Main.ForceJapanese.Value = !Main.ForceJapanese.Value;
-                    UpdateToggle(ForceJapanese, "Force Japanese: ", Main.ForceJapanese.Value);
-                }
-            }
-            if (JapaneseRoleName == null || JapaneseRoleName.gameObject == null)
-            {
-                JapaneseRoleName = CreateCustomToggle("Japanese Role Name: ", Main.JapaneseRoleName.Value, new Vector3(1.375f, yOffset, 0), (UnityEngine.Events.UnityAction)LangModeButtonToggle, __instance);
-
-                void LangModeButtonToggle()
-                {
-                    Main.JapaneseRoleName.Value = !Main.JapaneseRoleName.Value;
-                    UpdateToggle(JapaneseRoleName, "Japanese Role Name: ", Main.JapaneseRoleName.Value);
-                }
-            }
-            if (SendResultToDiscord == null || SendResultToDiscord.gameObject == null)
-            {
-                var buttonText = $"{Translator.GetString("DiscordResultButtonText")}: ";
-                SendResultToDiscord = CreateCustomToggle(buttonText, Main.SendResultToDiscord.Value, new Vector3(1.375f, yOffset * 2 - 0.08f, 0), (UnityEngine.Events.UnityAction)DiscordResultButtonToggle, __instance);
-
-                void DiscordResultButtonToggle()
-                {
-                    Main.SendResultToDiscord.Value = !Main.SendResultToDiscord.Value;
-                    UpdateToggle(SendResultToDiscord, buttonText, Main.SendResultToDiscord.Value);
-                }
-            }
-            if (ShowLobbySummary == null || ShowLobbySummary.gameObject == null)
-            {
-                var buttonText = "ロビーで前の試合の結果を表示: ";
-                ShowLobbySummary = CreateCustomToggle(
-                    buttonText,
-                    Main.ShowLobbySummary.Value,
-                    new(-0.375f, yOffset * 2f - 0.08f, 0f),
-                    (UnityEngine.Events.UnityAction)LobbySummaryButtonToggle,
+                ForceJapanese = ClientOptionToggleButton.Create(
+                    "日本語表示を強制",
+                    "ForceJapanese",
+                    Main.ForceJapanese,
                     __instance);
-
-                void LobbySummaryButtonToggle()
-                {
-                    Main.ShowLobbySummary.Value = !Main.ShowLobbySummary.Value;
-                    UpdateToggle(ShowLobbySummary, buttonText, Main.ShowLobbySummary.Value);
-                    if (DestroyableSingleton<GameStartManager>.InstanceExists)
-                    {
-                        LobbySummary.Show();
-                    }
-                }
             }
+            if (JapaneseRoleName == null || JapaneseRoleName.Behaviour == null)
+            {
+                JapaneseRoleName = ClientOptionToggleButton.Create(
+                    "役職名を日本語で表示",
+                    "JapaneseRoleName",
+                    Main.JapaneseRoleName,
+                    __instance);
+            }
+            if (SendResultToDiscord == null || SendResultToDiscord.Behaviour == null)
+            {
+                SendResultToDiscord = ClientOptionToggleButton.Create(
+                    "Discordに試合結果を送信",
+                    "DiscordResult",
+                    Main.SendResultToDiscord,
+                    __instance);
+            }
+            if (ShowLobbySummary == null || ShowLobbySummary.Behaviour == null)
+            {
+                ShowLobbySummary = ClientOptionToggleButton.Create(
+                    "ロビーで前の試合の結果を表示",
+                    "ShowLobbySummary",
+                    Main.ShowLobbySummary,
+                    __instance,
+                    () =>
+                    {
+                        if (DestroyableSingleton<GameStartManager>.InstanceExists)
+                        {
+                            LobbySummary.Show();
+                        }
+                    });
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Close))]
+    public static class OptionsMenuBehaviourClosePatch
+    {
+        public static void Postfix()
+        {
+            ClientOptionToggleButton.CustomBackground?.gameObject?.SetActive(false);
         }
     }
 }

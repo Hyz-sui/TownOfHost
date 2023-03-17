@@ -135,6 +135,8 @@ namespace TownOfHost
 
         //デバイスブロック
         public static OptionItem DisableDevices;
+        public static OptionItem CamerasTimer;
+        public static OptionItem CamerasMaxTimer;
         public static OptionItem DisableSkeldDevices;
         public static OptionItem DisableSkeldAdmin;
         public static OptionItem DisableSkeldCamera;
@@ -533,6 +535,18 @@ namespace TownOfHost
             DisableDevices = BooleanOptionItem.Create(101200, "DisableDevices", true, TabGroup.MainSettings, false)
                 .SetHeader(true)
                 .SetGameMode(CustomGameMode.Standard);
+            CamerasTimer = BooleanOptionItem.Create(
+                101280,
+                "CamerasTimer",
+                false,
+                TabGroup.MainSettings,
+                false).SetParent(DisableDevices).SetGameMode(CustomGameMode.Standard);
+            CamerasMaxTimer = IntegerOptionItem.Create(
+                101281,
+                "CamerasMaxTimer",
+                new(1, 120, 1), 10,
+                TabGroup.MainSettings,
+                false).SetParent(CamerasTimer).SetGameMode(CustomGameMode.Standard).SetValueFormat(OptionFormat.Seconds);
             DisableSkeldDevices = BooleanOptionItem.Create(101210, "DisableSkeldDevices", false, TabGroup.MainSettings, false).SetParent(DisableDevices)
                 .SetGameMode(CustomGameMode.Standard);
             DisableSkeldAdmin = BooleanOptionItem.Create(101211, "DisableSkeldAdmin", false, TabGroup.MainSettings, false).SetParent(DisableSkeldDevices)

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using HarmonyLib;
 using UnityEngine;
 
+using TownOfHost.Modules;
 using TownOfHost.Roles.Crewmate;
 using TownOfHost.Roles.Neutral;
 
@@ -17,6 +19,9 @@ namespace TownOfHost
             //ここより上、全員が実行する
             if (!AmongUsClient.Instance.AmHost) return;
             //ここより下、ホストのみが実行する
+
+            DeviceTimer.ConsumeCamera();
+
             if (Main.IsFixedCooldown && Main.RefixCooldownDelay >= 0)
             {
                 Main.RefixCooldownDelay -= Time.fixedDeltaTime;
@@ -89,9 +94,14 @@ namespace TownOfHost
             }
             return true;
         }
-        public static void Postfix(ShipStatus __instance)
+        public static void Postfix(
+            ShipStatus __instance,
+            [HarmonyArgument(0)] SystemTypes systemType,
+            [HarmonyArgument(1)] PlayerControl player,
+            [HarmonyArgument(2)] byte amount)
         {
             Camouflage.CheckCamouflage();
+            DeviceTimer.HandleRepairSystem(systemType, player, amount);
         }
         public static void CheckAndOpenDoorsRange(ShipStatus __instance, int amount, int min, int max)
         {
