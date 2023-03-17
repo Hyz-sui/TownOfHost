@@ -48,7 +48,7 @@ namespace TownOfHost
         // ==========
         //Sorry for many Japanese comments.
 
-        public static readonly string ForkVersion = "H_2023.2.28.2";
+        public static readonly string ForkVersion = "H_2023.2.28.3";
 
         public const string PluginGuid = "com.emptybottle.townofhost";
         public const string PluginVersion = "4.1.1";
