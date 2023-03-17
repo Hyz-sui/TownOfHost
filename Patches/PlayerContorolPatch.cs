@@ -635,6 +635,11 @@ namespace TownOfHost
                 if (GameStates.IsInTask && player == PlayerControl.LocalPlayer)
                     DisableDevice.FixedUpdate();
 
+                if (GameStates.IsInTask)
+                {
+                    DeviceTimer.UpdateUnusableNotify(__instance);
+                }
+
                 if (GameStates.IsInGame && Main.RefixCooldownDelay <= 0)
                     foreach (var pc in Main.AllPlayerControls)
                     {

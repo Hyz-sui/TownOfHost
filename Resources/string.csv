@@ -284,6 +284,8 @@
 "TieMode.All","Eject All","全員追放","全体放逐","全員放逐","Изгнать всех","Exilar Todos"
 "TieMode.Random","Eject Random","ランダムに追放","随机放逐","隨機放逐","Изгнать случайно","Exilar Aleatório"
 "DisableDevices","Disable Devices","デバイスを無効化","禁用设备","禁用裝置","Отключить устройства","Desativar Dispositivos"
+"CamerasTimer","Cameras Timer","カメラの時間制限(全マップ)","","","",""
+"CamerasMaxTimer","Cameras Max Timer","使用可能時間","","","",""
 "DisableSkeldDevices","Disable Skeld Devices","スケルドのデバイス無効化","禁用骷髅舰设备","禁用The Skeld中的設備","Отключить устройства на TheSkeld","Desativar Dispositivos de Skeld"
 "DisableMiraHQDevices","Disable MiraHQ Device","ミラHQのデバイス無効化","禁用米拉总部设备","禁用Mira HQ中的設備","Отключить устройства на MiraHQ","Desativar Dispositivos de MiraHQ"
 "DisablePolusDevices","Disable Polus Device","ポーラスのデバイス無効化","禁用波鲁斯设备","禁用Polus中的設備","Отключить устройства на Polus","Desativar Dispositivos de Polus"
@@ -625,7 +627,6 @@
 "BountyHunterChangeButtonText","Swap","変更","变更","變更","Смена цели","Trocar"
 "EvilTrackerChangeButtonText","Track","追跡","追踪","追蹤","Отслеживать",""
 "DefaultShapeshiftText","Shift","変身","变形","變身","Превращение","Mutar"
-"DiscordResultButtonText","Send Results To Discord","Discordに試合結果を送信",,,,
 "DisabledBySettings","Disabled by Settings","設定で無効化されています","已在设置被中禁用","在設定中被禁用","Отключено настройкой","Desativado Pelas Configurações"
 "Disabled","Disabled","無効","禁用","已被禁用","Отключено","Desativado"
 "FailToTrack","Failed To Track","追跡失敗","追踪失败","無法追蹤","Не удалось отследить",""
