@@ -14,7 +14,8 @@ namespace TownOfHost.Modules
             private set => camerasRanOut = value;
         }
         private static bool camerasRanOut;
-        private static int numPlayersWatchingCamera;
+        private static int NumPlayersWatchingCamera => playersWatchingCamera.Count;
+        private static HashSet<byte> playersWatchingCamera;
         private static bool isEnabled;
         private static float camerasRemaining;
         private static string notifyText;
@@ -23,7 +24,7 @@ namespace TownOfHost.Modules
         public static void Init()
         {
             CamerasRanOut = false;
-            numPlayersWatchingCamera = 0;
+            playersWatchingCamera = new();
             isEnabled = Options.CamerasTimer.GetBool();
             camerasRemaining = Options.CamerasMaxTimer.GetInt();
             UpdateNotifyText();
@@ -42,27 +43,30 @@ namespace TownOfHost.Modules
 
             switch (amount)
             {
-                case 1: BeginCamera(); break;
-                case 2: CloseCamera(); break;
+                case 1: BeginCamera(player); break;
+                case 2: CloseCamera(player); break;
             }
         }
-        public static void BeginCamera()
+        public static void BeginCamera(PlayerControl player)
         {
             if (!AmongUsClient.Instance.AmHost || !isEnabled)
             {
                 return;
             }
-            numPlayersWatchingCamera++;
+            playersWatchingCamera.Add(player.PlayerId);
             Logger.Info($"Begin: {System.DateTime.Now:HH:mm:ss}", nameof(DeviceTimer));
         }
-        public static void CloseCamera()
+        public static void CloseCamera(PlayerControl player)
         {
             if (!AmongUsClient.Instance.AmHost || !isEnabled)
             {
                 return;
             }
-            numPlayersWatchingCamera--;
-            Logger.Info($"Close: {System.DateTime.Now:HH:mm:ss}", nameof(DeviceTimer));
+            if (playersWatchingCamera.Contains(player.PlayerId))
+            {
+                playersWatchingCamera.Remove(player.PlayerId);
+                Logger.Info($"Close: {System.DateTime.Now:HH:mm:ss}", nameof(DeviceTimer));
+            }
         }
         public static void ConsumeCamera()
         {
@@ -70,7 +74,7 @@ namespace TownOfHost.Modules
             {
                 return;
             }
-            camerasRemaining -= Time.fixedDeltaTime * numPlayersWatchingCamera;
+            camerasRemaining -= Time.fixedDeltaTime * NumPlayersWatchingCamera;
             if (camerasRemaining <= 0f && !CamerasRanOut)
             {
                 RpcUpdateCamerasUsable(camerasRemaining);
