@@ -46,6 +46,10 @@ namespace TownOfHost
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
             }
         }
+        public static void RpcChangeMainRole(this PlayerControl player, CustomRoles role)
+        {
+            Main.PlayerStates[player.PlayerId].RpcChangeMainRole(role);
+        }
 
         public static void RpcExile(this PlayerControl player)
         {

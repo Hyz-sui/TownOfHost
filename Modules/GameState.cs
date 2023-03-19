@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AmongUs.GameOptions;
+
 using HarmonyLib;
+using Hazel;
+
+using AmongUs.GameOptions;
 
 namespace TownOfHost
 {
@@ -11,6 +14,7 @@ namespace TownOfHost
         byte PlayerId;
         public CustomRoles MainRole;
         public List<CustomRoles> SubRoles;
+        public List<CustomRoles> PreviousRoles;
         public CountTypes countTypes;
         public bool IsDead { get; set; }
         public DeathReason deathReason { get; set; }
@@ -23,6 +27,7 @@ namespace TownOfHost
         {
             MainRole = CustomRoles.NotAssigned;
             SubRoles = new();
+            this.PreviousRoles = new();
             countTypes = CountTypes.OutOfGame;
             PlayerId = playerId;
             IsDead = false;
@@ -66,6 +71,25 @@ namespace TownOfHost
         {
             if (SubRoles.Contains(role))
                 SubRoles.Remove(role);
+        }
+        public void ChangeMainRole(CustomRoles role)
+        {
+            this.PreviousRoles.Add(this.MainRole);
+            this.SetMainRole(role);
+        }
+        public void RpcChangeMainRole(CustomRoles role)
+        {
+            this.ChangeMainRole(role);
+            if (AmongUsClient.Instance.AmHost)
+            {
+                var writer = AmongUsClient.Instance.StartRpcImmediately(
+                    PlayerControl.LocalPlayer.NetId,
+                    (byte)CustomRPC.ChangeMainRole,
+                    SendOption.Reliable);
+                writer.Write(this.PlayerId);
+                writer.WritePacked((int)role);
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
+            }
         }
 
         public void SetDead()
@@ -113,6 +137,18 @@ namespace TownOfHost
                 if (!(ExcludeSelfKill && state.PlayerId == PlayerId) && state.GetRealKiller() == PlayerId)
                     count++;
             return count;
+        }
+
+        public string GetPreviousRolesText()
+        {
+            if (this.PreviousRoles.Count <= 0)
+            {
+                return string.Empty;
+            }
+
+            var coloredRoles = this.PreviousRoles.Select(role =>
+                Utils.ColorString(Utils.GetRoleColor(role), Translator.GetRoleString(role.ToString()))).ToArray();
+            return $"{string.Join(" → ", coloredRoles)} → ";
         }
     }
     public class TaskState

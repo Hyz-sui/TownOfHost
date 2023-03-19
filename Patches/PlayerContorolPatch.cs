@@ -1060,4 +1060,21 @@ namespace TownOfHost
             }
         }
     }
+
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
+    public static class PlayerControlDiePatch
+    {
+        public static void Postfix(PlayerControl __instance)
+        {
+            if (!AmongUsClient.Instance.AmHost)
+            {
+                return;
+            }
+
+            if (__instance.Is(CustomRoles.EvilHacker))
+            {
+                EvilHacker.Inherit();
+            }
+        }
+    }
 }
