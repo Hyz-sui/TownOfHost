@@ -14,7 +14,7 @@ namespace TownOfHost
     [HarmonyPatch]
     public class ModUpdater
     {
-        private static readonly string URL = "https://api.github.com/repos/tukasa0001/TownOfHost";
+        private static readonly string URL = "https://api.github.com/repos/Hyz-sui/TownOfHost-H";
         public static bool hasUpdate = false;
         public static bool isBroken = false;
         public static bool isChecked = false;
@@ -75,20 +75,16 @@ namespace TownOfHost
                     JArray assets = data["assets"].Cast<JArray>();
                     for (int i = 0; i < assets.Count; i++)
                     {
-                        if (assets[i]["name"].ToString() == "TownOfHost_Steam.dll" && Constants.GetPlatformType() == Platforms.StandaloneSteamPC)
+                        var asset = assets[i];
+                        var name = asset["name"].ToString();
+                        if (!name.ToLower().EndsWith(".dll"))
                         {
-                            downloadUrl = assets[i]["browser_download_url"].ToString();
-                            break;
+                            continue;
                         }
-                        if (assets[i]["name"].ToString() == "TownOfHost_Epic.dll" && Constants.GetPlatformType() == Platforms.StandaloneEpicPC)
-                        {
-                            downloadUrl = assets[i]["browser_download_url"].ToString();
-                            break;
-                        }
-                        if (assets[i]["name"].ToString() == "TownOfHost.dll")
-                            downloadUrl = assets[i]["browser_download_url"].ToString();
+                        downloadUrl = asset["browser_download_url"].ToString();
                     }
-                    hasUpdate = latestVersion.CompareTo(Main.version) > 0;
+                    hasUpdate = latestVersion.CompareTo(Main.ParsedForkVersion) > 0;
+                    Logger.Info(hasUpdate.ToString(), "update");
                 }
                 if (downloadUrl == null)
                 {
@@ -152,7 +148,7 @@ namespace TownOfHost
             {
                 using WebClient client = new();
                 client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(DownloadCallBack);
-                client.DownloadFileAsync(new Uri(url), "BepInEx/plugins/TownOfHost.dll");
+                client.DownloadFileAsync(new Uri(url), $"BepInEx/plugins/TownOfHost-H_{latestVersion}.dll");
                 while (client.IsBusy) await Task.Delay(1);
                 ShowPopup(GetString("updateRestart"), true);
             }
