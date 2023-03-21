@@ -1,11 +1,15 @@
 using System.Collections.Generic;
 using System;
 using System.Linq;
+
+using HarmonyLib;
+using UnityEngine;
+
 using AmongUs.Data;
 using AmongUs.GameOptions;
-using HarmonyLib;
 using InnerNet;
-using UnityEngine;
+
+using TownOfHost.Modules;
 using static TownOfHost.Translator;
 
 namespace TownOfHost
@@ -82,6 +86,8 @@ namespace TownOfHost
             public static void Postfix(GameStartManager __instance)
             {
                 if (!AmongUsClient.Instance) return;
+
+                LobbySummary.Update();
 
                 string warningMessage = "";
                 if (AmongUsClient.Instance.AmHost)

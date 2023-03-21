@@ -224,7 +224,9 @@ namespace TownOfHost
 
             var RoleSummaryRectTransform = RoleSummary.GetComponent<RectTransform>();
             RoleSummaryRectTransform.anchoredPosition = new Vector2(Pos.x + 3.5f, Pos.y - 0.1f);
-            RoleSummary.text = LobbySummary.PrevSummaryText = sb.ToString();
+            var summary = sb.ToString();
+            RoleSummary.text = summary;
+            LobbySummary.Save(summary);
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

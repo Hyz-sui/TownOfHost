@@ -1,5 +1,6 @@
 using HarmonyLib;
 
+using TownOfHost.Modules;
 using TownOfHost.Objects;
 
 namespace TownOfHost

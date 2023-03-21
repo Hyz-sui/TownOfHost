@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using AmongUs.GameOptions;
+
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.IL2CPP;
 using HarmonyLib;
 using UnhollowerRuntimeLib;
 using UnityEngine;
+
+using AmongUs.GameOptions;
+
+using TownOfHost.Modules;
 
 [assembly: AssemblyFileVersionAttribute(TownOfHost.Main.PluginVersion)]
 [assembly: AssemblyInformationalVersionAttribute(TownOfHost.Main.PluginVersion)]
@@ -157,6 +161,8 @@ namespace TownOfHost
             TownOfHost.Logger.Disable("SwitchSystem");
             TownOfHost.Logger.Disable("CustomRpcSender");
             //TownOfHost.Logger.isDetail = true;
+
+            ModTempData.Clear();
 
             // 認証関連-初期化
             DebugKeyAuth = new HashAuth(DebugKeyHash, DebugKeySalt);
