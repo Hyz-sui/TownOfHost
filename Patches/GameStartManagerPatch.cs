@@ -108,7 +108,9 @@ namespace TownOfHost
                 }
                 else
                 {
-                    if (!MatchVersions(0))
+                    if (MatchVersions(0))
+                        exitTimer = 0;
+                    else
                     {
                         exitTimer += Time.deltaTime;
                         if (exitTimer > 10)

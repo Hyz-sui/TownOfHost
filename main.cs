@@ -52,7 +52,7 @@ namespace TownOfHost
         public static readonly Version ParsedForkVersion = Version.Parse(ForkVersion.Replace("H_", ""));
 
         public const string PluginGuid = "com.emptybottle.townofhost";
-        public const string PluginVersion = "4.1.1";
+        public const string PluginVersion = "4.1.2";
         public Harmony Harmony { get; } = new Harmony(PluginGuid);
         public static Version version = Version.Parse(PluginVersion);
         public static BepInEx.Logging.ManualLogSource Logger;

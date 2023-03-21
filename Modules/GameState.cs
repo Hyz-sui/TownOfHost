@@ -148,7 +148,8 @@ namespace TownOfHost
 
             var coloredRoles = this.PreviousRoles.Select(role =>
                 Utils.ColorString(Utils.GetRoleColor(role), Translator.GetRoleString(role.ToString()))).ToArray();
-            return $"{string.Join(" → ", coloredRoles)} → ";
+            var arrow = "<size=80%> >> </size>";
+            return string.Concat(string.Join(arrow, coloredRoles), arrow);
         }
     }
     public class TaskState
