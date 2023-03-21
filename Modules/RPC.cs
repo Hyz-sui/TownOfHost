@@ -40,6 +40,7 @@ namespace TownOfHost
         SetRealKiller,
         SyncEvilHackerScenes,
         UpdateCamerasUsable,
+        ChangeMainRole,
     }
     public enum Sounds
     {
@@ -198,6 +199,9 @@ namespace TownOfHost
                     break;
                 case CustomRPC.UpdateCamerasUsable:
                     DeviceTimer.UpdateCamerasUsable(reader.ReadSingle());
+                    break;
+                case CustomRPC.ChangeMainRole:
+                    Main.PlayerStates[reader.ReadByte()].ChangeMainRole((CustomRoles)reader.ReadPackedInt32());
                     break;
             }
         }
