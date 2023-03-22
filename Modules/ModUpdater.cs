@@ -84,7 +84,6 @@ namespace TownOfHost
                         downloadUrl = asset["browser_download_url"].ToString();
                     }
                     hasUpdate = latestVersion.CompareTo(Main.ParsedForkVersion) > 0;
-                    Logger.Info(hasUpdate.ToString(), "update");
                 }
                 if (downloadUrl == null)
                 {

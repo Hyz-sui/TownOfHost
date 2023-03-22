@@ -19,10 +19,10 @@ namespace TownOfHost.Modules
         }
         public static DirectoryInfo GetSubDirectory(string path)
         {
-            logger.Info($"一時ディレクトリ作成: {path}");
             var directoryInfo = new DirectoryInfo($"{RelativePath}{path}");
             if (!directoryInfo.Exists)
             {
+                logger.Info($"一時ディレクトリ作成: {path}");
                 directoryInfo.Create();
             }
             return directoryInfo;
