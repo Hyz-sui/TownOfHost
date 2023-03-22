@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using AmongUs.GameOptions;
+
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.IL2CPP;
 using HarmonyLib;
 using UnhollowerRuntimeLib;
 using UnityEngine;
+
+using AmongUs.GameOptions;
+
+using TownOfHost.Modules;
 
 [assembly: AssemblyFileVersionAttribute(TownOfHost.Main.PluginVersion)]
 [assembly: AssemblyInformationalVersionAttribute(TownOfHost.Main.PluginVersion)]
@@ -48,10 +52,11 @@ namespace TownOfHost
         // ==========
         //Sorry for many Japanese comments.
 
-        public static readonly string ForkVersion = "H_2023.2.28.3";
+        public static readonly string ForkVersion = "H_2023.2.28.4";
+        public static readonly Version ParsedForkVersion = Version.Parse(ForkVersion.Replace("H_", ""));
 
         public const string PluginGuid = "com.emptybottle.townofhost";
-        public const string PluginVersion = "4.1.1";
+        public const string PluginVersion = "4.1.2";
         public Harmony Harmony { get; } = new Harmony(PluginGuid);
         public static Version version = Version.Parse(PluginVersion);
         public static BepInEx.Logging.ManualLogSource Logger;
@@ -156,6 +161,8 @@ namespace TownOfHost
             TownOfHost.Logger.Disable("SwitchSystem");
             TownOfHost.Logger.Disable("CustomRpcSender");
             //TownOfHost.Logger.isDetail = true;
+
+            ModTempData.Clear();
 
             // 認証関連-初期化
             DebugKeyAuth = new HashAuth(DebugKeyHash, DebugKeySalt);

@@ -1,9 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using HarmonyLib;
-using UnityEngine;
 using Hazel;
+using UnityEngine;
+
+using TownOfHost.Extensions;
 using static TownOfHost.Options;
 using static TownOfHost.Translator;
 
@@ -19,12 +22,14 @@ namespace TownOfHost.Roles.Impostor
         private static OptionItem OptionCanSeeKillFlash;
         private static OptionItem OptionCanSeeMurderScene;
         private static OptionItem OptionCanSeeImpArrow;
+        private static OptionItem OptionInheritAbility;
 
         private static bool CanSeeDeadPos;
         private static bool CanSeeOtherImp;
         private static bool CanSeeKillFlash;
         private static bool CanSeeMurderScene;
         private static bool CanSeeImpArrow;
+        private static bool InheritAbility;
 
         private static Dictionary<SystemTypes, int> PlayerCount = new();
         private static Dictionary<SystemTypes, int> DeadCount = new();
@@ -41,6 +46,12 @@ namespace TownOfHost.Roles.Impostor
             OptionCanSeeKillFlash = BooleanOptionItem.Create(Id + 12, "CanSeeKillFlash", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.EvilHacker]);
             OptionCanSeeMurderScene = BooleanOptionItem.Create(Id + 13, "CanSeeMurderScene", true, TabGroup.ImpostorRoles, false).SetParent(OptionCanSeeKillFlash);
             OptionCanSeeImpArrow = BooleanOptionItem.Create(Id + 14, "CanSeeImpArrow", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.EvilHacker]);
+            OptionInheritAbility = BooleanOptionItem.Create(
+                Id + 15,
+                "InheritAbility",
+                false,
+                TabGroup.ImpostorRoles,
+                false).SetParent(CustomRoleSpawnChances[CustomRoles.EvilHacker]);
         }
         public static void Init()
         {
@@ -56,6 +67,7 @@ namespace TownOfHost.Roles.Impostor
             CanSeeKillFlash = OptionCanSeeKillFlash.GetBool();
             CanSeeMurderScene = OptionCanSeeMurderScene.GetBool();
             CanSeeImpArrow = OptionCanSeeImpArrow.GetBool();
+            InheritAbility = OptionInheritAbility.GetBool();
         }
         public static void Add(byte playerId)
         {
@@ -234,5 +246,25 @@ namespace TownOfHost.Roles.Impostor
         }
         public static bool KillFlashCheck(PlayerControl killer, PlayerControl target) =>
             CanSeeKillFlash && Utils.IsImpostorKill(killer, target);
+        public static void Inherit()
+        {
+            if (!InheritAbility)
+            {
+                return;
+            }
+
+            // 生存素インポスター
+            var candidates = Main.AllAlivePlayerControls.Where(player => player.Is(CustomRoles.Impostor)).ToArray();
+            if (candidates.Length <= 0)
+            {
+                return;
+            }
+
+            var target = candidates.PickRandom();
+            Logger.Info($"継承: {target.GetNameWithRole()}", "EvilHacker");
+            target.RpcChangeMainRole(CustomRoles.EvilHacker);
+            Add(target.PlayerId);
+            Utils.NotifyRoles(SpecifySeer: target);
+        }
     }
 }

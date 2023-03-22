@@ -22,6 +22,9 @@ namespace TownOfHost
             GameStates.InGame = false;
 
             Logger.Info("-----------ゲーム終了-----------", "Phase");
+
+            FarSight.DisableAbility();
+
             if (!GameStates.IsModHost) return;
             SummaryText = new();
             foreach (var id in Main.PlayerStates.Keys)
@@ -221,7 +224,9 @@ namespace TownOfHost
 
             var RoleSummaryRectTransform = RoleSummary.GetComponent<RectTransform>();
             RoleSummaryRectTransform.anchoredPosition = new Vector2(Pos.x + 3.5f, Pos.y - 0.1f);
-            RoleSummary.text = LobbySummary.PrevSummaryText = sb.ToString();
+            var summary = sb.ToString();
+            RoleSummary.text = summary;
+            LobbySummary.Save(summary);
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

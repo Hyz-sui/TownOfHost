@@ -1,11 +1,15 @@
 using System.Collections.Generic;
 using System;
 using System.Linq;
+
+using HarmonyLib;
+using UnityEngine;
+
 using AmongUs.Data;
 using AmongUs.GameOptions;
-using HarmonyLib;
 using InnerNet;
-using UnityEngine;
+
+using TownOfHost.Modules;
 using static TownOfHost.Translator;
 
 namespace TownOfHost
@@ -83,6 +87,8 @@ namespace TownOfHost
             {
                 if (!AmongUsClient.Instance) return;
 
+                LobbySummary.Update();
+
                 string warningMessage = "";
                 if (AmongUsClient.Instance.AmHost)
                 {
@@ -108,7 +114,9 @@ namespace TownOfHost
                 }
                 else
                 {
-                    if (!MatchVersions(0))
+                    if (MatchVersions(0))
+                        exitTimer = 0;
+                    else
                     {
                         exitTimer += Time.deltaTime;
                         if (exitTimer > 10)

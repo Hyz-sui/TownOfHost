@@ -1,12 +1,24 @@
 using System;
+
 using HarmonyLib;
+using UnityEngine;
+
+using TownOfHost.Modules;
 using TownOfHost.Roles.Impostor;
 using TownOfHost.Roles.Neutral;
-using UnityEngine;
 using static TownOfHost.Translator;
 
 namespace TownOfHost
 {
+    [HarmonyPatch(typeof(HudManager), nameof(HudManager.Start))]
+    public static class HudManagerStartPatch
+    {
+        public static void Postfix(HudManager __instance)
+        {
+            FarSight.CreateButton(__instance);
+        }
+    }
+
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
     class HudManagerPatch
     {
@@ -49,6 +61,8 @@ namespace TownOfHost
             }
             //ゲーム中でなければ以下は実行されない
             if (!AmongUsClient.Instance.IsGameStarted) return;
+
+            FarSight.Update();
 
             Utils.CountAlivePlayers();
 
@@ -169,6 +183,7 @@ namespace TownOfHost
                     __instance.KillButton.Hide();
                     __instance.AbilityButton.Show();
                     __instance.AbilityButton.OverrideText(GetString(StringNames.HauntAbilityName));
+                    FarSight.Button.ToggleVisible(FarSight.ShouldShowButton);
                 }
             }
 
@@ -238,11 +253,20 @@ namespace TownOfHost
     class SetHudActivePatch
     {
         public static bool IsActive = false;
-        public static void Postfix(HudManager __instance, [HarmonyArgument(2)] bool isActive)
+        public static void Postfix(
+            HudManager __instance,
+            [HarmonyArgument(0)] PlayerControl localPlayer,
+            [HarmonyArgument(2)] bool isActive)
         {
             __instance.ReportButton.ToggleVisible(!GameStates.IsLobby && isActive);
             if (!GameStates.IsModHost) return;
             IsActive = isActive;
+
+            FarSight.Button.ToggleVisible(
+                isActive &&
+                !localPlayer.IsAlive() &&
+                FarSight.ShouldShowButton);
+
             if (!isActive) return;
 
             var player = PlayerControl.LocalPlayer;
