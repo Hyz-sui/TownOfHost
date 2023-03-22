@@ -74,7 +74,7 @@ namespace TownOfHost.Modules
                 let name = file.Name
                 where name.StartsWith("result_")
                 where name.EndsWith(".txt")
-                orderby file.Name descending
+                orderby name descending
                 select file).ToArray();
             History = new string[files.Length];
             for (int i = 0; i < files.Length; i++)
