@@ -988,7 +988,19 @@ namespace TownOfHost
         public static string SummaryTexts(byte id, bool disableColor = true)
         {
             var RolePos = TranslationController.Instance.currentLanguage.languageID == SupportedLangs.English ? 47 : 37;
-            string summary = $"{ColorString(Main.PlayerColors[id], Main.AllPlayerNames[id])}<pos=22%>{GetProgressText(id)}</pos><pos=29%> {GetVitalText(id)}</pos><pos={RolePos}%> {Main.PlayerStates[id].GetPreviousRolesText()}{GetDisplayRoleName(id)}{GetSubRolesText(id)}</pos>";
+            var summary =
+                new StringBuilder(100)
+                .Append(ColorString(Main.PlayerColors[id], Main.AllPlayerNames[id]))
+                .Append("<pos=22%>")
+                .Append(GetProgressText(id))
+                .Append("</pos><pos=29%> ")
+                .Append(GetVitalText(id))
+                .AppendFormat("</pos><pos={0}%> ", RolePos)
+                .Append(Main.PlayerStates[id].GetPreviousRolesText())
+                .Append(GetDisplayRoleName(id))
+                .Append(GetSubRolesText(id))
+                .Append("</pos>")
+                .ToString();
             return disableColor ? summary.RemoveHtmlTags() : summary;
         }
         public static string RemoveHtmlTags(this string str) => Regex.Replace(str, "<[^>]*?>", "");
