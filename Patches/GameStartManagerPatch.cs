@@ -1,15 +1,17 @@
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using HarmonyLib;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 using AmongUs.Data;
 using AmongUs.GameOptions;
 using InnerNet;
 
 using TownOfHost.Modules;
+using TownOfHost.Objects;
 using static TownOfHost.Translator;
 
 namespace TownOfHost
@@ -30,6 +32,7 @@ namespace TownOfHost
         public class GameStartManagerStartPatch
         {
             public static TMPro.TextMeshPro HideName;
+            public static int CurrentGameId = 32;
             public static void Postfix(GameStartManager __instance)
             {
                 __instance.GameRoomNameCode.text = GameCode.IntToGameName(AmongUsClient.Instance.GameId);
@@ -42,6 +45,35 @@ namespace TownOfHost
                         : $"<color={Main.ModColor}>{Main.HideName.Value}</color>";
 
                 LobbySummary.Show();
+
+                if (AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame)
+                {
+                    var gameId = AmongUsClient.Instance.GameId;
+                    if (gameId != CurrentGameId)
+                    {
+                        var hudManager = DestroyableSingleton<HudManager>.Instance;
+                        CurrentGameId = gameId;
+                        GUIUtility.systemCopyBuffer = GameCode.IntToGameName(CurrentGameId);
+                        var notifyText = Object.Instantiate(Prefabs.SimpleText, hudManager.transform);
+                        notifyText.name = "CodeCopyNotify";
+                        notifyText.text = "コードをコピーしました";
+                        notifyText.color = Color.white;
+                        notifyText.outlineColor = new(0, 128, 255, 255);
+                        notifyText.fontSize = 4f;
+                        notifyText.transform.localPosition = Vector3.zero;
+                        notifyText.gameObject.SetActive(true);
+                        hudManager.StartCoroutine(Effects.Lerp(3f, new Action<float>(t =>
+                        {
+                            var alpha = 1f - t;
+                            if (alpha <= 0f)
+                            {
+                                Object.Destroy(notifyText.gameObject);
+                                return;
+                            }
+                            notifyText.color = new Color(1f, 1f, 1f, alpha);
+                        })));
+                    }
+                }
 
                 if (!AmongUsClient.Instance.AmHost) return;
 
