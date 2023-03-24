@@ -31,12 +31,14 @@ namespace TownOfHost
             Logger.Info("Options.Load Start", "Options");
             taskOptionsLoad = Task.Run(Load);
         }
+        /*
         [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix]
         public static void WaitOptionsLoad()
         {
             taskOptionsLoad.Wait();
             Logger.Info("Options.Load End", "Options");
         }
+        */
         // オプションId
         public const int PresetId = 0;
 
@@ -730,6 +732,7 @@ namespace TownOfHost
             DebugModeManager.SetupCustomOption();
 
             IsLoaded = true;
+            Logger.Info("Options.Load End", "Options");
         }
 
         public static void SetupRoleOptions(int id, TabGroup tab, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard)

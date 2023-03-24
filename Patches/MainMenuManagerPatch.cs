@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+
 using HarmonyLib;
 using UnityEngine;
 
@@ -63,6 +65,35 @@ namespace TownOfHost
                 __instance.StartCoroutine(Effects.Lerp(0.01f, new Action<float>((p) => freeplayButton.transform.GetChild(0).GetComponent<TMPro.TMP_Text>().SetText("GitHub"))));
             }
 #endif
+        }
+    }
+
+    [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.LateUpdate))]
+    public static class MainMenuManagerLateUpdatePatch
+    {
+        private static PassiveButton playLocalButton;
+        private static PassiveButton playOnlineButton;
+        public static void Postfix(MainMenuManager __instance)
+        {
+            var buttons = __instance.ControllerSelectable.ToArray();
+            if (playLocalButton == null)
+            {
+                playLocalButton = buttons.FirstOrDefault(element => element.name == "PlayLocalButton").GetComponent<PassiveButton>();
+            }
+            if (playOnlineButton == null)
+            {
+                playOnlineButton = buttons.FirstOrDefault(element => element.name == "PlayOnlineButton").GetComponent<PassiveButton>();
+            }
+
+            if (playLocalButton != null)
+            {
+                playLocalButton.SetButtonEnableState(Options.IsLoaded);
+            }
+            if (playOnlineButton != null)
+            {
+                playOnlineButton.SetButtonEnableState(Options.IsLoaded);
+            }
+
         }
     }
 }
