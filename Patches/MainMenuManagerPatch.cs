@@ -3,6 +3,7 @@ using System.Linq;
 
 using HarmonyLib;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace TownOfHost
 {
@@ -12,6 +13,10 @@ namespace TownOfHost
         public static GameObject template;
         public static GameObject discordButton;
         public static GameObject updateButton;
+
+        private static PassiveButton playLocalButton;
+        private static PassiveButton playOnlineButton;
+        private static GameObject loadingIcon;
 
         [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPrefix]
         public static void Start_Prefix(MainMenuManager __instance)
@@ -66,14 +71,27 @@ namespace TownOfHost
             }
 #endif
         }
-    }
 
-    [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.LateUpdate))]
-    public static class MainMenuManagerLateUpdatePatch
-    {
-        private static PassiveButton playLocalButton;
-        private static PassiveButton playOnlineButton;
-        public static void Postfix(MainMenuManager __instance)
+        [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix]
+        public static void StartPostfix()
+        {
+            if (loadingIcon != null)
+            {
+                return;
+            }
+
+            var connectIcon = GameObject.Find("MainUI")?.transform?.Find("ConnectIcon")?.gameObject;
+            if (connectIcon != null)
+            {
+                loadingIcon = Object.Instantiate(connectIcon, connectIcon.transform.parent);
+                loadingIcon.transform.localPosition = new(0f, -0.95f, -1f);
+                loadingIcon.transform.localScale = new(1.3f, 1.3f, 1f);
+                loadingIcon.SetActive(true);
+            }
+        }
+
+        [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.LateUpdate)), HarmonyPostfix]
+        public static void LateUpdatePostfix(MainMenuManager __instance)
         {
             var buttons = __instance.ControllerSelectable.ToArray();
             if (playLocalButton == null)
@@ -85,15 +103,15 @@ namespace TownOfHost
                 playOnlineButton = buttons.FirstOrDefault(element => element.name == "PlayOnlineButton").GetComponent<PassiveButton>();
             }
 
-            if (playLocalButton != null)
+            if (playLocalButton != null && playLocalButton.enabled != Options.IsLoaded)
             {
                 playLocalButton.SetButtonEnableState(Options.IsLoaded);
             }
-            if (playOnlineButton != null)
+            if (playOnlineButton != null && playOnlineButton.enabled != Options.IsLoaded)
             {
                 playOnlineButton.SetButtonEnableState(Options.IsLoaded);
             }
-
+            loadingIcon.SetActive(!Options.IsLoaded);
         }
     }
 }
