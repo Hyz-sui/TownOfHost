@@ -240,8 +240,6 @@ namespace TownOfHost
         public static OptionItem GhostCanSeeDeathReason;
         public static OptionItem GhostIgnoreTasks;
         public static OptionItem CommsCamouflage;
-        public static OptionItem FarSight;
-        public static OptionItem FarSightExcludeImpostors;
 
         // プリセット対象外
         public static OptionItem NoGameEnd;
@@ -686,18 +684,6 @@ namespace TownOfHost
                 .SetGameMode(CustomGameMode.All);
             CommsCamouflage = BooleanOptionItem.Create(900_013, "CommsCamouflage", false, TabGroup.MainSettings, false)
                 .SetGameMode(CustomGameMode.All);
-            FarSight = BooleanOptionItem.Create(
-                910000,
-                "FarSight",
-                true,
-                TabGroup.MainSettings,
-                false).SetGameMode(CustomGameMode.All);
-            FarSightExcludeImpostors = BooleanOptionItem.Create(
-                910100,
-                "FarSightExImp",
-                true,
-                TabGroup.MainSettings,
-                false).SetGameMode(CustomGameMode.All).SetParent(FarSight);
 
             // プリセット対象外
             AutoDisplayLastResult = BooleanOptionItem.Create(1_000_000, "AutoDisplayLastResult", true, TabGroup.MainSettings, false)
