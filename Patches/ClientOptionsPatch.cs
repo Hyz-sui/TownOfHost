@@ -12,6 +12,7 @@ namespace TownOfHost
         private static ClientOptionToggleButton JapaneseRoleName;
         private static ClientOptionToggleButton SendResultToDiscord;
         private static ClientOptionToggleButton ShowLobbySummary;
+        private static ClientOptionToggleButton CopyGameCodeOnCreateLobby;
 
         public static void Postfix(OptionsMenuBehaviour __instance)
         {
@@ -58,6 +59,14 @@ namespace TownOfHost
                             LobbySummary.Show();
                         }
                     });
+            }
+            if (CopyGameCodeOnCreateLobby == null || CopyGameCodeOnCreateLobby.Behaviour == null)
+            {
+                CopyGameCodeOnCreateLobby = ClientOptionToggleButton.Create(
+                    "部屋建て時にコードを自動でコピー",
+                    "CopyCode",
+                    Main.CopyGameCodeOnCreateLobby,
+                    __instance);
             }
         }
     }

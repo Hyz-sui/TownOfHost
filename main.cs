@@ -73,6 +73,7 @@ namespace TownOfHost
         public static ConfigEntry<bool> JapaneseRoleName { get; private set; }
         public static ConfigEntry<bool> SendResultToDiscord { get; private set; }
         public static ConfigEntry<bool> ShowLobbySummary { get; private set; }
+        public static ConfigEntry<bool> CopyGameCodeOnCreateLobby { get; private set; }
         public static ConfigEntry<int> MessageWait { get; private set; }
 
         public static Dictionary<byte, PlayerVersion> playerVersion = new();
@@ -151,6 +152,7 @@ namespace TownOfHost
             JapaneseRoleName = Config.Bind("Client Options", "Japanese Role Name", true);
             SendResultToDiscord = Config.Bind("Client Options", "Send Game Result To Discord", false);
             ShowLobbySummary = Config.Bind("Client Options", "Show Lobby Summary", true);
+            CopyGameCodeOnCreateLobby = Config.Bind("Client Options", "Copy Game Code On Create Lobby", true);
             DebugKeyInput = Config.Bind("Authentication", "Debug Key", "");
 
             Logger = BepInEx.Logging.Logger.CreateLogSource("TownOfHost");

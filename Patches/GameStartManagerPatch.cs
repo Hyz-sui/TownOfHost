@@ -46,7 +46,7 @@ namespace TownOfHost
 
                 LobbySummary.Show();
 
-                if (AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame)
+                if (AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame && Main.CopyGameCodeOnCreateLobby.Value)
                 {
                     var gameId = AmongUsClient.Instance.GameId;
                     if (gameId != CurrentGameId)
