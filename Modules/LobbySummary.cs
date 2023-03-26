@@ -8,6 +8,8 @@ using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
+using TownOfHost.Objects;
+
 namespace TownOfHost.Modules
 {
     public static class LobbySummary
@@ -21,11 +23,10 @@ namespace TownOfHost.Modules
                 {
                     return _PrevSummaryTMP;
                 }
-                var settingsTMP = DestroyableSingleton<HudManager>.Instance.GameSettings;
-                _PrevSummaryTMP = Object.Instantiate(settingsTMP, settingsTMP.transform.parent);
+                _PrevSummaryTMP = Object.Instantiate(Prefabs.SimpleText, DestroyableSingleton<HudManager>.Instance.transform);
                 _PrevSummaryTMP.name = "PrevSummary_TMP";
-                _PrevSummaryTMP.GetComponent<AspectPosition>().enabled = false;
-                _PrevSummaryTMP.transform.localPosition = new(-2.3f, 3f, -1f);
+                _PrevSummaryTMP.transform.localPosition = new(-2.3f, 2.9f, -1f);
+                _PrevSummaryTMP.alignment = TextAlignmentOptions.TopLeft;
                 _PrevSummaryTMP.fontSize = _PrevSummaryTMP.fontSizeMax = _PrevSummaryTMP.fontSizeMin = 1.2f;
                 _PrevSummaryTMP.outlineColor = new(0, 0, 0, 100);
                 _PrevSummaryTMP.outlineWidth = 0.15f;

@@ -22,9 +22,6 @@ namespace TownOfHost
             GameStates.InGame = false;
 
             Logger.Info("-----------ゲーム終了-----------", "Phase");
-
-            FarSight.DisableAbility();
-
             if (!GameStates.IsModHost) return;
             SummaryText = new();
             foreach (var id in Main.PlayerStates.Keys)
