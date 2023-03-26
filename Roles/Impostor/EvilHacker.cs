@@ -49,7 +49,7 @@ namespace TownOfHost.Roles.Impostor
             OptionInheritAbility = BooleanOptionItem.Create(
                 Id + 15,
                 "InheritAbility",
-                false,
+                true,
                 TabGroup.ImpostorRoles,
                 false).SetParent(CustomRoleSpawnChances[CustomRoles.EvilHacker]);
         }

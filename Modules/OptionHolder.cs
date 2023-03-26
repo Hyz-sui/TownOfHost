@@ -538,7 +538,7 @@ namespace TownOfHost
             CamerasTimer = BooleanOptionItem.Create(
                 101280,
                 "CamerasTimer",
-                false,
+                true,
                 TabGroup.MainSettings,
                 false).SetParent(DisableDevices).SetGameMode(CustomGameMode.Standard);
             CamerasMaxTimer = IntegerOptionItem.Create(
