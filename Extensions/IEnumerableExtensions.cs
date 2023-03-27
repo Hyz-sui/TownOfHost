@@ -11,7 +11,16 @@ namespace TownOfHost.Extensions
         }
         public static T PickRandom<T>(this T[] candidates)
         {
-            return candidates[IRandom.Instance.Next(candidates.Length)];
+            var length = candidates.Length;
+            if (length <= 0)
+            {
+                return default;
+            }
+            if (length <= 1)
+            {
+                return candidates[0];
+            }
+            return candidates[IRandom.Instance.Next(length)];
         }
     }
 }

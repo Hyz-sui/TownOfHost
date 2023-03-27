@@ -1,7 +1,10 @@
 using System.Globalization;
 using System.Text;
+
 using HarmonyLib;
 using UnityEngine;
+
+using TownOfHost.Objects;
 using static TownOfHost.Translator;
 
 namespace TownOfHost
@@ -48,6 +51,8 @@ namespace TownOfHost
         static TMPro.TextMeshPro SpecialEventText;
         static void Postfix(VersionShower __instance)
         {
+            Prefabs.SimpleText = __instance.text;
+
             Main.credentialsText = $"\r\n<color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginVersion}";
             if (ThisAssembly.Git.Branch.Contains('/'))
                 Main.credentialsText += $"\r\n<color={Main.ModColor}>{ThisAssembly.Git.Branch}({ThisAssembly.Git.Commit})</color>";

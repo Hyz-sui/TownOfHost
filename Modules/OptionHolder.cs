@@ -31,12 +31,14 @@ namespace TownOfHost
             Logger.Info("Options.Load Start", "Options");
             taskOptionsLoad = Task.Run(Load);
         }
+        /*
         [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix]
         public static void WaitOptionsLoad()
         {
             taskOptionsLoad.Wait();
             Logger.Info("Options.Load End", "Options");
         }
+        */
         // オプションId
         public const int PresetId = 0;
 
@@ -240,8 +242,6 @@ namespace TownOfHost
         public static OptionItem GhostCanSeeDeathReason;
         public static OptionItem GhostIgnoreTasks;
         public static OptionItem CommsCamouflage;
-        public static OptionItem FarSight;
-        public static OptionItem FarSightExcludeImpostors;
 
         // プリセット対象外
         public static OptionItem NoGameEnd;
@@ -540,7 +540,7 @@ namespace TownOfHost
             CamerasTimer = BooleanOptionItem.Create(
                 101280,
                 "CamerasTimer",
-                false,
+                true,
                 TabGroup.MainSettings,
                 false).SetParent(DisableDevices).SetGameMode(CustomGameMode.Standard);
             CamerasMaxTimer = IntegerOptionItem.Create(
@@ -686,18 +686,6 @@ namespace TownOfHost
                 .SetGameMode(CustomGameMode.All);
             CommsCamouflage = BooleanOptionItem.Create(900_013, "CommsCamouflage", false, TabGroup.MainSettings, false)
                 .SetGameMode(CustomGameMode.All);
-            FarSight = BooleanOptionItem.Create(
-                910000,
-                "FarSight",
-                true,
-                TabGroup.MainSettings,
-                false).SetGameMode(CustomGameMode.All);
-            FarSightExcludeImpostors = BooleanOptionItem.Create(
-                910100,
-                "FarSightExImp",
-                true,
-                TabGroup.MainSettings,
-                false).SetGameMode(CustomGameMode.All).SetParent(FarSight);
 
             // プリセット対象外
             AutoDisplayLastResult = BooleanOptionItem.Create(1_000_000, "AutoDisplayLastResult", true, TabGroup.MainSettings, false)
@@ -730,6 +718,7 @@ namespace TownOfHost
             DebugModeManager.SetupCustomOption();
 
             IsLoaded = true;
+            Logger.Info("Options.Load End", "Options");
         }
 
         public static void SetupRoleOptions(int id, TabGroup tab, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard)
