@@ -65,9 +65,12 @@ namespace TownOfHost
             }
 
             //不正キル防止処理
-            if (target.Data == null || //PlayerDataがnullじゃないか確認
-                target.inVent || target.inMovingPlat //targetの状態をチェック
-            )
+            if (
+                target.Data == null ||
+                target.inVent ||
+                target.MyPhysics.Animations.IsPlayingEnterVentAnimation() ||
+                target.MyPhysics.Animations.IsPlayingAnyLadderAnimation() ||
+                target.inMovingPlat)
             {
                 Logger.Info("targetは現在キルできない状態です。", "CheckMurder");
                 return false;
