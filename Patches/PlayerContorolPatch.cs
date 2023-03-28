@@ -72,11 +72,6 @@ namespace TownOfHost
                 Logger.Info("targetは現在キルできない状態です。", "CheckMurder");
                 return false;
             }
-            if (target.onLadder)
-            {
-                Logger.Info("targetははしご上にいるためキルできません", "CheckMurder");
-                return false;
-            }
             if (target.Data.IsDead) //同じtargetへの同時キルをブロック
             {
                 Logger.Info("targetは既に死んでいたため、キルをキャンセルしました。", "CheckMurder");
@@ -1070,18 +1065,6 @@ namespace TownOfHost
                 }
             }
             return true;
-        }
-    }
-
-    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ResetForMeeting))]
-    public static class ResetForMeetingPatch
-    {
-        public static void Postfix(PlayerControl __instance)
-        {
-            if (__instance != null && __instance.onLadder)
-            {
-                __instance.onLadder = false;
-            }
         }
     }
 
