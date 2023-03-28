@@ -13,5 +13,11 @@ namespace TownOfHost.Patches
                 __instance.SetFilter((int)HauntMenuMinigame.HauntFilters.Crewmate);
             }
         }
+
+        [HarmonyPatch(typeof(HauntMenuMinigame), nameof(HauntMenuMinigame.SetFilterText)), HarmonyPostfix]
+        public static void SetFilterTextPostfix(HauntMenuMinigame __instance)
+        {
+            __instance.FilterText.text = __instance.HauntTarget.GetDisplayRoleName();
+        }
     }
 }
