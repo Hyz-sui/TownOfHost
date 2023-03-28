@@ -13,6 +13,7 @@ namespace TownOfHost
         private static ClientOptionToggleButton SendResultToDiscord;
         private static ClientOptionToggleButton ShowLobbySummary;
         private static ClientOptionToggleButton CopyGameCodeOnCreateLobby;
+        private static ClientOptionToggleButton HauntMenuFocusCrewmate;
 
         public static void Postfix(OptionsMenuBehaviour __instance)
         {
@@ -66,6 +67,14 @@ namespace TownOfHost
                     "部屋建て時にコードを自動でコピー",
                     "CopyCode",
                     Main.CopyGameCodeOnCreateLobby,
+                    __instance);
+            }
+            if (HauntMenuFocusCrewmate == null || HauntMenuFocusCrewmate.Behaviour == null)
+            {
+                HauntMenuFocusCrewmate = ClientOptionToggleButton.Create(
+                    "憑依開始時に生存者にフォーカス",
+                    "HauntFocusCrew",
+                    Main.HauntMenuFocusCrewmate,
                     __instance);
             }
         }

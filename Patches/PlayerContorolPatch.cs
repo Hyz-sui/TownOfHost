@@ -65,16 +65,14 @@ namespace TownOfHost
             }
 
             //不正キル防止処理
-            if (target.Data == null || //PlayerDataがnullじゃないか確認
-                target.inVent || target.inMovingPlat //targetの状態をチェック
-            )
+            if (
+                target.Data == null ||
+                target.inVent ||
+                target.MyPhysics.Animations.IsPlayingEnterVentAnimation() ||
+                target.MyPhysics.Animations.IsPlayingAnyLadderAnimation() ||
+                target.inMovingPlat)
             {
                 Logger.Info("targetは現在キルできない状態です。", "CheckMurder");
-                return false;
-            }
-            if (target.onLadder)
-            {
-                Logger.Info("targetははしご上にいるためキルできません", "CheckMurder");
                 return false;
             }
             if (target.Data.IsDead) //同じtargetへの同時キルをブロック
@@ -1070,18 +1068,6 @@ namespace TownOfHost
                 }
             }
             return true;
-        }
-    }
-
-    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ResetForMeeting))]
-    public static class ResetForMeetingPatch
-    {
-        public static void Postfix(PlayerControl __instance)
-        {
-            if (__instance != null && __instance.onLadder)
-            {
-                __instance.onLadder = false;
-            }
         }
     }
 
