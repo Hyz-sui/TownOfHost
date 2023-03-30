@@ -52,7 +52,7 @@ namespace TownOfHost
         // ==========
         //Sorry for many Japanese comments.
 
-        public static readonly string ForkVersion = "H_2023.3.28.0";
+        public static readonly string ForkVersion = "H_2023.3.28.1";
         public static readonly Version ParsedForkVersion = Version.Parse(ForkVersion.Replace("H_", ""));
 
         public const string PluginGuid = "com.emptybottle.townofhost";
