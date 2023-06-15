@@ -10,17 +10,18 @@ namespace TownOfHost
     [HarmonyPatch]
     public class MainMenuManagerPatch
     {
+        /*
         public static GameObject template;
         public static GameObject discordButton;
         public static GameObject updateButton;
+        */
 
-        private static PassiveButton playLocalButton;
-        private static PassiveButton playOnlineButton;
-        private static GameObject loadingIcon;
+        // private static GameObject loadingIcon;
 
         [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPrefix]
         public static void Start_Prefix(MainMenuManager __instance)
         {
+            /*
             if (template == null) template = GameObject.Find("/MainUI/ExitGameButton");
             if (template == null) return;
             //Discordボタンを生成
@@ -70,10 +71,12 @@ namespace TownOfHost
                 __instance.StartCoroutine(Effects.Lerp(0.01f, new Action<float>((p) => freeplayButton.transform.GetChild(0).GetComponent<TMPro.TMP_Text>().SetText("GitHub"))));
             }
 #endif
+            */
         }
 
+        /*
         [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix]
-        public static void StartPostfix()
+        public static void StartPostfix(MainMenuManager __instance)
         {
             if (loadingIcon != null)
             {
@@ -84,34 +87,21 @@ namespace TownOfHost
             if (connectIcon != null)
             {
                 loadingIcon = Object.Instantiate(connectIcon, connectIcon.transform.parent);
-                loadingIcon.transform.localPosition = new(0f, -0.95f, -1f);
+                loadingIcon.transform.localPosition = __instance.playButton.transform.localPosition;
                 loadingIcon.transform.localScale = new(1.3f, 1.3f, 1f);
                 loadingIcon.SetActive(true);
             }
         }
+        */
 
         [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.LateUpdate)), HarmonyPostfix]
         public static void LateUpdatePostfix(MainMenuManager __instance)
         {
-            var buttons = __instance.ControllerSelectable.ToArray();
-            if (playLocalButton == null)
+            if (__instance.playButton.enabled != Options.IsLoaded)
             {
-                playLocalButton = buttons.FirstOrDefault(element => element.name == "PlayLocalButton").GetComponent<PassiveButton>();
+                __instance.playButton.SetButtonEnableState(Options.IsLoaded);
             }
-            if (playOnlineButton == null)
-            {
-                playOnlineButton = buttons.FirstOrDefault(element => element.name == "PlayOnlineButton").GetComponent<PassiveButton>();
-            }
-
-            if (playLocalButton != null && playLocalButton.enabled != Options.IsLoaded)
-            {
-                playLocalButton.SetButtonEnableState(Options.IsLoaded);
-            }
-            if (playOnlineButton != null && playOnlineButton.enabled != Options.IsLoaded)
-            {
-                playOnlineButton.SetButtonEnableState(Options.IsLoaded);
-            }
-            loadingIcon.SetActive(!Options.IsLoaded);
+            // loadingIcon.SetActive(!Options.IsLoaded);
         }
     }
 }

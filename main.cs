@@ -6,9 +6,9 @@ using System.Reflection;
 
 using BepInEx;
 using BepInEx.Configuration;
-using BepInEx.IL2CPP;
+using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
-using UnhollowerRuntimeLib;
+using Il2CppInterop.Runtime.Injection;
 using UnityEngine;
 
 using AmongUs.GameOptions;
