@@ -288,8 +288,6 @@ namespace TownOfHost
 
             RoleAssignManager.SetupOptionItem();
             // Impostor
-
-            Roles.Impostor.EvilHacker.SetupCustomOption();
             sortedRoleInfo.Where(role => role.CustomRoleType == CustomRoleTypes.Impostor).Do(info =>
             {
                 SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName);

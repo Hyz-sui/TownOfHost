@@ -255,7 +255,6 @@ namespace TownOfHost
                 role.OnReportDeadBody(__instance, target);
             }
 
-            Roles.Impostor.EvilHacker.OnReportDeadbody();
             Main.AllPlayerControls
                 .Where(pc => Main.CheckShapeshift.ContainsKey(pc.PlayerId))
                 .Do(pc => Camouflage.RpcSetSkin(pc, RevertToDefault: true));
