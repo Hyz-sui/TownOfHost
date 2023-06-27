@@ -7,6 +7,7 @@ using Hazel;
 using UnityEngine;
 
 using TownOfHost.Extensions;
+using TownOfHost.Roles.Core;
 using static TownOfHost.Options;
 using static TownOfHost.Translator;
 
@@ -108,7 +109,7 @@ namespace TownOfHost.Roles.Impostor
             }
             foreach (var pc in Main.AllAlivePlayerControls)
             {
-                var room = Main.PlayerStates[pc.PlayerId].LastRoom?.RoomId ?? default;
+                var room = PlayerState.GetByPlayerId(pc.PlayerId).LastRoom?.RoomId ?? default;
                 PlayerCount[room]++;
                 if (CanSeeOtherImp && pc.GetCustomRole().IsImpostor() && !ImpRooms.Contains(room))
                 {

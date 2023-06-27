@@ -2,18 +2,21 @@ using HarmonyLib;
 
 using TownOfHost.Modules;
 using TownOfHost.Objects;
+using TownOfHost.Modules.ClientOptions;
 
 namespace TownOfHost
 {
     [HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Start))]
-    class OptionsMenuBehaviourStartPatch
+    public static class OptionsMenuBehaviourStartPatch
     {
-        private static ClientOptionToggleButton ForceJapanese;
-        private static ClientOptionToggleButton JapaneseRoleName;
-        private static ClientOptionToggleButton SendResultToDiscord;
-        private static ClientOptionToggleButton ShowLobbySummary;
-        private static ClientOptionToggleButton CopyGameCodeOnCreateLobby;
-        private static ClientOptionToggleButton HauntMenuFocusCrewmate;
+        private static ClientActionItem ForceJapanese;
+        private static ClientActionItem JapaneseRoleName;
+        private static ClientActionItem UnloadMod;
+        private static ClientActionItem DumpLog;
+        private static ClientActionItem SendResultToDiscord;
+        private static ClientActionItem ShowLobbySummary;
+        private static ClientActionItem CopyGameCodeOnCreateLobby;
+        private static ClientActionItem HauntMenuFocusCrewmate;
 
         public static void Postfix(OptionsMenuBehaviour __instance)
         {
@@ -22,60 +25,48 @@ namespace TownOfHost
                 return;
             }
 
-            if (ForceJapanese == null || ForceJapanese.Behaviour == null)
+            if (ForceJapanese == null || ForceJapanese.ToggleButton == null)
             {
-                ForceJapanese = ClientOptionToggleButton.Create(
-                    "日本語表示を強制",
-                    "ForceJapanese",
-                    Main.ForceJapanese,
-                    __instance);
+                ForceJapanese = ClientOptionItem.Create("ForceJapanese", Main.ForceJapanese, __instance);
             }
-            if (JapaneseRoleName == null || JapaneseRoleName.Behaviour == null)
+            if (JapaneseRoleName == null || JapaneseRoleName.ToggleButton == null)
             {
-                JapaneseRoleName = ClientOptionToggleButton.Create(
-                    "役職名を日本語で表示",
-                    "JapaneseRoleName",
-                    Main.JapaneseRoleName,
-                    __instance);
+                JapaneseRoleName = ClientOptionItem.Create("JapaneseRoleName", Main.JapaneseRoleName, __instance);
             }
-            if (SendResultToDiscord == null || SendResultToDiscord.Behaviour == null)
+            if (SendResultToDiscord == null || SendResultToDiscord.ToggleButton == null)
             {
-                SendResultToDiscord = ClientOptionToggleButton.Create(
-                    "Discordに試合結果を送信",
-                    "DiscordResult",
-                    Main.SendResultToDiscord,
-                    __instance);
+                SendResultToDiscord = ClientOptionItem.Create("DiscordResult", Main.SendResultToDiscord, __instance);
             }
-            if (ShowLobbySummary == null || ShowLobbySummary.Behaviour == null)
+            if (ShowLobbySummary == null || ShowLobbySummary.ToggleButton == null)
             {
-                ShowLobbySummary = ClientOptionToggleButton.Create(
-                    "ロビーで前の試合の結果を表示",
-                    "ShowLobbySummary",
-                    Main.ShowLobbySummary,
-                    __instance,
-                    () =>
+                ShowLobbySummary = ClientOptionItem.Create("ShowLobbySummary", Main.ShowLobbySummary, __instance, () =>
+                {
+                    if (DestroyableSingleton<GameStartManager>.InstanceExists)
                     {
-                        if (DestroyableSingleton<GameStartManager>.InstanceExists)
-                        {
-                            LobbySummary.Show();
-                        }
-                    });
+                        LobbySummary.Show();
+                    }
+                });
             }
-            if (CopyGameCodeOnCreateLobby == null || CopyGameCodeOnCreateLobby.Behaviour == null)
+            if (CopyGameCodeOnCreateLobby == null || CopyGameCodeOnCreateLobby.ToggleButton == null)
             {
-                CopyGameCodeOnCreateLobby = ClientOptionToggleButton.Create(
-                    "部屋建て時にコードを自動でコピー",
-                    "CopyCode",
-                    Main.CopyGameCodeOnCreateLobby,
-                    __instance);
+                CopyGameCodeOnCreateLobby = ClientOptionItem.Create("CopyCode", Main.CopyGameCodeOnCreateLobby, __instance);
             }
-            if (HauntMenuFocusCrewmate == null || HauntMenuFocusCrewmate.Behaviour == null)
+            if (HauntMenuFocusCrewmate == null || HauntMenuFocusCrewmate.ToggleButton == null)
             {
-                HauntMenuFocusCrewmate = ClientOptionToggleButton.Create(
-                    "憑依開始時に生存者にフォーカス",
-                    "HauntFocusCrew",
-                    Main.HauntMenuFocusCrewmate,
-                    __instance);
+                HauntMenuFocusCrewmate = ClientOptionItem.Create("HauntFocusCrew", Main.HauntMenuFocusCrewmate, __instance);
+            }
+            if (UnloadMod == null || UnloadMod.ToggleButton == null)
+            {
+                UnloadMod = ClientActionItem.Create("UnloadMod", ModUnloaderScreen.Show, __instance);
+            }
+            if (DumpLog == null || DumpLog.ToggleButton == null)
+            {
+                DumpLog = ClientActionItem.Create("DumpLog", Utils.DumpLog, __instance);
+            }
+
+            if (ModUnloaderScreen.Popup == null)
+            {
+                ModUnloaderScreen.Init(__instance);
             }
         }
     }
@@ -85,7 +76,11 @@ namespace TownOfHost
     {
         public static void Postfix()
         {
-            ClientOptionToggleButton.CustomBackground?.gameObject?.SetActive(false);
+            if (ClientActionItem.CustomBackground != null)
+            {
+                ClientActionItem.CustomBackground.gameObject.SetActive(false);
+            }
+            ModUnloaderScreen.Hide();
         }
     }
 }
