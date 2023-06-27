@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 
 using TownOfHost.Modules;
+using TownOfHost.Objects;
 using TownOfHost.Roles.Core;
 using static TownOfHost.Translator;
 
@@ -58,6 +59,7 @@ namespace TownOfHost
             static TextMeshPro SpecialEventText;
             static void Postfix(VersionShower __instance)
             {
+                Prefabs.SimpleText = __instance.text;
                 Main.credentialsText = $"<color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginVersion}";
 #if DEBUG
                 Main.credentialsText += $"\r\n<color={Main.ModColor}>{ThisAssembly.Git.Branch}({ThisAssembly.Git.Commit})</color>";
