@@ -16,10 +16,6 @@ namespace TownOfHost
         public static PassiveButton UpdateButton { get; private set; }
         private static PassiveButton gitHubButton;
 
-        private static PassiveButton playLocalButton;
-        private static PassiveButton playOnlineButton;
-        private static GameObject loadingIcon;
-
         [HarmonyPatch(nameof(MainMenuManager.Start)), HarmonyPostfix, HarmonyPriority(Priority.Normal)]
         public static void StartPostfix(MainMenuManager __instance)
         {
@@ -124,48 +120,6 @@ namespace TownOfHost
             buttonCollider.offset = new(0f, 0f);
 
             return button;
-        }
-
-        [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix]
-        public static void StartPostfix()
-        {
-            if (loadingIcon != null)
-            {
-                return;
-            }
-
-            var connectIcon = GameObject.Find("MainUI")?.transform?.Find("ConnectIcon")?.gameObject;
-            if (connectIcon != null)
-            {
-                loadingIcon = Object.Instantiate(connectIcon, connectIcon.transform.parent);
-                loadingIcon.transform.localPosition = new(0f, -0.95f, -1f);
-                loadingIcon.transform.localScale = new(1.3f, 1.3f, 1f);
-                loadingIcon.SetActive(true);
-            }
-        }
-
-        [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.LateUpdate)), HarmonyPostfix]
-        public static void LateUpdatePostfix(MainMenuManager __instance)
-        {
-            var buttons = __instance.ControllerSelectable.ToArray();
-            if (playLocalButton == null)
-            {
-                playLocalButton = buttons.FirstOrDefault(element => element.name == "PlayLocalButton").GetComponent<PassiveButton>();
-            }
-            if (playOnlineButton == null)
-            {
-                playOnlineButton = buttons.FirstOrDefault(element => element.name == "PlayOnlineButton").GetComponent<PassiveButton>();
-            }
-
-            if (playLocalButton != null && playLocalButton.enabled != Options.IsLoaded)
-            {
-                playLocalButton.SetButtonEnableState(Options.IsLoaded);
-            }
-            if (playOnlineButton != null && playOnlineButton.enabled != Options.IsLoaded)
-            {
-                playOnlineButton.SetButtonEnableState(Options.IsLoaded);
-            }
-            loadingIcon.SetActive(!Options.IsLoaded);
         }
 
         // プレイメニュー，アカウントメニュー，クレジット画面が開かれたらロゴとボタンを消す

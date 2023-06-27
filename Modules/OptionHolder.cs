@@ -24,12 +24,11 @@ namespace TownOfHost
     [HarmonyPatch]
     public static class Options
     {
-        static Task taskOptionsLoad;
         [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.Initialize)), HarmonyPostfix]
         public static void OptionsLoadStart()
         {
             Logger.Info("Options.Load Start", "Options");
-            taskOptionsLoad = Task.Run(Load);
+            Load();
         }
         /*
         [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix]
@@ -303,20 +302,6 @@ namespace TownOfHost
             CanMakeMadmateCount = IntegerOptionItem.Create(5012, "CanMakeMadmateCount", new(0, 15, 1), 0, TabGroup.ImpostorRoles, false)
                 .SetValueFormat(OptionFormat.Times);
 
-            // Madmate
-            Roles.Madmate.MadSnitch.MadSnitchSpecifyNumRequiredTasks = BooleanOptionItem.Create(
-                10224,
-                "MadSnitchSpecifyTasks",
-                false,
-                TabGroup.ImpostorRoles,
-                false).SetParent(CustomRoleSpawnChances[CustomRoles.MadSnitch]);
-            Roles.Madmate.MadSnitch.MadSnitchNumRequiredTasks = IntegerOptionItem.Create(
-                10225,
-                "MadSnitchNumRequiredTasks",
-                new(1, 99, 1),
-                1,
-                TabGroup.ImpostorRoles,
-                false).SetParent(Roles.Madmate.MadSnitch.MadSnitchSpecifyNumRequiredTasks);
             // Madmate Common Options
             MadmateCanFixLightsOut = BooleanOptionItem.Create(15010, "MadmateCanFixLightsOut", false, TabGroup.ImpostorRoles, false)
                 .SetHeader(true);

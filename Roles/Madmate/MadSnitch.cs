@@ -45,6 +45,8 @@ public sealed class MadSnitch : RoleBase, IKillFlashSeeable, IDeathReasonSeeable
     {
         CanVent,
         MadSnitchCanAlsoBeExposedToImpostor,
+        MadSnitchSpecifyTasks,
+        MadSnitchNumRequiredTasks,
     }
 
     private static bool canSeeKillFlash;
@@ -57,6 +59,8 @@ public sealed class MadSnitch : RoleBase, IKillFlashSeeable, IDeathReasonSeeable
         OptionCanVent = BooleanOptionItem.Create(RoleInfo, 10, OptionName.CanVent, false, false);
         OptionCanAlsoBeExposedToImpostor = BooleanOptionItem.Create(RoleInfo, 11, OptionName.MadSnitchCanAlsoBeExposedToImpostor, false, false);
         Tasks = Options.OverrideTasksData.Create(RoleInfo, 20);
+        MadSnitchSpecifyNumRequiredTasks = BooleanOptionItem.Create(RoleInfo, 24, OptionName.MadSnitchSpecifyTasks, false, false);
+        MadSnitchNumRequiredTasks = IntegerOptionItem.Create(RoleInfo, 25, OptionName.MadSnitchNumRequiredTasks, new(1, 99, 1), 1, false).SetParent(MadSnitchSpecifyNumRequiredTasks);
     }
 
     public bool KnowsImpostor() => IsTaskFinished;
