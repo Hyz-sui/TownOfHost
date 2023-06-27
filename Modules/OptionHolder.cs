@@ -302,6 +302,12 @@ namespace TownOfHost
             CanMakeMadmateCount = IntegerOptionItem.Create(5012, "CanMakeMadmateCount", new(0, 15, 1), 0, TabGroup.ImpostorRoles, false)
                 .SetValueFormat(OptionFormat.Times);
 
+            // Madmate
+            sortedRoleInfo.Where(role => role.CustomRoleType == CustomRoleTypes.Madmate).Do(info =>
+            {
+                SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName);
+                info.OptionCreator?.Invoke();
+            });
             // Madmate Common Options
             MadmateCanFixLightsOut = BooleanOptionItem.Create(15010, "MadmateCanFixLightsOut", false, TabGroup.ImpostorRoles, false)
                 .SetHeader(true);
