@@ -17,7 +17,7 @@ namespace TownOfHost.Patches
         [HarmonyPatch(typeof(HauntMenuMinigame), nameof(HauntMenuMinigame.SetFilterText)), HarmonyPrefix]
         public static bool SetFilterTextPrefix(HauntMenuMinigame __instance)
         {
-            __instance.FilterText.text = __instance.HauntTarget.GetDisplayRoleName();
+            __instance.FilterText.text = __instance.HauntTarget.GetTrueRoleName();
 
             return false;
         }

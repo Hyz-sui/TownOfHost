@@ -25,11 +25,9 @@ namespace TownOfHost.Modules
                 }
                 _PrevSummaryTMP = Object.Instantiate(Prefabs.SimpleText, DestroyableSingleton<HudManager>.Instance.transform);
                 _PrevSummaryTMP.name = "PrevSummary_TMP";
-                _PrevSummaryTMP.transform.localPosition = new(-2.3f, 2.9f, -1f);
+                _PrevSummaryTMP.transform.localPosition = new(0f, 2.9f, -1f);
                 _PrevSummaryTMP.alignment = TextAlignmentOptions.TopLeft;
                 _PrevSummaryTMP.fontSize = _PrevSummaryTMP.fontSizeMax = _PrevSummaryTMP.fontSizeMin = 1.2f;
-                _PrevSummaryTMP.outlineColor = new(0, 0, 0, 100);
-                _PrevSummaryTMP.outlineWidth = 0.15f;
                 _PrevSummaryTMP.lineSpacing = -25f;
                 _PrevSummaryTMP.characterSpacing = -5f;
                 _PrevSummaryTMP.gameObject.SetActive(true);
