@@ -437,6 +437,7 @@
 "EvilHackerCanSeeImpostorArrow",,"他のインポスターを指す矢印が見える","","","",""
 "EvilHackerCanSeeMurderRoom","Can See The Murder Location","キルの発生場所がわかる","","","",""
 "EvilHackerInheritAbility","InheritAbility","死亡時､生存インポスターに能力を引き継ぐ","","","",""
+"EvilHackerSkipUnoccupiedRooms","EvilHackerSkipUnoccupiedRooms","アドミン情報で誰もいない部屋を省略する","","","",""
 "TimeManagerIncreaseMeetingTime","Increase voting time","伸びる会議時間","延长投票的时间","延長時間","Увеличить время встреч на",""
 "TimeManagerLimitMeetingTime","Increase limit","会議時間の伸びる限界","增加限制","會議時間延長上限","Лимит увеличения времени встреч",""
 "TriggerDouble","Double Click","ダブルクリック","双击","同時觸發兩個技能冷卻","Двойное нажатие",""

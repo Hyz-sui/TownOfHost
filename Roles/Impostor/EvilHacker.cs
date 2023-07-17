@@ -37,6 +37,7 @@ public sealed class EvilHacker : RoleBase, IImpostor, IKillFlashSeeable
         canSeeMurderRoom = OptionCanSeeMurderRoom.GetBool();
         canSeeImpostorArrow = OptionCanSeeImpostorArrow.GetBool();
         inheritAbility = OptionInheritAbility.GetBool();
+        skipUnoccupiedRooms = OptionSkipUnoccupiedRooms.GetBool();
 
         foreach (var otherPlayer in Main.AllAlivePlayerControls)
         {
@@ -61,6 +62,7 @@ public sealed class EvilHacker : RoleBase, IImpostor, IKillFlashSeeable
     private static OptionItem OptionCanSeeMurderRoom;
     private static OptionItem OptionCanSeeImpostorArrow;
     private static OptionItem OptionInheritAbility;
+    private static OptionItem OptionSkipUnoccupiedRooms;
     private enum OptionName
     {
         EvilHackerCanSeeDeadMark,
@@ -69,6 +71,7 @@ public sealed class EvilHacker : RoleBase, IImpostor, IKillFlashSeeable
         EvilHackerCanSeeMurderRoom,
         EvilHackerCanSeeImpostorArrow,
         EvilHackerInheritAbility,
+        EvilHackerSkipUnoccupiedRooms,
     }
     private static bool canSeeDeadMark;
     private static bool canSeeImpostorMark;
@@ -76,6 +79,7 @@ public sealed class EvilHacker : RoleBase, IImpostor, IKillFlashSeeable
     private static bool canSeeMurderRoom;
     private static bool canSeeImpostorArrow;
     private static bool inheritAbility;
+    private static bool skipUnoccupiedRooms;
 
     private static HashSet<EvilHacker> instances = new(1);
 
@@ -90,6 +94,7 @@ public sealed class EvilHacker : RoleBase, IImpostor, IKillFlashSeeable
         OptionCanSeeMurderRoom = BooleanOptionItem.Create(RoleInfo, 13, OptionName.EvilHackerCanSeeMurderRoom, true, false, OptionCanSeeKillFlash);
         OptionCanSeeImpostorArrow = BooleanOptionItem.Create(RoleInfo, 14, OptionName.EvilHackerCanSeeImpostorArrow, true, false);
         OptionInheritAbility = BooleanOptionItem.Create(RoleInfo, 15, OptionName.EvilHackerInheritAbility, true, false);
+        OptionSkipUnoccupiedRooms = BooleanOptionItem.Create(RoleInfo, 16, OptionName.EvilHackerSkipUnoccupiedRooms, false, false);
     }
     /// <summary>相方がキルした部屋を通知する設定がオンなら各プレイヤーに通知を行う</summary>
     private static void HandleMurderRoomNotify(MurderInfo info)
@@ -116,7 +121,7 @@ public sealed class EvilHacker : RoleBase, IImpostor, IKillFlashSeeable
         foreach (var admin in admins)
         {
             var entry = admin.Value;
-            if (entry.TotalPlayers <= 0)
+            if (skipUnoccupiedRooms && entry.TotalPlayers <= 0)
             {
                 continue;
             }
