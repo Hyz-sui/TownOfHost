@@ -675,6 +675,7 @@ namespace TownOfHost
             {
                 return;
             }
+            __instance.GetRoleClass().OnDie();
         }
     }
 }
