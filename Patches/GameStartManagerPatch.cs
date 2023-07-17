@@ -89,8 +89,9 @@ namespace TownOfHost
                         notifyText.name = "CodeCopyNotify";
                         notifyText.text = "コードをコピーしました";
                         notifyText.color = Color.white;
+                        notifyText.outlineWidth = 0.07f;
                         notifyText.outlineColor = new(0, 128, 255, 255);
-                        notifyText.fontSize = 4f;
+                        notifyText.fontSize = notifyText.fontSizeMax = notifyText.fontSizeMin = 8f;
                         notifyText.transform.localPosition = Vector3.zero;
                         notifyText.gameObject.SetActive(true);
                         hudManager.StartCoroutine(Effects.Lerp(3f, new Action<float>(t =>
