@@ -140,7 +140,6 @@ namespace TownOfHost
             if (!target.Data.IsDead || !AmongUsClient.Instance.AmHost) return;
             //以降ホストしか処理しない
             // 処理は全てCustomRoleManager側で行う
-            Roles.Impostor.EvilHacker.OnMurder(__instance, target);
             CustomRoleManager.OnMurderPlayer(__instance, target);
         }
     }
@@ -425,14 +424,6 @@ namespace TownOfHost
                     //seerに関わらず発動するSuffix
                     Suffix.Append(CustomRoleManager.GetSuffixOthers(seer, target));
 
-                    if (GameStates.IsInTask && target.Is(CustomRoles.EvilHacker) && seer == target)
-                    {
-                        Suffix.Append(Roles.Impostor.EvilHacker.GetArrow(seer, false));
-                    }
-
-                    if (GameStates.IsInTask && target.Is(CustomRoles.EvilHacker) && target.AmOwner)
-                        Suffix.Append(Roles.Impostor.EvilHacker.GetMurderSceneText(target));
-
                     /*if(main.AmDebugger.Value && main.BlockKilling.TryGetValue(target.PlayerId, out var isBlocked)) {
                         Mark = isBlocked ? "(true)" : "(false)";
                     }*/
@@ -684,11 +675,7 @@ namespace TownOfHost
             {
                 return;
             }
-
-            if (__instance.Is(CustomRoles.EvilHacker))
-            {
-                Roles.Impostor.EvilHacker.Inherit();
-            }
+            __instance.GetRoleClass().OnDie();
         }
     }
 }

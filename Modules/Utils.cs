@@ -140,7 +140,6 @@ namespace TownOfHost
             return seer.GetCustomRole() switch
             {
                 // IKillFlashSeeable未適用役職はここに書く
-                CustomRoles.EvilHacker => EvilHacker.KillFlashCheck(killer, target),
                 _ => seer.Is(CustomRoleTypes.Madmate) && Options.MadmateCanSeeKillFlash.GetBool(),
             };
         }
@@ -809,14 +808,6 @@ namespace TownOfHost
                 SelfSuffix.Append(seerRole?.GetSuffix(seer, isForMeeting: isForMeeting));
                 //seerに関わらず発動するSuffix
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, isForMeeting: isForMeeting));
-
-                if (seer.Is(CustomRoles.EvilHacker))
-                {
-                    SelfSuffix.Append(EvilHacker.GetArrow(seer, isForMeeting));
-                }
-
-                if (seer.Is(CustomRoles.EvilHacker) && !isForMeeting)
-                    SelfSuffix.Append(EvilHacker.GetMurderSceneText(seer));
 
                 var deviceUnusableNotify = DeviceTimer.GetNameNotifyText(seer);
                 if (deviceUnusableNotify != string.Empty)

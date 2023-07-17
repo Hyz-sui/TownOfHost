@@ -1,280 +1,277 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
-using HarmonyLib;
-using UnityEngine;
-
 using AmongUs.GameOptions;
 using Hazel;
-
 using TownOfHost.Extensions;
+using TownOfHost.Modules;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
-using static TownOfHost.Translator;
+using UnityEngine;
 
 namespace TownOfHost.Roles.Impostor;
 
-public sealed class EvilHacker : RoleBase, IImpostor
+public sealed class EvilHacker : RoleBase, IImpostor, IKillFlashSeeable
 {
-    public EvilHacker(PlayerControl player) : base(RoleInfo, player)
+    public static readonly SimpleRoleInfo RoleInfo =
+        SimpleRoleInfo.Create(
+            typeof(EvilHacker),
+            player => new EvilHacker(player),
+            CustomRoles.EvilHacker,
+            () => RoleTypes.Impostor,
+            CustomRoleTypes.Impostor,
+            3100,
+            SetupOptionItems,
+            "eh"
+        );
+    public EvilHacker(PlayerControl player)
+    : base(
+        RoleInfo,
+        player
+    )
     {
+        canSeeDeadMark = OptionCanSeeDeadMark.GetBool();
+        canSeeImpostorMark = OptionCanSeeImpostorMark.GetBool();
+        canSeeKillFlash = OptionCanSeeKillFlash.GetBool();
+        canSeeMurderRoom = OptionCanSeeMurderRoom.GetBool();
+        canSeeImpostorArrow = OptionCanSeeImpostorArrow.GetBool();
+        inheritAbility = OptionInheritAbility.GetBool();
+
+        foreach (var otherPlayer in Main.AllAlivePlayerControls)
+        {
+            if (!Is(otherPlayer) && otherPlayer.Is(CustomRoleTypes.Impostor))
+            {
+                otherImpostors.Add(otherPlayer.PlayerId);
+                TargetArrow.Add(Player.PlayerId, otherPlayer.PlayerId);
+            }
+        }
+
+        CustomRoleManager.OnMurderPlayerOthers.Add(HandleMurderRoomNotify);
+        instances.Add(this);
+    }
+    public override void OnDestroy()
+    {
+        instances.Remove(this);
     }
 
-    public static readonly SimpleRoleInfo RoleInfo = SimpleRoleInfo.Create(
-        typeof(EvilHacker),
-        player => new EvilHacker(player),
-        CustomRoles.EvilHacker,
-        () => RoleTypes.Impostor,
-        CustomRoleTypes.Impostor,
-        3100,
-        SetupCustomOption,
-        "eh");
-
-    private static List<byte> playerIdList = new();
-
-    private static OptionItem OptionCanSeeDeadPos;
-    private static OptionItem OptionCanSeeOtherImp;
+    private static OptionItem OptionCanSeeDeadMark;
+    private static OptionItem OptionCanSeeImpostorMark;
     private static OptionItem OptionCanSeeKillFlash;
-    private static OptionItem OptionCanSeeMurderScene;
-    private static OptionItem OptionCanSeeImpArrow;
+    private static OptionItem OptionCanSeeMurderRoom;
+    private static OptionItem OptionCanSeeImpostorArrow;
     private static OptionItem OptionInheritAbility;
-
-    private static bool CanSeeDeadPos;
-    private static bool CanSeeOtherImp;
-    private static bool CanSeeKillFlash;
-    private static bool CanSeeMurderScene;
-    private static bool CanSeeImpArrow;
-    private static bool InheritAbility;
-
-    private static Dictionary<SystemTypes, int> PlayerCount = new();
-    private static Dictionary<SystemTypes, int> DeadCount = new();
-    private static List<SystemTypes> ImpRooms = new();
-    // (キルしたインポスター, 殺害現場の部屋)
-    private static List<(byte killerId, SystemTypes room)> KillerIdsAndRooms = new();
-    private static Dictionary<byte, byte[]> ImpostorIds = new();
-
-    private enum OptionName { EvilHackerCanSeeDeadPos, EvilHackerCanSeeOtherImp, EvilHackerCanSeeKillFlash, EvilHackerCanSeeMurderScene, EvilHackerCanSeeImpArrow, EvilHackerInheritAbility, }
-    public static void SetupCustomOption()
+    private enum OptionName
     {
-        OptionCanSeeDeadPos = BooleanOptionItem.Create(RoleInfo, 10, OptionName.EvilHackerCanSeeDeadPos, true, false);
-        OptionCanSeeOtherImp = BooleanOptionItem.Create(RoleInfo, 11, OptionName.EvilHackerCanSeeOtherImp, true, false);
+        EvilHackerCanSeeDeadMark,
+        EvilHackerCanSeeImpostorMark,
+        EvilHackerCanSeeKillFlash,
+        EvilHackerCanSeeMurderRoom,
+        EvilHackerCanSeeImpostorArrow,
+        EvilHackerInheritAbility,
+    }
+    private static bool canSeeDeadMark;
+    private static bool canSeeImpostorMark;
+    private static bool canSeeKillFlash;
+    private static bool canSeeMurderRoom;
+    private static bool canSeeImpostorArrow;
+    private static bool inheritAbility;
+
+    private static HashSet<EvilHacker> instances = new(1);
+
+    private HashSet<MurderNotify> activeNotifies = new(2);
+    private HashSet<byte> otherImpostors = new(2);
+
+    private static void SetupOptionItems()
+    {
+        OptionCanSeeDeadMark = BooleanOptionItem.Create(RoleInfo, 10, OptionName.EvilHackerCanSeeDeadMark, true, false);
+        OptionCanSeeImpostorMark = BooleanOptionItem.Create(RoleInfo, 11, OptionName.EvilHackerCanSeeImpostorMark, true, false);
         OptionCanSeeKillFlash = BooleanOptionItem.Create(RoleInfo, 12, OptionName.EvilHackerCanSeeKillFlash, true, false);
-        OptionCanSeeMurderScene = BooleanOptionItem.Create(RoleInfo, 13, OptionName.EvilHackerCanSeeMurderScene, true, false).SetParent(OptionCanSeeKillFlash);
-        OptionCanSeeImpArrow = BooleanOptionItem.Create(RoleInfo, 14, OptionName.EvilHackerCanSeeImpArrow, true, false);
+        OptionCanSeeMurderRoom = BooleanOptionItem.Create(RoleInfo, 13, OptionName.EvilHackerCanSeeMurderRoom, true, false, OptionCanSeeKillFlash);
+        OptionCanSeeImpostorArrow = BooleanOptionItem.Create(RoleInfo, 14, OptionName.EvilHackerCanSeeImpostorArrow, true, false);
         OptionInheritAbility = BooleanOptionItem.Create(RoleInfo, 15, OptionName.EvilHackerInheritAbility, true, false);
     }
-    public static void Init()
+    /// <summary>相方がキルした部屋を通知する設定がオンなら各プレイヤーに通知を行う</summary>
+    private static void HandleMurderRoomNotify(MurderInfo info)
     {
-        playerIdList = new();
-        PlayerCount = new();
-        DeadCount = new();
-        ImpRooms = new();
-        KillerIdsAndRooms = new();
-        ImpostorIds = new();
-
-        CanSeeDeadPos = OptionCanSeeDeadPos.GetBool();
-        CanSeeOtherImp = OptionCanSeeOtherImp.GetBool();
-        CanSeeKillFlash = OptionCanSeeKillFlash.GetBool();
-        CanSeeMurderScene = OptionCanSeeMurderScene.GetBool();
-        CanSeeImpArrow = OptionCanSeeImpArrow.GetBool();
-        InheritAbility = OptionInheritAbility.GetBool();
-    }
-    public static void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-
-        var impostorIds = (
-            from player in Main.AllAlivePlayerControls
-            where player.PlayerId != playerId
-            where player.Is(CustomRoleTypes.Impostor)
-            select player.PlayerId).ToArray();
-        foreach (var impostorId in impostorIds)
+        if (canSeeMurderRoom)
         {
-            TargetArrow.Add(playerId, impostorId);
-        }
-        ImpostorIds[playerId] = impostorIds;
-    }
-    public static bool IsEnable => playerIdList.Count > 0;
-    public static void InitDeadCount()
-    {
-        if (ShipStatus.Instance == null)
-        {
-            Logger.Warn("死者カウントの初期化時にShipStatus.Instanceがnullでした", "EvilHacker");
-            return;
-        }
-        foreach (var room in ShipStatus.Instance.AllRooms)
-        {
-            DeadCount[room.RoomId] = 0;
-        }
-    }
-
-    public static void OnMeeting()
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-        // 全生存プレイヤーの位置を取得
-        foreach (var room in ShipStatus.Instance.AllRooms)
-        {
-            PlayerCount[room.RoomId] = 0;
-        }
-        foreach (var pc in Main.AllAlivePlayerControls)
-        {
-            var room = PlayerState.GetByPlayerId(pc.PlayerId).LastRoom?.RoomId ?? default;
-            PlayerCount[room]++;
-            if (CanSeeOtherImp && pc.GetCustomRole().IsImpostor() && !ImpRooms.Contains(room))
+            foreach (var evilHacker in instances)
             {
-                ImpRooms.Add(room);
+                evilHacker.OnMurderPlayer(info);
             }
         }
-        PlayerCount.Remove(SystemTypes.Hallway);
-        DeadCount.Remove(SystemTypes.Hallway);
+    }
+
+    public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+    {
+        if (!Player.IsAlive())
+        {
+            return;
+        }
+        var admins = AdminProvider.CalculateAdmin();
+        var builder = new StringBuilder(512);
+
         // 送信するメッセージを生成
-        StringBuilder messageBuilder = new();
-        foreach (var kvp in PlayerCount)
+        foreach (var admin in admins)
         {
-            var roomName = GetString(kvp.Key.ToString());
-            if (ImpRooms.Contains(kvp.Key))
+            var entry = admin.Value;
+            if (entry.TotalPlayers <= 0)
             {
-                messageBuilder.Append("★");
+                continue;
             }
-            messageBuilder.AppendFormat("{0}: {1}", roomName, kvp.Value + DeadCount[kvp.Key]);
-            if (DeadCount[kvp.Key] > 0 && CanSeeDeadPos)
+            // インポスターがいるなら星マークを付ける
+            if (canSeeImpostorMark && entry.NumImpostors > 0)
             {
-                messageBuilder.AppendFormat("({0}\u00d7{1})", GetString("Deadbody"), DeadCount[kvp.Key]);
+                builder.Append(ImpostorMark);
             }
-            messageBuilder.AppendLine();
+            // 部屋名と合計プレイヤー数を表記
+            builder.Append(DestroyableSingleton<TranslationController>.Instance.GetString(entry.Room));
+            builder.Append(": ");
+            builder.Append(entry.TotalPlayers);
+            // 死体があったら死体の数を書く
+            if (canSeeDeadMark && entry.NumDeadBodies > 0)
+            {
+                builder.Append('(').Append(Translator.GetString("Deadbody"));
+                builder.Append('×').Append(entry.NumDeadBodies).Append(')');
+            }
+            builder.Append('\n');
         }
-        // 生存イビルハッカーに送信
-        var aliveEvilHackerIds = playerIdList.Where(player => Utils.GetPlayerById(player).IsAlive()).ToArray();
-        var message = messageBuilder.ToString();
-        aliveEvilHackerIds.Do(id => Utils.SendMessage(
-            message,
-            id,
-            Utils.ColorString(Color.green, $"{GetString("Message.LastAdminInfo")}")));
 
-        InitDeadCount();
-        ImpRooms = new();
-    }
-    public static void OnMurder(PlayerControl killer, PlayerControl target)
-    {
-        var room = target.GetPlainShipRoom()?.RoomId ?? default;
-        DeadCount[room]++;
-        if (CanSeeOtherImp && target.GetCustomRole().IsImpostor() && !ImpRooms.Contains(room))
+        // 送信
+        var message = builder.ToString();
+        var title = Utils.ColorString(Color.green, Translator.GetString("LastAdminInfo"));
+
+        _ = new LateTask(() =>
         {
-            ImpRooms.Add(room);
-        }
-        if (CanSeeMurderScene && Utils.IsImpostorKill(killer, target))
-        {
-            var realKiller = target.GetRealKiller() ?? killer;
-            KillerIdsAndRooms.Add((realKiller.PlayerId, room));
-            RpcSyncMurderScenes();
-            new LateTask(() =>
+            if (GameStates.IsInGame)
             {
-                if (!GameStates.IsInGame)
-                {
-                    Logger.Info("待機中にゲームが終了したためキャンセル", "EvilHacker");
-                    return;
-                }
-                KillerIdsAndRooms.Remove((realKiller.PlayerId, room));
-                RpcSyncMurderScenes();
-                var aliveEvilHackers = (
-                    from id in playerIdList
-                    let player = Utils.GetPlayerById(id)
-                    where player.IsAlive()
-                    select player).ToArray();
-                foreach (var player in aliveEvilHackers)
-                {
-                    Utils.NotifyRoles(false, player);
-                }
-            }, 10f, "Remove EvilHacker KillerIdsAndRooms");
-        }
+                Utils.SendMessage(message, Player.PlayerId, title);
+            }
+        }, 4f, "EvilHacker Admin Message");
+        return;
     }
-    // 暇なときに書き直したい
-    public static string GetArrow(PlayerControl seer, bool isMeeting)
+    private void OnMurderPlayer(MurderInfo info)
     {
-        if (isMeeting || !CanSeeImpArrow)
-        {
-            return string.Empty;
-        }
-        var impostorIds = GetArrowTargets(seer.PlayerId);
-        if (impostorIds == null)
-        {
-            return "?";
-        }
-        return TargetArrow.GetArrows(seer, impostorIds);
-    }
-    private static byte[] GetArrowTargets(byte seerId)
-    {
-        if (!ImpostorIds.TryGetValue(seerId, out var impostorIds))
-        {
-            Logger.Warn($"{Utils.GetPlayerById(seerId)?.GetRealName() ?? $"(null: {seerId})"}からの矢印ターゲットの取得に失敗", "EvilHacker");
-            return null;
-        }
-        var aliveImpostorIds = (
-            from impostorId in impostorIds
-            let impostor = Utils.GetPlayerById(impostorId)
-            where impostor != null
-            where impostor.IsAlive()
-            select impostorId).ToArray();
-        return aliveImpostorIds;
-    }
-    public static void RpcSyncMurderScenes()
-    {
-        // タプルの数，キル者ID1，キル現場1，キル者ID2，キル現場2，......
-        if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-            PlayerControl.LocalPlayer.NetId,
-            (byte)CustomRPC.SyncEvilHackerScenes,
-            SendOption.Reliable, -1);
-        writer.Write(KillerIdsAndRooms.Count);
-        foreach (var (killerId, room) in KillerIdsAndRooms)
-        {
-            writer.Write(killerId);
-            writer.Write((byte)room);
-        }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public static void ReceiveRPC(MessageReader reader)
-    {
-        int count = reader.ReadInt32();
-        List<(byte, SystemTypes)> rooms = new(count);
-        for (int i = 0; i < count; i++)
-        {
-            rooms.Add((reader.ReadByte(), (SystemTypes)reader.ReadByte()));
-        }
-        KillerIdsAndRooms = rooms;
-    }
-    public static string GetMurderSceneText(PlayerControl seer)
-    {
-        if (!seer.IsAlive()) return "";
-        var roomNames = (
-            from tuple in KillerIdsAndRooms
-                // 自身がキルしたものは除外
-            where tuple.killerId != seer.PlayerId
-            select GetString(tuple.room.ToString())).ToArray();
-        if (roomNames.Length < 1) return "";
-        return Utils.ColorString(Color.green, $"{GetString("EvilHackerMurderOccurred")}: {string.Join(", ", roomNames)}");
-    }
-    public static bool KillFlashCheck(PlayerControl killer, PlayerControl target) =>
-        CanSeeKillFlash && Utils.IsImpostorKill(killer, target);
-    public static void Inherit()
-    {
-        if (!InheritAbility)
+        // 生きてる間に相方のキルでキルフラが鳴った場合に通知を出す
+        if (!Player.IsAlive() || !CheckKillFlash(info) || info.AttemptKiller == Player)
         {
             return;
         }
+        RpcCreateMurderNotify(info.AttemptTarget.GetPlainShipRoom()?.RoomId ?? SystemTypes.Hallway);
+    }
+    private void RpcCreateMurderNotify(SystemTypes room)
+    {
+        CreateMurderNotify(room);
+        if (AmongUsClient.Instance.AmHost)
+        {
+            using var sender = CreateSender(CustomRPC.EvilHackerCreateMurderNotify);
+            sender.Writer.Write((byte)room);
+        }
+    }
+    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    {
+        if (rpcType == CustomRPC.EvilHackerCreateMurderNotify)
+        {
+            CreateMurderNotify((SystemTypes)reader.ReadByte());
+        }
+    }
+    /// <summary>
+    /// 名前の下にキル発生通知を出す
+    /// </summary>
+    /// <param name="room">キルが起きた部屋</param>
+    private void CreateMurderNotify(SystemTypes room)
+    {
+        activeNotifies.Add(new()
+        {
+            CreatedAt = DateTime.Now,
+            Room = room,
+        });
+        if (AmongUsClient.Instance.AmHost)
+        {
+            Utils.NotifyRoles(SpecifySeer: Player);
+        }
+    }
+    public override void OnFixedUpdate(PlayerControl player)
+    {
+        // 古い通知の削除処理 Mod入りは自分でやる
+        if (!AmongUsClient.Instance.AmHost && Player != PlayerControl.LocalPlayer)
+        {
+            return;
+        }
+        if (activeNotifies.Count <= 0)
+        {
+            return;
+        }
+        // NotifyRolesを実行するかどうかのフラグ
+        var doNotifyRoles = false;
+        // 古い通知があれば削除
+        foreach (var notify in activeNotifies)
+        {
+            if (DateTime.Now - notify.CreatedAt > NotifyDuration)
+            {
+                activeNotifies.Remove(notify);
+                doNotifyRoles = true;
+            }
+        }
+        if (doNotifyRoles && AmongUsClient.Instance.AmHost)
+        {
+            Utils.NotifyRoles(SpecifySeer: Player);
+        }
+    }
+    public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    {
+        seen ??= seer;
+        if (isForMeeting || seer != Player || seen != Player || (!canSeeMurderRoom && !canSeeImpostorArrow))
+        {
+            return base.GetSuffix(seer, seen, isForMeeting);
+        }
+        var suffixBuilder = new StringBuilder(32);
+        if (canSeeImpostorArrow)
+        {
+            suffixBuilder.Append(TargetArrow.GetArrows(Player, otherImpostors.ToArray()));
+        }
+        if (canSeeMurderRoom && activeNotifies.Count > 0)
+        {
+            var roomNames = activeNotifies.Select(notify => DestroyableSingleton<TranslationController>.Instance.GetString(notify.Room));
+            suffixBuilder.Append(Utils.ColorString(Color.green, $"{Translator.GetString("MurderNotify")}: {string.Join(", ", roomNames)}"));
+        }
+        return suffixBuilder.ToString();
+    }
+    public bool CheckKillFlash(MurderInfo info) =>
+        canSeeKillFlash && !info.IsSuicide && !info.IsAccident && info.AttemptKiller.Is(CustomRoleTypes.Impostor);
 
+    public override void OnDie()
+    {
+        if (!inheritAbility)
+        {
+            return;
+        }
+        Inherit();
+    }
+    private void Inherit()
+    {
         // 生存素インポスター
         var candidates = Main.AllAlivePlayerControls.Where(player => player.Is(CustomRoles.Impostor)).ToArray();
         if (candidates.Length <= 0)
         {
             return;
         }
-
         var target = candidates.PickRandom();
         Logger.Info($"継承: {target.GetNameWithRole()}", "EvilHacker");
         target.RpcChangeMainRole(CustomRoles.EvilHacker);
-        Add(target.PlayerId);
         Utils.NotifyRoles(SpecifySeer: target);
+    }
+
+    private const char ImpostorMark = '★';
+    /// <summary>相方がキルしたときに名前の下に通知を表示する長さ</summary>
+    private static readonly TimeSpan NotifyDuration = TimeSpan.FromSeconds(10);
+
+    private readonly struct MurderNotify
+    {
+        /// <summary>通知が作成された時間</summary>
+        public DateTime CreatedAt { get; init; }
+        /// <summary>キルが起きた部屋</summary>
+        public SystemTypes Room { get; init; }
     }
 }

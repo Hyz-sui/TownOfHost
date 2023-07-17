@@ -256,7 +256,6 @@ namespace TownOfHost
                             break;
                     }
                 }
-                Roles.Impostor.EvilHacker.InitDeadCount();
 
                 // そのままだとホストのみDesyncImpostorの暗室内での視界がクルー仕様になってしまう
                 var roleInfo = PlayerControl.LocalPlayer.GetCustomRole().GetRoleInfo();

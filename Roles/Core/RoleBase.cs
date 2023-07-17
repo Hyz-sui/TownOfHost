@@ -143,6 +143,12 @@ public abstract class RoleBase : IDisposable
     { }
 
     /// <summary>
+    /// 自身が死亡したときに呼ばれる
+    /// </summary>
+    public virtual void OnDie()
+    { }
+
+    /// <summary>
     /// シェイプシフト時に呼ばれる関数
     /// 自分自身について呼ばれるため本人確認不要
     /// Host以外も呼ばれるので注意
