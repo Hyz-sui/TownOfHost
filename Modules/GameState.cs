@@ -88,6 +88,9 @@ namespace TownOfHost
         {
             this.PreviousRoles.Add(this.MainRole);
             this.SetMainRole(role);
+            var player = Utils.GetPlayerById(PlayerId);
+            player.GetRoleClass()?.Dispose();
+            CustomRoleManager.CreateInstance(role, player);
         }
         public void RpcChangeMainRole(CustomRoles role)
         {
