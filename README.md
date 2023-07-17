@@ -2,8 +2,13 @@
 
 This mod is not affiliated with Among Us or Innersloth LLC, and the content contained therein is not endorsed or otherwise sponsored by Innersloth LLC. Portions of the materials contained herein are property of Innersloth LLC. © Innersloth LLC.
 
-[本家TownOfHostのreadme](https://github.com/tukasa0001/TownOfHost/blob/main/README.md#town-of-host)  
-公開ルームは禁止
+[本家TownOfHostのreadme](https://github.com/tukasa0001/TownOfHost/blob/main/README.md#town-of-host)
+- 公開ルームは封印
+- 知人以外からの質問やバグ報告等は[Issues](https://github.com/Hyz-sui/TownOfHost-H/issues/new)で**のみ**受け付けています  
+  TwitterやDiscord等では受け付けていません
+  - 既存の説明を読めばわかるもの，低レベルなもの，日本語のコミュニケーションが怪しいもの，聞く相手を間違ってるもの等々には基本対応しません
+- 11人2狼村(1イビルハッカー1シェリフ1黒猫マッドスニッチ)以外の役職構成や特定の設定の組み合わせで発生するバグ等については低優先度で扱います
+- 多言語対応はしていませんし，する予定もありません
 
 ## 本家との変更点
 
@@ -36,7 +41,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 ...
 ```
 
-アイデア元: [haoming37/TheOtherRoles-GM-Haoming](https://github.com/haoming37/TheOtherRoles-GM-Haoming)，[tomarai/TheOtherRoles](https://github.com/tomarai/TheOtherRoles/tree/dev-v3.4.x)
+アイデア元: [~~haoming37/TheOtherRoles-GM-Haoming~~](https://github.com/haoming37/TheOtherRoles-GM-Haoming) [haoming37/GMH](https://github.com/haoming37/GMH)，[tomarai/TheOtherRoles](https://github.com/tomarai/TheOtherRoles/tree/dev-v3.4.x)
 
 ### 追加機能
 
@@ -106,14 +111,11 @@ Mod導入者向けに憑依のパフォーマンスを改善
 
 ### 変更点
 
-* 名前上の役職テキストの文字サイズを少し大きく調整
 * 黒猫レギュ向けにオプションのデフォルト値を調整
-* Mod設定のUIを一新
-* 起動を少し高速化(読み込みが終わるまで部屋作成はできない)
 
 ## CREDITS&THANKS
 
 * [tukasa0001/TownOfHost](https://github.com/tukasa0001/TownOfHost) - fork元
 * [BepInEx](https://github.com/BepInEx)
 * [tomarai/TheOtherRoles](https://github.com/tomarai/TheOtherRoles/tree/dev-v3.4.x) - EvilHackerの役職および能力のアイデア元
-* [haoming37/TheOtherRoles-GM-Haoming](https://github.com/haoming37/TheOtherRoles-GM-Haoming) - EvilHackerの能力のアイデア元
+* [~~haoming37/TheOtherRoles-GM-Haoming~~](https://github.com/haoming37/TheOtherRoles-GM-Haoming) [haoming37/GMH](https://github.com/haoming37/GMH) - EvilHackerの能力のアイデア元
