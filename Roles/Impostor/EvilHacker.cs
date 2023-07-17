@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using AmongUs.GameOptions;
 using Hazel;
+using TownOfHost.Extensions;
 using TownOfHost.Modules;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
@@ -239,6 +240,28 @@ public sealed class EvilHacker : RoleBase, IImpostor, IKillFlashSeeable
     }
     public bool CheckKillFlash(MurderInfo info) =>
         canSeeKillFlash && !info.IsSuicide && !info.IsAccident && info.AttemptKiller.Is(CustomRoleTypes.Impostor);
+
+    public override void OnDie()
+    {
+        if (!inheritAbility)
+        {
+            return;
+        }
+        Inherit();
+    }
+    private void Inherit()
+    {
+        // 生存素インポスター
+        var candidates = Main.AllAlivePlayerControls.Where(player => player.Is(CustomRoles.Impostor)).ToArray();
+        if (candidates.Length <= 0)
+        {
+            return;
+        }
+        var target = candidates.PickRandom();
+        Logger.Info($"継承: {target.GetNameWithRole()}", "EvilHacker");
+        target.RpcChangeMainRole(CustomRoles.EvilHacker);
+        Utils.NotifyRoles(SpecifySeer: target);
+    }
 
     private const char ImpostorMark = '★';
     /// <summary>相方がキルしたときに名前の下に通知を表示する長さ</summary>
