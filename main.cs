@@ -13,6 +13,7 @@ using UnityEngine;
 
 using AmongUs.GameOptions;
 
+using TownOfHost.Attributes;
 using TownOfHost.Modules;
 using TownOfHost.Roles.Core;
 
@@ -57,9 +58,9 @@ namespace TownOfHost
         public static readonly Version ParsedForkVersion = Version.Parse(ForkVersion.Replace("H_", ""));
 
         public const string PluginGuid = "com.emptybottle.townofhost";
-        public const string PluginVersion = "5.0.1";
+        public const string PluginVersion = "5.0.3";
         // サポートされている最低のAmongUsバージョン
-        public static readonly string LowestSupportedVersion = "2023.6.13";
+        public static readonly string LowestSupportedVersion = "2023.7.11";
         public Harmony Harmony { get; } = new Harmony(PluginGuid);
         public static Version version = Version.Parse(PluginVersion);
         public static BepInEx.Logging.ManualLogSource Logger;
@@ -177,10 +178,7 @@ namespace TownOfHost
             LastKillCooldown = Config.Bind("Other", "LastKillCooldown", (float)30);
             LastShapeshifterCooldown = Config.Bind("Other", "LastShapeshifterCooldown", (float)30);
 
-            CustomWinnerHolder.Reset();
-            Translator.Init();
-            BanManager.Init();
-            TemplateManager.Init();
+            PluginModuleInitializerAttribute.InitializeAll();
 
             IRandom.SetInstance(new NetRandomWrapper());
 
