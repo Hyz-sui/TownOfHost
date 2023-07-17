@@ -1,7 +1,6 @@
 using HarmonyLib;
 
 using TownOfHost.Modules;
-using TownOfHost.Objects;
 using TownOfHost.Modules.ClientOptions;
 
 namespace TownOfHost

@@ -102,7 +102,6 @@ namespace TownOfHost
                     Options.HideAndSeekKillDelayTimer = Options.StandardHASWaitingTime.GetFloat();
                 }
             }
-            Roles.Impostor.EvilHacker.Init();
             DeviceTimer.Init();
             IRandom.SetInstanceById(Options.RoleAssigningAlgorithm.GetValue());
 
@@ -275,12 +274,6 @@ namespace TownOfHost
                 CustomRoleManager.CreateInstance();
                 foreach (var pc in Main.AllPlayerControls)
                 {
-                    switch (pc.GetCustomRole())
-                    {
-                        case CustomRoles.EvilHacker:
-                            Roles.Impostor.EvilHacker.Add(pc.PlayerId);
-                            break;
-                    }
                     HudManager.Instance.SetHudActive(true);
                     pc.ResetKillCooldown();
 

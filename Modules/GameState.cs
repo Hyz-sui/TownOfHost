@@ -7,8 +7,6 @@ using Hazel;
 
 using AmongUs.GameOptions;
 
-using TownOfHost.Roles.Impostor;
-
 using TownOfHost.Attributes;
 using TownOfHost.Roles.Core;
 
@@ -88,13 +86,6 @@ namespace TownOfHost
         }
         public void ChangeMainRole(CustomRoles role)
         {
-            // 回避策
-            // Mod入りクライアントが継承先だとAddに届かず名前がバグる
-            if (this.MainRole == CustomRoles.Impostor && role == CustomRoles.EvilHacker)
-            {
-                EvilHacker.Add(this.PlayerId);
-            }
-
             this.PreviousRoles.Add(this.MainRole);
             this.SetMainRole(role);
         }

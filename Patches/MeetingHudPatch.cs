@@ -76,7 +76,6 @@ public static class MeetingHudPatch
                     roleTextMeeting.enabled = true;
                 }
             }
-            Roles.Impostor.EvilHacker.OnMeeting();
             CustomRoleManager.AllActiveRoles.Values.Do(role => role.OnStartMeeting());
             if (Options.SyncButtonMode.GetBool())
             {

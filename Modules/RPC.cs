@@ -34,6 +34,7 @@ namespace TownOfHost
         UpdateCamerasUsable,
         ChangeMainRole,
         SyncPuppet,
+        EvilHackerCreateMurderNotify,
     }
     public enum Sounds
     {
@@ -151,9 +152,6 @@ namespace TownOfHost
                     byte killerId = reader.ReadByte();
                     RPC.SetRealKiller(targetId, killerId);
                     break;
-                case CustomRPC.SyncEvilHackerScenes:
-                    Roles.Impostor.EvilHacker.ReceiveRPC(reader);
-                    break;
                 case CustomRPC.UpdateCamerasUsable:
                     Modules.DeviceTimer.UpdateCamerasUsable(reader.ReadSingle());
                     break;
@@ -267,12 +265,6 @@ namespace TownOfHost
             else if (role >= CustomRoles.NotAssigned)   //500:NoSubRole 501~:SubRole
             {
                 PlayerState.GetByPlayerId(targetId).SetSubRole(role);
-            }
-            switch (role)
-            {
-                case CustomRoles.EvilHacker:
-                    Roles.Impostor.EvilHacker.Add(targetId);
-                    break;
             }
 
             HudManager.Instance.SetHudActive(true);
