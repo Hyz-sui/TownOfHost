@@ -2,8 +2,13 @@
 
 This mod is not affiliated with Among Us or Innersloth LLC, and the content contained therein is not endorsed or otherwise sponsored by Innersloth LLC. Portions of the materials contained herein are property of Innersloth LLC. © Innersloth LLC.
 
-[本家TownOfHostのreadme](https://github.com/tukasa0001/TownOfHost/blob/main/README.md#town-of-host)  
-公開ルームは禁止
+[本家TownOfHostのreadme](https://github.com/tukasa0001/TownOfHost/blob/main/README.md#town-of-host)
+- 公開ルームは封印
+- 知人以外からの質問やバグ報告等は[Issues](https://github.com/Hyz-sui/TownOfHost-H/issues/new)で**のみ**受け付けています  
+  TwitterやDiscord等では受け付けていません
+  - 既存の説明を読めばわかるもの，低レベルなもの，日本語のコミュニケーションが怪しいもの，聞く相手を間違ってるもの等々には基本対応しません
+- 11人2狼村(1イビルハッカー1シェリフ1黒猫マッドスニッチ)以外の役職構成や特定の設定の組み合わせで発生するバグ等については低優先度で扱います
+- 多言語対応はしていませんし，する予定もありません
 
 ## 本家との変更点
 
@@ -18,13 +23,21 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 死体のある部屋には死体の数が表記される  
 他のインポスターがキルを行うとキルフラッシュが見え，名前の3行目にキルの発生した部屋が10秒間通知される
 
-* オプション(デフォルトですべてON)
-  * 死体位置がわかる - アドミン情報で死体の数を表示するかどうか
-  * 他のインポスターの位置がわかる - アドミン情報で★印を表示するかどうか
-  * インポスターキル時にキルフラッシュが見える
-    * キルの発生場所がわかる - 能力の性質上キルフラのオプションがONの場合しか設定できません
-  * 他のインポスターを指す矢印が見える - 相方の方向を指す矢印が見えるかどうか
-  * 死亡時､生存インポスターに能力を引き継ぐ - ONにすると自分が死亡したら素インポスターに能力を引き継ぐ
+- オプション
+  - 死体位置がわかる - アドミン情報で死体の数を表示するかどうか  
+    デフォルトON
+  - 他のインポスターの位置がわかる - アドミン情報で★印を表示するかどうか  
+    デフォルトON
+  - インポスターキル時にキルフラッシュが見える  
+    デフォルトON
+    - キルの発生場所がわかる - 能力の性質上キルフラのオプションがONの場合しか設定できません  
+      デフォルトON
+  - 他のインポスターを指す矢印が見える - 相方の方向を指す矢印が見えるかどうか  
+    デフォルトON
+  - 死亡時､生存インポスターに能力を引き継ぐ - ONにすると自分が死亡したら素インポスターに能力を引き継ぐ  
+    デフォルトON
+  - アドミン情報で誰もいない部屋を省略する - ONにすると，会議時のアドミン情報で無人の部屋は省略して表示されます  
+    デフォルトOFF
 
 チャットに送信されるアドミン情報の例
 
@@ -36,7 +49,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 ...
 ```
 
-アイデア元: [haoming37/TheOtherRoles-GM-Haoming](https://github.com/haoming37/TheOtherRoles-GM-Haoming)，[tomarai/TheOtherRoles](https://github.com/tomarai/TheOtherRoles/tree/dev-v3.4.x)
+アイデア元: [~~haoming37/TheOtherRoles-GM-Haoming~~](https://github.com/haoming37/TheOtherRoles-GM-Haoming) [haoming37/GMH](https://github.com/haoming37/GMH)，[tomarai/TheOtherRoles](https://github.com/tomarai/TheOtherRoles/tree/dev-v3.4.x)
 
 ### 追加機能
 
@@ -51,12 +64,6 @@ Mod視点では前を通っただけで壊れていることがわかってし�
 
 > **Note**
 > 他デバイスの制限は現時点で技術的に不可能
-
-#### オプションの文字列データ化
-
-ロビーで`Alt`+`O`を押すと全オプションのデータを含む文字列をコピーできる (`Alt`+`L`でファイルへの出力も可能)  
-文字列をコピーした状態で`Alt`+`P`を押すと文字列からオプションを読み込める  
-データ文字列は短いのでDiscordなどにそのまま貼って他の人と共有できる
 
 #### マッド系役職のオプション追加
 
@@ -106,14 +113,11 @@ Mod導入者向けに憑依のパフォーマンスを改善
 
 ### 変更点
 
-* 名前上の役職テキストの文字サイズを少し大きく調整
 * 黒猫レギュ向けにオプションのデフォルト値を調整
-* Mod設定のUIを一新
-* 起動を少し高速化(読み込みが終わるまで部屋作成はできない)
 
 ## CREDITS&THANKS
 
 * [tukasa0001/TownOfHost](https://github.com/tukasa0001/TownOfHost) - fork元
 * [BepInEx](https://github.com/BepInEx)
 * [tomarai/TheOtherRoles](https://github.com/tomarai/TheOtherRoles/tree/dev-v3.4.x) - EvilHackerの役職および能力のアイデア元
-* [haoming37/TheOtherRoles-GM-Haoming](https://github.com/haoming37/TheOtherRoles-GM-Haoming) - EvilHackerの能力のアイデア元
+* [~~haoming37/TheOtherRoles-GM-Haoming~~](https://github.com/haoming37/TheOtherRoles-GM-Haoming) [haoming37/GMH](https://github.com/haoming37/GMH) - EvilHackerの能力のアイデア元

@@ -17,7 +17,7 @@ public static class Base62
     /// </summary>
     /// <param name="number">変換したい数</param>
     /// <returns>変換された文字列</returns>
-    public static string ToBase62(long number)
+    public static string ToBase62(int number)
     {
         if (number == 0)
         {
@@ -33,7 +33,7 @@ public static class Base62
         var stack = new Stack<char>();
         do
         {
-            var remainder = (int)(number % 62);
+            var remainder = number % 62;
             stack.Push(Chars[remainder]);
             number /= 62;
         }
@@ -82,16 +82,4 @@ public static class Base62
         }
         return result;
     }
-    /// <summary>
-    /// 62進文字列を<see cref="byte"/>に変換します
-    /// </summary>
-    /// <param name="base62">変換したい62進文字列</param>
-    /// <returns>変換された整数</returns>
-    public static byte ToByte(string base62) => (byte)ToInt(base62);
-    /// <summary>
-    /// 62進文字列を<see cref="uint"/>に変換します
-    /// </summary>
-    /// <param name="base62">変換したい62進文字列</param>
-    /// <returns>変換された整数</returns>
-    public static uint ToUInt(string base62) => (uint)ToInt(base62);
 }
