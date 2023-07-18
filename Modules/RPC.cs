@@ -30,7 +30,6 @@ namespace TownOfHost
         SetCurrentDousingTarget,
         SetEvilTrackerTarget,
         SetRealKiller,
-        SyncEvilHackerScenes,
         UpdateCamerasUsable,
         ChangeMainRole,
         SyncPuppet,
