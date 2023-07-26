@@ -79,6 +79,7 @@ namespace TownOfHost
         public static ConfigEntry<bool> ShowLobbySummary { get; private set; }
         public static ConfigEntry<bool> CopyGameCodeOnCreateLobby { get; private set; }
         public static ConfigEntry<bool> HauntMenuFocusCrewmate { get; private set; }
+        public static ConfigEntry<bool> PutBackWinTextPosition { get; private set; }
         public static ConfigEntry<int> MessageWait { get; private set; }
 
         public static Dictionary<byte, PlayerVersion> playerVersion = new();
@@ -144,6 +145,7 @@ namespace TownOfHost
             ShowLobbySummary = Config.Bind("Client Options", "Show Lobby Summary", true);
             CopyGameCodeOnCreateLobby = Config.Bind("Client Options", "Copy Game Code On Create Lobby", true);
             HauntMenuFocusCrewmate = Config.Bind("Client Options", "Haunt Menu Focuses Crewmate", true);
+            PutBackWinTextPosition = Config.Bind("Client Options", "Put Back WinText Position", true);
             DebugKeyInput = Config.Bind("Authentication", "Debug Key", "");
 
             Logger = BepInEx.Logging.Logger.CreateLogSource("TownOfHost");
