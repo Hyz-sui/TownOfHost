@@ -120,11 +120,14 @@ namespace TownOfHost
             //          ==勝利陣営表示==
             //#######################################
 
-            __instance.WinText.alignment = TMPro.TextAlignmentOptions.Right;
             var WinnerTextObject = UnityEngine.Object.Instantiate(__instance.WinText.gameObject);
-            WinnerTextObject.transform.position = new(__instance.WinText.transform.position.x + 2.4f, __instance.WinText.transform.position.y - 0.5f, __instance.WinText.transform.position.z);
+            var WinnerText = WinnerTextObject.GetComponent<TMPro.TextMeshPro>();
+            if (!Main.PutBackWinTextPosition.Value)
+            {
+                __instance.WinText.alignment = WinnerText.alignment = TMPro.TextAlignmentOptions.Right;
+            }
+            WinnerTextObject.transform.position = new(Main.PutBackWinTextPosition.Value ? __instance.WinText.transform.position.x : __instance.WinText.transform.position.x + 2.4f, __instance.WinText.transform.position.y - 0.5f, __instance.WinText.transform.position.z);
             WinnerTextObject.transform.localScale = new(0.6f, 0.6f, 0.6f);
-            var WinnerText = WinnerTextObject.GetComponent<TMPro.TextMeshPro>(); //WinTextと同じ型のコンポーネントを取得
             WinnerText.fontSizeMin = 3f;
             WinnerText.text = "";
 
