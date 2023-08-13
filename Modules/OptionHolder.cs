@@ -201,6 +201,7 @@ namespace TownOfHost
         // マップ改造
         public static OptionItem MapModification;
         public static OptionItem AirShipVariableElectrical;
+        public static OptionItem AirshipAllOpenElectrical;
         public static OptionItem DisableAirshipMovingPlatform;
         public static OptionItem ResetDoorsEveryTurns;
         public static OptionItem DoorsResetMode;
@@ -400,6 +401,7 @@ namespace TownOfHost
             MapModification = BooleanOptionItem.Create(102000, "MapModification", false, TabGroup.MainSettings, false)
                 .SetHeader(true);
             AirShipVariableElectrical = BooleanOptionItem.Create(101600, "AirShipVariableElectrical", false, TabGroup.MainSettings, false).SetParent(MapModification);
+            AirshipAllOpenElectrical = BooleanOptionItem.Create(101610,"AirshipAllOpenElectrical",false,TabGroup.MainSettings, false).SetParent(MapModification);
             DisableAirshipMovingPlatform = BooleanOptionItem.Create(101700, "DisableAirshipMovingPlatform", false, TabGroup.MainSettings, false).SetParent(MapModification);
             ResetDoorsEveryTurns = BooleanOptionItem.Create(101800, "ResetDoorsEveryTurns", false, TabGroup.MainSettings, false).SetParent(MapModification);
             DoorsResetMode = StringOptionItem.Create(101810, "DoorsResetMode", EnumHelper.GetAllNames<DoorsReset.ResetMode>(), 0, TabGroup.MainSettings, false).SetParent(ResetDoorsEveryTurns);

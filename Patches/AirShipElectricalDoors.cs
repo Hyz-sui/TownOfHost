@@ -41,6 +41,25 @@ namespace TownOfHost
     [HarmonyPatch(typeof(ElectricalDoors), nameof(ElectricalDoors.Initialize))]
     class ElectricalDoorsInitializePatch
     {
+        public static bool Prefix(ElectricalDoors __instance)
+        {
+            if (Options.AirshipAllOpenElectrical.GetBool())
+            {
+                // ドアを全部開ける
+                foreach (var door in __instance.Doors)
+                {
+                    door.SetOpen(true);
+                }
+                // セキュへ通じるドアを両方開ける
+                foreach (var leftDoor in __instance.LeftExits.Doors)
+                {
+                    leftDoor.SetOpen(true);
+                }
+                __instance.IsDirty = true;
+                return false;
+            }
+            return true;
+        }
         public static void Postfix(ElectricalDoors __instance)
         {
             if (!GameStates.IsInGame) return;
