@@ -23,7 +23,8 @@ public sealed class EvilHacker : RoleBase, IImpostor, IKillFlashSeeable
             CustomRoleTypes.Impostor,
             3100,
             SetupOptionItems,
-            "eh"
+            "eh",
+            wikiPage: "イビルハッカー"
         );
     public EvilHacker(PlayerControl player)
     : base(
