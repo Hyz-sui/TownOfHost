@@ -293,6 +293,10 @@ namespace TownOfHost
             sortedRoleInfo.Where(role => role.CustomRoleType == CustomRoleTypes.Impostor).Do(info =>
             {
                 SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName);
+                if (info.WikiPage != null && CustomRoleSpawnChances.TryGetValue(info.RoleName, out var roleOption))
+                {
+                    roleOption.SetWikiPage(info.WikiPage);
+                }
                 info.OptionCreator?.Invoke();
             });
 
@@ -306,6 +310,10 @@ namespace TownOfHost
             sortedRoleInfo.Where(role => role.CustomRoleType == CustomRoleTypes.Madmate).Do(info =>
             {
                 SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName);
+                if (info.WikiPage != null && CustomRoleSpawnChances.TryGetValue(info.RoleName, out var roleOption))
+                {
+                    roleOption.SetWikiPage(info.WikiPage);
+                }
                 info.OptionCreator?.Invoke();
             });
             // Madmate Common Options
@@ -331,6 +339,10 @@ namespace TownOfHost
             sortedRoleInfo.Where(role => role.CustomRoleType == CustomRoleTypes.Crewmate).Do(info =>
             {
                 SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName);
+                if (info.WikiPage != null && CustomRoleSpawnChances.TryGetValue(info.RoleName, out var roleOption))
+                {
+                    roleOption.SetWikiPage(info.WikiPage);
+                }
                 info.OptionCreator?.Invoke();
             });
 
@@ -344,6 +356,10 @@ namespace TownOfHost
                         break;
                     default:
                         SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName);
+                        if (info.WikiPage != null && CustomRoleSpawnChances.TryGetValue(info.RoleName, out var roleOption))
+                        {
+                            roleOption.SetWikiPage(info.WikiPage);
+                        }
                         break;
                 }
                 info.OptionCreator?.Invoke();
