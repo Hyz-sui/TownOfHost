@@ -43,7 +43,7 @@ namespace TownOfHost
     {
         public static bool Prefix(ElectricalDoors __instance)
         {
-            if (Options.AirshipAllOpenElectrical.GetBool())
+            if (AmongUsClient.Instance.AmHost && Options.AirshipAllOpenElectrical.GetBool())
             {
                 // ドアを全部開ける
                 foreach (var door in __instance.Doors)
