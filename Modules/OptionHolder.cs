@@ -420,7 +420,10 @@ namespace TownOfHost
             MapModification = BooleanOptionItem.Create(102000, "MapModification", false, TabGroup.MainSettings, false)
                 .SetHeader(true);
             AirShipVariableElectrical = BooleanOptionItem.Create(101600, "AirShipVariableElectrical", false, TabGroup.MainSettings, false).SetParent(MapModification);
-            AirshipAllOpenElectrical = BooleanOptionItem.Create(101610,"AirshipAllOpenElectrical",false,TabGroup.MainSettings, false).SetParent(MapModification);
+
+            AirshipAllOpenElectrical = BooleanOptionItem.Create(101610, "AirshipAllOpenElectrical", false, TabGroup.MainSettings, false).SetParent(MapModification);
+            AirshipAllOpenElectrical.SetWikiPage("その他の機能と変更点#電気室のドアを全開にするオプション");
+
             DisableAirshipMovingPlatform = BooleanOptionItem.Create(101700, "DisableAirshipMovingPlatform", false, TabGroup.MainSettings, false).SetParent(MapModification);
 
             ResetDoorsEveryTurns = BooleanOptionItem.Create(101800, "ResetDoorsEveryTurns", false, TabGroup.MainSettings, false).SetParent(MapModification);
