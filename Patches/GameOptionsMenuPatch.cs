@@ -4,6 +4,7 @@ using System.Linq;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using TMPro;
 using UnityEngine;
 using static TownOfHost.Translator;
 using Object = UnityEngine.Object;
@@ -100,6 +101,19 @@ namespace TownOfHost
                         stringOption.transform.FindChild("Value_TMP").localPosition += new Vector3(0.3f, 0f, 0f);
                         stringOption.transform.FindChild("Title_TMP").localPosition += new Vector3(0.15f, 0f, 0f);
                         stringOption.transform.FindChild("Title_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(3.5f, 0.37f);
+
+                        if (option.WikiPage != null)
+                        {
+                            var minusButton = stringOption.transform.FindChild("Minus_TMP").GetComponent<PassiveButton>();
+                            var helpButton = Object.Instantiate(minusButton, minusButton.transform.parent);
+                            helpButton.name = "HelpButton";
+                            helpButton.OnClick = new();
+                            helpButton.OnClick.AddListener((Action)(() => Application.OpenURL(option.WikiPage)));
+                            var helpLabel = helpButton.GetComponent<TextMeshPro>();
+                            helpLabel.text = "?";
+                            helpLabel.transform.SetLocalX(2.9f);
+                            helpLabel.transform.localScale = new(0.5f, 0.5f, 1f);
+                        }
 
                         option.OptionBehaviour = stringOption;
                     }

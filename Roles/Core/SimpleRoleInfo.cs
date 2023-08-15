@@ -27,6 +27,7 @@ public class SimpleRoleInfo
     public AudioClip IntroSound => introSound?.Invoke();
     private Func<bool> canMakeMadmate;
     public bool CanMakeMadmate => canMakeMadmate?.Invoke() == true;
+    public readonly string WikiPage = null;
 
     private SimpleRoleInfo(
         Type classType,
@@ -42,7 +43,8 @@ public class SimpleRoleInfo
         bool requireResetCam,
         TabGroup tab,
         Func<AudioClip> introSound,
-        Func<bool> canMakeMadmate
+        Func<bool> canMakeMadmate,
+        string wikiPage
     )
     {
         ClassType = classType;
@@ -57,6 +59,7 @@ public class SimpleRoleInfo
         this.introSound = introSound;
         this.canMakeMadmate = canMakeMadmate;
         ChatCommand = chatCommand;
+        WikiPage = wikiPage;
 
         if (colorCode == "")
             colorCode = customRoleType switch
@@ -95,7 +98,8 @@ public class SimpleRoleInfo
         TabGroup tab = TabGroup.MainSettings,
         Func<AudioClip> introSound = null,
         Func<bool> canMakeMadmate = null,
-        CountTypes? countType = null
+        CountTypes? countType = null,
+        string wikiPage = null
     )
     {
         countType ??= customRoleType == CustomRoleTypes.Impostor ?
@@ -117,7 +121,8 @@ public class SimpleRoleInfo
                 requireResetCam,
                 tab,
                 introSound,
-                canMakeMadmate
+                canMakeMadmate,
+                wikiPage
             );
     }
     public static SimpleRoleInfo CreateForVanilla(
@@ -176,7 +181,8 @@ public class SimpleRoleInfo
                 false,
                 TabGroup.MainSettings,
                 null,
-                () => canMakeMadmate
+                () => canMakeMadmate,
+                null
             );
     }
     public delegate void OptionCreatorDelegate();
