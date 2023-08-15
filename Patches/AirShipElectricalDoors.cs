@@ -50,11 +50,6 @@ namespace TownOfHost
                 {
                     door.SetOpen(true);
                 }
-                // セキュへ通じるドアを両方開ける
-                foreach (var leftDoor in __instance.LeftExits.Doors)
-                {
-                    leftDoor.SetOpen(true);
-                }
                 __instance.IsDirty = true;
                 return false;
             }
