@@ -293,6 +293,10 @@ namespace TownOfHost
             sortedRoleInfo.Where(role => role.CustomRoleType == CustomRoleTypes.Impostor).Do(info =>
             {
                 SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName);
+                if (info.WikiPage != null && CustomRoleSpawnChances.TryGetValue(info.RoleName, out var roleOption))
+                {
+                    roleOption.SetWikiPage(info.WikiPage);
+                }
                 info.OptionCreator?.Invoke();
             });
 
@@ -306,18 +310,25 @@ namespace TownOfHost
             sortedRoleInfo.Where(role => role.CustomRoleType == CustomRoleTypes.Madmate).Do(info =>
             {
                 SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName);
+                if (info.WikiPage != null && CustomRoleSpawnChances.TryGetValue(info.RoleName, out var roleOption))
+                {
+                    roleOption.SetWikiPage(info.WikiPage);
+                }
                 info.OptionCreator?.Invoke();
             });
             // Madmate Common Options
             MadmateCanFixLightsOut = BooleanOptionItem.Create(15010, "MadmateCanFixLightsOut", false, TabGroup.ImpostorRoles, false)
                 .SetHeader(true);
             MadmateCanFixComms = BooleanOptionItem.Create(15011, "MadmateCanFixComms", false, TabGroup.ImpostorRoles, false);
+
             ModdedMadmateCantOpenSabConsoles = BooleanOptionItem.Create(
                 15020,
                 "ModdedMadCantOpen",
                 true,
                 TabGroup.ImpostorRoles,
                 false);
+            ModdedMadmateCantOpenSabConsoles.SetWikiPage("マッド系役職の変更点#配電盤事故防止オプション");
+
             MadmateHasImpostorVision = BooleanOptionItem.Create(15012, "MadmateHasImpostorVision", true, TabGroup.ImpostorRoles, false);
             MadmateCanSeeKillFlash = BooleanOptionItem.Create(15015, "MadmateCanSeeKillFlash", false, TabGroup.ImpostorRoles, false);
             MadmateCanSeeOtherVotes = BooleanOptionItem.Create(15016, "MadmateCanSeeOtherVotes", false, TabGroup.ImpostorRoles, false);
@@ -331,6 +342,10 @@ namespace TownOfHost
             sortedRoleInfo.Where(role => role.CustomRoleType == CustomRoleTypes.Crewmate).Do(info =>
             {
                 SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName);
+                if (info.WikiPage != null && CustomRoleSpawnChances.TryGetValue(info.RoleName, out var roleOption))
+                {
+                    roleOption.SetWikiPage(info.WikiPage);
+                }
                 info.OptionCreator?.Invoke();
             });
 
@@ -344,6 +359,10 @@ namespace TownOfHost
                         break;
                     default:
                         SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName);
+                        if (info.WikiPage != null && CustomRoleSpawnChances.TryGetValue(info.RoleName, out var roleOption))
+                        {
+                            roleOption.SetWikiPage(info.WikiPage);
+                        }
                         break;
                 }
                 info.OptionCreator?.Invoke();
@@ -401,7 +420,10 @@ namespace TownOfHost
                 .SetHeader(true);
             AirShipVariableElectrical = BooleanOptionItem.Create(101600, "AirShipVariableElectrical", false, TabGroup.MainSettings, false).SetParent(MapModification);
             DisableAirshipMovingPlatform = BooleanOptionItem.Create(101700, "DisableAirshipMovingPlatform", false, TabGroup.MainSettings, false).SetParent(MapModification);
+
             ResetDoorsEveryTurns = BooleanOptionItem.Create(101800, "ResetDoorsEveryTurns", false, TabGroup.MainSettings, false).SetParent(MapModification);
+            ResetDoorsEveryTurns.SetWikiPage("ターンごとのドア状態リセット");
+
             DoorsResetMode = StringOptionItem.Create(101810, "DoorsResetMode", EnumHelper.GetAllNames<DoorsReset.ResetMode>(), 0, TabGroup.MainSettings, false).SetParent(ResetDoorsEveryTurns);
 
             // タスク無効化
@@ -425,18 +447,21 @@ namespace TownOfHost
             DisableDevices = BooleanOptionItem.Create(101200, "DisableDevices", true, TabGroup.MainSettings, false)
                 .SetHeader(true)
                 .SetGameMode(CustomGameMode.Standard);
+
             CamerasTimer = BooleanOptionItem.Create(
                 101280,
                 "CamerasTimer",
                 true,
                 TabGroup.MainSettings,
                 false).SetParent(DisableDevices).SetGameMode(CustomGameMode.Standard);
+            CamerasTimer.SetWikiPage("カメラの時間制限");
             CamerasMaxTimer = IntegerOptionItem.Create(
                 101281,
                 "CamerasMaxTimer",
                 new(1, 120, 1), 10,
                 TabGroup.MainSettings,
                 false).SetParent(CamerasTimer).SetGameMode(CustomGameMode.Standard).SetValueFormat(OptionFormat.Seconds);
+
             DisableSkeldDevices = BooleanOptionItem.Create(101210, "DisableSkeldDevices", false, TabGroup.MainSettings, false).SetParent(DisableDevices)
                 .SetGameMode(CustomGameMode.Standard);
             DisableSkeldAdmin = BooleanOptionItem.Create(101211, "DisableSkeldAdmin", false, TabGroup.MainSettings, false).SetParent(DisableSkeldDevices)
