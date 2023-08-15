@@ -37,6 +37,7 @@ namespace TownOfHost
             }
         }
         private Dictionary<string, string> _replacementDictionary;
+        public string WikiPage { get; private set; } = null;
 
         // 設定値情報 (オプションの値に関わる情報)
         public int CurrentValue
@@ -130,6 +131,7 @@ namespace TownOfHost
         public OptionItem SetChild(OptionItem child) => Do(i => i.Children.Add(child));
         public OptionItem RegisterUpdateValueEvent(EventHandler<UpdateValueEventArgs> handler)
             => Do(i => UpdateValueEvent += handler);
+        public void SetWikiPage(string page) => WikiPage = $"{WikiLink}{page}";
 
         // 置き換え辞書
         public OptionItem AddReplacement((string key, string value) kvp)
@@ -244,6 +246,8 @@ namespace TownOfHost
                 BeforeValue = beforeValue;
             }
         }
+
+        public const string WikiLink = "https://github.com/Hyz-sui/TownOfHost-H/wiki/";
     }
 
     public enum TabGroup
