@@ -249,7 +249,7 @@ public sealed class EvilHacker : RoleBase, IImpostor, IKillFlashSeeable
 
     public override void OnDie()
     {
-        if (!inheritAbility)
+        if (!inheritAbility || CustomWinnerHolder.WinnerTeam != CustomWinner.Default)
         {
             return;
         }
