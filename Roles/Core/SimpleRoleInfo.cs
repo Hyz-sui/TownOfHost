@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using AmongUs.GameOptions;
 
@@ -28,6 +29,19 @@ public class SimpleRoleInfo
     private Func<bool> canMakeMadmate;
     public bool CanMakeMadmate => canMakeMadmate?.Invoke() == true;
     public readonly string WikiPage = null;
+    /// <summary>
+    /// 人数設定の最小人数, 最大人数, 一単位数
+    /// </summary>
+    public IntegerValueRule AssignCountRule;
+    /// <summary>
+    /// 人数設定に対し何人単位でアサインするか
+    /// 役職の抽選回数 = 設定人数 / AssignUnitCount
+    /// </summary>
+    public int AssignUnitCount => AssignCountRule?.Step ?? 1;
+    /// <summary>
+    /// 実際にアサインされる役職の内訳
+    /// </summary>
+    public CustomRoles[] AssignUnitRoles;
 
     private SimpleRoleInfo(
         Type classType,
@@ -44,7 +58,9 @@ public class SimpleRoleInfo
         TabGroup tab,
         Func<AudioClip> introSound,
         Func<bool> canMakeMadmate,
-        string wikiPage
+        string wikiPage,
+        IntegerValueRule assignCountRule,
+        CustomRoles[] assignUnitRoles
     )
     {
         ClassType = classType;
@@ -60,11 +76,14 @@ public class SimpleRoleInfo
         this.canMakeMadmate = canMakeMadmate;
         ChatCommand = chatCommand;
         WikiPage = wikiPage;
+        AssignCountRule = assignCountRule;
+        AssignUnitRoles = assignUnitRoles;
 
         if (colorCode == "")
             colorCode = customRoleType switch
             {
                 CustomRoleTypes.Impostor or CustomRoleTypes.Madmate => "#ff1919",
+                CustomRoleTypes.Crewmate => "#8cffff",
                 _ => "#ffffff"
             };
         RoleColorCode = colorCode;
@@ -99,12 +118,18 @@ public class SimpleRoleInfo
         Func<AudioClip> introSound = null,
         Func<bool> canMakeMadmate = null,
         CountTypes? countType = null,
-        string wikiPage = null
+        string wikiPage = null,
+        IntegerValueRule assignCountRule = null,
+        CustomRoles[] assignUnitRoles = null
     )
     {
         countType ??= customRoleType == CustomRoleTypes.Impostor ?
             CountTypes.Impostor :
             CountTypes.Crew;
+        assignCountRule ??= customRoleType == CustomRoleTypes.Impostor ?
+            new(1, 3, 1) :
+            new(1, 15, 1);
+        assignUnitRoles ??= Enumerable.Repeat(roleName, assignCountRule.Step).ToArray();
 
         return
             new(
@@ -122,7 +147,9 @@ public class SimpleRoleInfo
                 tab,
                 introSound,
                 canMakeMadmate,
-                wikiPage
+                wikiPage,
+                assignCountRule,
+                assignUnitRoles
             );
     }
     public static SimpleRoleInfo CreateForVanilla(
@@ -182,7 +209,9 @@ public class SimpleRoleInfo
                 TabGroup.MainSettings,
                 null,
                 () => canMakeMadmate,
-                null
+                null,
+                new(1, 15, 1),
+                new CustomRoles[1] { roleName }
             );
     }
     public delegate void OptionCreatorDelegate();

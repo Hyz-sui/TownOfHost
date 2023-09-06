@@ -8,6 +8,7 @@ using UnityEngine;
 using TownOfHost.Modules;
 using TownOfHost.Objects;
 using TownOfHost.Roles.Core;
+using TownOfHost.Templates;
 using static TownOfHost.Translator;
 
 namespace TownOfHost
@@ -30,7 +31,7 @@ namespace TownOfHost
                 sb.Append("\r\n").Append(Main.credentialsText);
                 if (GameStates.IsLobby)
                 {
-                    sb.AppendLine().Append(Main.ForkVersion);
+                    sb.AppendLine().Append("TOH: ").Append(Main.PluginVersion);
                 }
 
                 if (Options.NoGameEnd.GetBool()) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("NoGameEnd")));
@@ -60,16 +61,18 @@ namespace TownOfHost
             static void Postfix(VersionShower __instance)
             {
                 Prefabs.SimpleText = __instance.text;
-                Main.credentialsText = $"<color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginVersion}";
+                TMPTemplate.SetBase(__instance.text);
+                Main.credentialsText = $"<color={Main.ModColor}>{Main.ModName}</color> {Main.ForkVersion}";
 #if DEBUG
                 Main.credentialsText += $"\r\n<color={Main.ModColor}>{ThisAssembly.Git.Branch}({ThisAssembly.Git.Commit})</color>";
 #endif
-                var credentials = Object.Instantiate(__instance.text);
-                credentials.text = Main.credentialsText;
-                credentials.text += "\n" + Main.ForkVersion;
-                credentials.alignment = TextAlignmentOptions.Right;
+                var credentials = TMPTemplate.Create(
+                    "TOHCredentialsText",
+                    $"{Main.credentialsText}\nTOH: {Main.PluginVersion}",
+                    fontSize: 2f,
+                    alignment: TextAlignmentOptions.Right,
+                    setActive: true);
                 credentials.transform.position = new Vector3(1f, 2.65f, -2f);
-                credentials.fontSize = credentials.fontSizeMax = credentials.fontSizeMin = 2f;
 
                 ErrorText.Create(__instance.text);
                 if (Main.hasArgumentException && ErrorText.Instance != null)
@@ -81,17 +84,20 @@ namespace TownOfHost
 
                 if (SpecialEventText == null && TohLogo != null)
                 {
-                    SpecialEventText = Object.Instantiate(__instance.text, TohLogo.transform);
+                    SpecialEventText = TMPTemplate.Create(
+                        "SpecialEventText",
+                        "",
+                        Color.white,
+                        alignment: TextAlignmentOptions.Center,
+                        parent: TohLogo.transform);
                     SpecialEventText.name = "SpecialEventText";
-                    SpecialEventText.text = "";
-                    SpecialEventText.color = Color.white;
                     SpecialEventText.fontSizeMin = 3f;
-                    SpecialEventText.alignment = TextAlignmentOptions.Center;
                     SpecialEventText.transform.localPosition = new Vector3(0f, 0.8f, 0f);
                 }
                 if (SpecialEventText != null)
                 {
                     SpecialEventText.enabled = TitleLogoPatch.amongUsLogo != null;
+                    SpecialEventText.gameObject.SetActive(true);
                 }
                 if (Main.IsInitialRelease)
                 {
