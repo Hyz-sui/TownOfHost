@@ -31,7 +31,7 @@ namespace TownOfHost
                 sb.Append("\r\n").Append(Main.credentialsText);
                 if (GameStates.IsLobby)
                 {
-                    sb.AppendLine().Append(Main.ForkVersion);
+                    sb.AppendLine().Append("TOH: ").Append(Main.PluginVersion);
                 }
 
                 if (Options.NoGameEnd.GetBool()) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("NoGameEnd")));
@@ -62,13 +62,13 @@ namespace TownOfHost
             {
                 Prefabs.SimpleText = __instance.text;
                 TMPTemplate.SetBase(__instance.text);
-                Main.credentialsText = $"<color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginVersion}";
+                Main.credentialsText = $"<color={Main.ModColor}>{Main.ModName}</color> {Main.ForkVersion}";
 #if DEBUG
                 Main.credentialsText += $"\r\n<color={Main.ModColor}>{ThisAssembly.Git.Branch}({ThisAssembly.Git.Commit})</color>";
 #endif
                 var credentials = TMPTemplate.Create(
                     "TOHCredentialsText",
-                    $"{Main.credentialsText}\n{Main.ForkVersion}",
+                    $"{Main.credentialsText}\nTOH: {Main.PluginVersion}",
                     fontSize: 2f,
                     alignment: TextAlignmentOptions.Right,
                     setActive: true);
