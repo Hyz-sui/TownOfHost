@@ -58,7 +58,7 @@ namespace TownOfHost
         public static readonly Version ParsedForkVersion = Version.Parse(ForkVersion.Replace("H_", ""));
 
         public const string PluginGuid = "com.emptybottle.townofhost";
-        public const string PluginVersion = "5.0.3";
+        public const string PluginVersion = "5.1.1";
         // サポートされている最低のAmongUsバージョン
         public static readonly string LowestSupportedVersion = "2023.7.11";
         public Harmony Harmony { get; } = new Harmony(PluginGuid);
@@ -99,7 +99,7 @@ namespace TownOfHost
         public static Dictionary<(byte, byte), string> LastNotifyNames;
         public static Dictionary<byte, Color32> PlayerColors = new();
         public static Dictionary<byte, CustomDeathReason> AfterMeetingDeathPlayers = new();
-        public static Dictionary<CustomRoles, String> roleColors;
+        public static Dictionary<CustomRoles, string> roleColors;
         public static List<byte> ResetCamPlayerList;
         public static List<byte> winnerList;
         public static List<int> clientIdList;
@@ -192,13 +192,8 @@ namespace TownOfHost
                 roleColors = new Dictionary<CustomRoles, string>()
                 {
                     // マッドメイト役職
-                    {CustomRoles.MSchrodingerCat, "#ff1919"},
                     {CustomRoles.SKMadmate, "#ff1919"},
                     //特殊クルー役職
-                    {CustomRoles.CSchrodingerCat, "#ffffff"}, //シュレディンガーの猫の派生
-                    //ニュートラル役職
-                    {CustomRoles.EgoSchrodingerCat, "#5600ff"},
-                    {CustomRoles.JSchrodingerCat, "#00b4eb"},
                     //HideAndSeek
                     {CustomRoles.HASFox, "#e478ff"},
                     {CustomRoles.HASTroll, "#00ff00"},
@@ -263,6 +258,7 @@ namespace TownOfHost
         Sniped,
         Revenge,
         Execution,
+        Infected,
         Disconnected,
         Fall,
         etc = -1
@@ -282,6 +278,7 @@ namespace TownOfHost
         Arsonist = CustomRoles.Arsonist,
         Egoist = CustomRoles.Egoist,
         Jackal = CustomRoles.Jackal,
+        PlagueDoctor = CustomRoles.PlagueDoctor,
         HASTroll = CustomRoles.HASTroll,
     }
     public enum AdditionalWinners

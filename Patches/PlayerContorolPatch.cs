@@ -11,9 +11,7 @@ using TownOfHost.Modules;
 using TownOfHost.Roles;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
-using TownOfHost.Roles.Neutral;
 using TownOfHost.Roles.AddOns.Crewmate;
-using static TownOfHost.Translator;
 
 namespace TownOfHost
 {
@@ -389,14 +387,6 @@ namespace TownOfHost
                     //名前変更
                     RealName = target.GetRealName();
 
-                    //名前色変更処理
-                    //自分自身の名前の色を変更
-                    if (target.AmOwner && AmongUsClient.Instance.IsGameStarted)
-                    { //targetが自分自身
-                        if (target.Is(CustomRoles.Arsonist) && Arsonist.IsDouseDone(target))
-                            RealName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Arsonist), GetString("EnterVentToWin"));
-                    }
-
                     //NameColorManager準拠の処理
                     RealName = RealName.ApplyNameColorData(seer, target, false);
 
@@ -566,29 +556,14 @@ namespace TownOfHost
             Logger.Info($"TaskComplete:{pc.GetNameWithRole()}", "CompleteTask");
             var taskState = pc.GetPlayerTaskState();
             taskState.Update(pc);
-
-            var isTaskFinish = taskState.IsTaskFinished;
-            var completedNum = taskState.CompletedTasksCount;
-            var knowsViaTaskNum =
-                Roles.Madmate.MadSnitch.MadSnitchSpecifyNumRequiredTasks.GetBool() &&
-                completedNum >= Roles.Madmate.MadSnitch.MadSnitchNumRequiredTasks.GetInt();
-            if ((isTaskFinish || knowsViaTaskNum) && pc.Is(CustomRoles.MadSnitch))
-            {
-                foreach (var impostor in Main.AllAlivePlayerControls.Where(pc => pc.Is(CustomRoleTypes.Impostor)))
-                {
-                    NameColorManager.Add(pc.PlayerId, impostor.PlayerId);
-                }
-            }
             var roleClass = pc.GetRoleClass();
             var ret = true;
             if (roleClass != null)
             {
                 ret = roleClass.OnCompleteTask();
             }
-            else
-            {
-                ret = Workhorse.OnCompleteTask(pc);
-            }
+            //属性クラスの扱いを決定するまで仮置き
+            ret &= Workhorse.OnCompleteTask(pc);
             Utils.NotifyRoles();
             return ret;
         }
@@ -665,7 +640,6 @@ namespace TownOfHost
             return true;
         }
     }
-
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
     public static class PlayerControlDiePatch
     {

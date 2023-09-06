@@ -38,8 +38,6 @@ namespace TownOfHost
             Logger.Info("Options.Load End", "Options");
         }
         */
-        // オプションId
-        public const int PresetId = 0;
 
         // プリセット
         private static readonly string[] presets =
@@ -192,11 +190,16 @@ namespace TownOfHost
         public static OptionItem PolusReactorTimeLimit;
         public static OptionItem AirshipReactorTimeLimit;
 
+        // サボタージュのクールダウン変更
+        public static OptionItem ModifySabotageCooldown;
+        public static OptionItem SabotageCooldown;
+
         // 停電の特殊設定
         public static OptionItem LightsOutSpecialSettings;
         public static OptionItem DisableAirshipViewingDeckLightsPanel;
         public static OptionItem DisableAirshipGapRoomLightsPanel;
         public static OptionItem DisableAirshipCargoLightsPanel;
+        public static OptionItem BlockDisturbancesToSwitches;
 
         // マップ改造
         public static OptionItem MapModification;
@@ -267,6 +270,8 @@ namespace TownOfHost
         public static void Load()
         {
             if (IsLoaded) return;
+            OptionSaver.Initialize();
+
             // プリセット
             _ = PresetOptionItem.Create(0, TabGroup.MainSettings)
                 .SetColor(new Color32(204, 204, 0, 255))
@@ -293,7 +298,7 @@ namespace TownOfHost
             // Impostor
             sortedRoleInfo.Where(role => role.CustomRoleType == CustomRoleTypes.Impostor).Do(info =>
             {
-                SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName);
+                SetupRoleOptions(info);
                 if (info.WikiPage != null && CustomRoleSpawnChances.TryGetValue(info.RoleName, out var roleOption))
                 {
                     roleOption.SetWikiPage(info.WikiPage);
@@ -307,10 +312,10 @@ namespace TownOfHost
             CanMakeMadmateCount = IntegerOptionItem.Create(5012, "CanMakeMadmateCount", new(0, 15, 1), 0, TabGroup.ImpostorRoles, false)
                 .SetValueFormat(OptionFormat.Times);
 
-            // Madmate
-            sortedRoleInfo.Where(role => role.CustomRoleType == CustomRoleTypes.Madmate).Do(info =>
+            // Madmate, Crewmate, Neutral
+            sortedRoleInfo.Where(role => role.CustomRoleType != CustomRoleTypes.Impostor).Do(info =>
             {
-                SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName);
+                SetupRoleOptions(info);
                 if (info.WikiPage != null && CustomRoleSpawnChances.TryGetValue(info.RoleName, out var roleOption))
                 {
                     roleOption.SetWikiPage(info.WikiPage);
@@ -339,38 +344,9 @@ namespace TownOfHost
                 .SetValueFormat(OptionFormat.Seconds);
             MadmateVentMaxTime = FloatOptionItem.Create(15214, "MadmateVentMaxTime", new(0f, 180f, 5f), 0f, TabGroup.ImpostorRoles, false)
                 .SetValueFormat(OptionFormat.Seconds);
-            // Crewmate
-            sortedRoleInfo.Where(role => role.CustomRoleType == CustomRoleTypes.Crewmate).Do(info =>
-            {
-                SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName);
-                if (info.WikiPage != null && CustomRoleSpawnChances.TryGetValue(info.RoleName, out var roleOption))
-                {
-                    roleOption.SetWikiPage(info.WikiPage);
-                }
-                info.OptionCreator?.Invoke();
-            });
-
-            // Neutral
-            sortedRoleInfo.Where(role => role.CustomRoleType == CustomRoleTypes.Neutral).Do(info =>
-            {
-                switch (info.RoleName)
-                {
-                    case CustomRoles.Jackal: //ジャッカルは1人固定
-                        SetupSingleRoleOptions(info.ConfigId, info.Tab, info.RoleName, 1);
-                        break;
-                    default:
-                        SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName);
-                        if (info.WikiPage != null && CustomRoleSpawnChances.TryGetValue(info.RoleName, out var roleOption))
-                        {
-                            roleOption.SetWikiPage(info.WikiPage);
-                        }
-                        break;
-                }
-                info.OptionCreator?.Invoke();
-            });
-            SetupLoversRoleOptionsToggle(50300);
 
             // Add-Ons
+            SetupRoleOptions(50300, TabGroup.Addons, CustomRoles.Lovers, assignCountRule: new(2, 2, 2));
             LastImpostor.SetupCustomOption();
             Watcher.SetupCustomOption();
             Workhorse.SetupCustomOption();
@@ -382,8 +358,8 @@ namespace TownOfHost
                 .SetGameMode(CustomGameMode.Standard);
 
             // HideAndSeek
-            SetupRoleOptions(100000, TabGroup.MainSettings, CustomRoles.HASFox, CustomGameMode.HideAndSeek);
-            SetupRoleOptions(100100, TabGroup.MainSettings, CustomRoles.HASTroll, CustomGameMode.HideAndSeek);
+            SetupRoleOptions(100000, TabGroup.MainSettings, CustomRoles.HASFox, customGameMode: CustomGameMode.HideAndSeek);
+            SetupRoleOptions(100100, TabGroup.MainSettings, CustomRoles.HASTroll, customGameMode: CustomGameMode.HideAndSeek);
             AllowCloseDoors = BooleanOptionItem.Create(101000, "AllowCloseDoors", false, TabGroup.MainSettings, false)
                 .SetHeader(true)
                 .SetGameMode(CustomGameMode.HideAndSeek);
@@ -406,6 +382,13 @@ namespace TownOfHost
                 .SetValueFormat(OptionFormat.Seconds)
                 .SetGameMode(CustomGameMode.Standard);
 
+            // サボタージュのクールダウン変更
+            ModifySabotageCooldown = BooleanOptionItem.Create(100810, "ModifySabotageCooldown", false, TabGroup.MainSettings, false)
+                .SetGameMode(CustomGameMode.Standard);
+            SabotageCooldown = FloatOptionItem.Create(100811, "SabotageCooldown", new(1f, 60f, 1f), 30f, TabGroup.MainSettings, false).SetParent(ModifySabotageCooldown)
+                .SetValueFormat(OptionFormat.Seconds)
+                .SetGameMode(CustomGameMode.Standard);
+
             // 停電の特殊設定
             LightsOutSpecialSettings = BooleanOptionItem.Create(101500, "LightsOutSpecialSettings", false, TabGroup.MainSettings, false)
                 .SetGameMode(CustomGameMode.Standard);
@@ -414,6 +397,8 @@ namespace TownOfHost
             DisableAirshipGapRoomLightsPanel = BooleanOptionItem.Create(101512, "DisableAirshipGapRoomLightsPanel", false, TabGroup.MainSettings, false).SetParent(LightsOutSpecialSettings)
                 .SetGameMode(CustomGameMode.Standard);
             DisableAirshipCargoLightsPanel = BooleanOptionItem.Create(101513, "DisableAirshipCargoLightsPanel", false, TabGroup.MainSettings, false).SetParent(LightsOutSpecialSettings)
+                .SetGameMode(CustomGameMode.Standard);
+            BlockDisturbancesToSwitches = BooleanOptionItem.Create(101514, "BlockDisturbancesToSwitches", false, TabGroup.MainSettings, false).SetParent(LightsOutSpecialSettings)
                 .SetGameMode(CustomGameMode.Standard);
 
             // マップ改造
@@ -425,10 +410,7 @@ namespace TownOfHost
             AirshipAllOpenElectrical.SetWikiPage("その他の機能と変更点#電気室のドアを全開にするオプション");
 
             DisableAirshipMovingPlatform = BooleanOptionItem.Create(101700, "DisableAirshipMovingPlatform", false, TabGroup.MainSettings, false).SetParent(MapModification);
-
             ResetDoorsEveryTurns = BooleanOptionItem.Create(101800, "ResetDoorsEveryTurns", false, TabGroup.MainSettings, false).SetParent(MapModification);
-            ResetDoorsEveryTurns.SetWikiPage("ターンごとのドア状態リセット");
-
             DoorsResetMode = StringOptionItem.Create(101810, "DoorsResetMode", EnumHelper.GetAllNames<DoorsReset.ResetMode>(), 0, TabGroup.MainSettings, false).SetParent(ResetDoorsEveryTurns);
 
             // タスク無効化
@@ -633,49 +615,27 @@ namespace TownOfHost
 
             DebugModeManager.SetupCustomOption();
 
+            OptionSaver.Load();
+
             IsLoaded = true;
             Logger.Info("Options.Load End", "Options");
         }
 
-        public static void SetupRoleOptions(int id, TabGroup tab, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard)
+        public static void SetupRoleOptions(SimpleRoleInfo info) =>
+            SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName, info.AssignCountRule);
+        public static void SetupRoleOptions(int id, TabGroup tab, CustomRoles role, IntegerValueRule assignCountRule = null, CustomGameMode customGameMode = CustomGameMode.Standard)
         {
             if (role.IsVanilla()) return;
+            assignCountRule ??= new(1, 15, 1);
 
-            var spawnOption = IntegerOptionItem.Create(id, role.ToString(), new(0, 100, 10), 0, tab, false).SetColor(Utils.GetRoleColor(role))
+            var spawnOption = IntegerOptionItem.Create(id, role.ToString(), new(0, 100, 10), 0, tab, false)
+                .SetColor(Utils.GetRoleColor(role))
                 .SetValueFormat(OptionFormat.Percent)
                 .SetHeader(true)
                 .SetGameMode(customGameMode) as IntegerOptionItem;
-            var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, 15, 1), 1, tab, false).SetParent(spawnOption)
+            var countOption = IntegerOptionItem.Create(id + 1, "Maximum", assignCountRule, assignCountRule.Step, tab, false)
+                .SetParent(spawnOption)
                 .SetValueFormat(OptionFormat.Players)
-                .SetGameMode(customGameMode);
-
-            CustomRoleSpawnChances.Add(role, spawnOption);
-            CustomRoleCounts.Add(role, countOption);
-        }
-        private static void SetupLoversRoleOptionsToggle(int id, CustomGameMode customGameMode = CustomGameMode.Standard)
-        {
-            var role = CustomRoles.Lovers;
-            var spawnOption = IntegerOptionItem.Create(id, role.ToString(), new(0, 100, 10), 0, TabGroup.Addons, false).SetColor(Utils.GetRoleColor(role))
-                .SetValueFormat(OptionFormat.Percent)
-                .SetHeader(true)
-                .SetGameMode(customGameMode) as IntegerOptionItem;
-
-            var countOption = IntegerOptionItem.Create(id + 1, "NumberOfLovers", new(2, 2, 1), 2, TabGroup.Addons, false).SetParent(spawnOption)
-                .SetHidden(true)
-                .SetGameMode(customGameMode);
-
-            CustomRoleSpawnChances.Add(role, spawnOption);
-            CustomRoleCounts.Add(role, countOption);
-        }
-        public static void SetupSingleRoleOptions(int id, TabGroup tab, CustomRoles role, int count, CustomGameMode customGameMode = CustomGameMode.Standard)
-        {
-            var spawnOption = IntegerOptionItem.Create(id, role.ToString(), new(0, 100, 10), 0, tab, false).SetColor(Utils.GetRoleColor(role))
-                .SetValueFormat(OptionFormat.Percent)
-                .SetHeader(true)
-                .SetGameMode(customGameMode) as IntegerOptionItem;
-            // 初期値,最大値,最小値が同じで、stepが0のどうやっても変えることができない個数オプション
-            var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(count, count, count), count, tab, false).SetParent(spawnOption)
-                .SetHidden(true)
                 .SetGameMode(customGameMode);
 
             CustomRoleSpawnChances.Add(role, spawnOption);
