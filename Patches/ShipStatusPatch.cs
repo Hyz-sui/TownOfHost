@@ -7,6 +7,7 @@ using UnityEngine;
 
 using TownOfHost.Modules;
 using TownOfHost.Roles.Core;
+using TownOfHost.Roles.Neutral;
 
 namespace TownOfHost
 {
@@ -131,7 +132,11 @@ namespace TownOfHost
                 return true;
             }
 
-            if (player.Is(CustomRoleTypes.Madmate))
+            var isMadmate =
+                player.Is(CustomRoleTypes.Madmate) ||
+                // マッド属性化時に削除
+                (player.GetRoleClass() is SchrodingerCat schrodingerCat && schrodingerCat.AmMadmate);
+            if (isMadmate)
             {
                 if (systemType == SystemTypes.Comms)
                 {

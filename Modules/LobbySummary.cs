@@ -63,7 +63,7 @@ namespace TownOfHost.Modules
             var path = $"{HistoryDirectory.FullName}/result_{DateTime.Now:yyyy_MM_dd_HH_mm_ss_ffff}.txt";
             var formattedText = Regex.Replace(
                 text.Replace(Translator.GetString("RoleSummaryText"), ""),
-                @"</?pos(=\d*%)?>", "");
+                @"</?pos(=[0-9\.]*em)?>", " ");
             File.WriteAllText(path, formattedText, Encoding.UTF8);
         }
         public static void Load()
