@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -56,7 +57,7 @@ public static class DeviceTimer
             return;
         }
         playersWatchingCamera.Add(player.PlayerId);
-        Logger.Info($"Begin: {System.DateTime.Now:HH:mm:ss}", nameof(DeviceTimer));
+        Logger.Info($"Begin: {DateTime.Now:HH:mm:ss}", nameof(DeviceTimer));
     }
     public static void CloseCamera(PlayerControl player)
     {
@@ -67,7 +68,7 @@ public static class DeviceTimer
         if (playersWatchingCamera.Contains(player.PlayerId))
         {
             playersWatchingCamera.Remove(player.PlayerId);
-            Logger.Info($"Close: {System.DateTime.Now:HH:mm:ss}", nameof(DeviceTimer));
+            Logger.Info($"Close: {DateTime.Now:HH:mm:ss}", nameof(DeviceTimer));
         }
     }
     public static void ConsumeCamera()
@@ -114,7 +115,7 @@ public static class DeviceTimer
         camerasRemaining = time;
         if (time <= 0f)
         {
-            Logger.Info($"Destroy: {System.DateTime.Now:HH:mm:ss}", nameof(DeviceTimer));
+            Logger.Info($"Destroy: {DateTime.Now:HH:mm:ss}", nameof(DeviceTimer));
             CamerasRanOut = true;
         }
     }
