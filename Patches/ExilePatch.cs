@@ -141,7 +141,7 @@ namespace TownOfHost
 
             GameStates.AlreadyDied |= !Utils.IsAllAlive;
             RemoveDisableDevicesPatch.UpdateDisableDevices();
-            DeviceTimer.UpdateNotifyText();
+            DeviceTimer.MeetingEndedUpdate();
             SoundManager.Instance.ChangeAmbienceVolume(DataManager.Settings.Audio.AmbienceVolume);
             Logger.Info("タスクフェイズ開始", "Phase");
         }

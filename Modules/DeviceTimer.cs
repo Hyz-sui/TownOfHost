@@ -18,6 +18,7 @@ public static class DeviceTimer
     private static HashSet<byte> playersWatchingCamera;
     private static bool isEnabled;
     private static float camerasRemaining;
+    private static NotifyMode notifyMode;
     private static string notifyText;
     private static HashSet<byte> unusableNotifyTargets;
 
@@ -27,6 +28,7 @@ public static class DeviceTimer
         playersWatchingCamera = new();
         isEnabled = Options.CamerasTimer.GetBool();
         camerasRemaining = Options.CamerasMaxTimer.GetInt();
+        notifyMode = (NotifyMode)Options.CamerasTimerNotifyMode.GetValue();
         UpdateNotifyText();
         unusableNotifyTargets = new();
     }
@@ -80,6 +82,14 @@ public static class DeviceTimer
             RpcUpdateCamerasUsable(camerasRemaining);
         }
     }
+    public static void MeetingEndedUpdate()
+    {
+        if (AmongUsClient.Instance.AmHost)
+        {
+            RpcUpdateCamerasUsable(camerasRemaining);
+        }
+        UpdateNotifyText();
+    }
     public static void RpcUpdateCamerasUsable(float time)
     {
         if (AmongUsClient.Instance.AmHost)
@@ -101,14 +111,14 @@ public static class DeviceTimer
         {
             return;
         }
-
+        camerasRemaining = time;
         if (time <= 0f)
         {
             Logger.Info($"Destroy: {System.DateTime.Now:HH:mm:ss}", nameof(DeviceTimer));
             CamerasRanOut = true;
         }
     }
-    public static void UpdateNotifyText()
+    private static void UpdateNotifyText()
     {
         if (!isEnabled)
         {
@@ -130,7 +140,7 @@ public static class DeviceTimer
     }
     public static void SendNotifyText()
     {
-        if (!isEnabled)
+        if (!isEnabled || notifyMode != NotifyMode.MeetingChat)
         {
             return;
         }
@@ -158,24 +168,33 @@ public static class DeviceTimer
     }
     public static string GetNameNotifyText(PlayerControl player)
     {
-        if (player.IsModClient() || !player.IsAlive())
+        if (!isEnabled)
         {
             return string.Empty;
         }
-        if (!CamerasRanOut)
+        if (player.AmOwner)
         {
-            return string.Empty;
+            if (notifyMode == NotifyMode.ProximityName && IsNearCamera(player))
+            {
+                return Utils.ColorString(Color.cyan, notifyText);
+            }
         }
-
-        if (unusableNotifyTargets.Contains(player.PlayerId))
+        else if (unusableNotifyTargets.Contains(player.PlayerId))
         {
-            return Utils.ColorString(Color.cyan, "使用不可");
+            if (CamerasRanOut)
+            {
+                return Utils.ColorString(Color.cyan, "使用不可");
+            }
+            else if (notifyMode == NotifyMode.ProximityName)
+            {
+                return Utils.ColorString(Color.cyan, notifyText);
+            }
         }
         return string.Empty;
     }
     public static void UpdateUnusableNotify(PlayerControl player)
     {
-        if (!AmongUsClient.Instance.AmHost || !isEnabled || !CamerasRanOut)
+        if (!AmongUsClient.Instance.AmHost || !isEnabled)
         {
             return;
         }

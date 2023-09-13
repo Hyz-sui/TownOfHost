@@ -414,6 +414,15 @@ namespace TownOfHost
                     //seerに関わらず発動するSuffix
                     Suffix.Append(CustomRoleManager.GetSuffixOthers(seer, target));
 
+                    if (__instance.AmOwner)
+                    {
+                        var deviceNotify = DeviceTimer.GetNameNotifyText(__instance);
+                        if (deviceNotify.Length > 0)
+                        {
+                            Suffix.Append(deviceNotify);
+                        }
+                    }
+
                     /*if(main.AmDebugger.Value && main.BlockKilling.TryGetValue(target.PlayerId, out var isBlocked)) {
                         Mark = isBlocked ? "(true)" : "(false)";
                     }*/
