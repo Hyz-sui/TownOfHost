@@ -812,7 +812,7 @@ namespace TownOfHost
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, isForMeeting: isForMeeting));
 
                 var deviceUnusableNotify = DeviceTimer.GetNameNotifyText(seer);
-                if (deviceUnusableNotify != string.Empty)
+                if (deviceUnusableNotify.Length > 0)
                 {
                     SelfSuffix.Append(deviceUnusableNotify);
                 }
