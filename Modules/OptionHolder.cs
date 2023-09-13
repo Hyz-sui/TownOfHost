@@ -109,6 +109,7 @@ namespace TownOfHost
         public static OptionItem DisableDevices;
         public static OptionItem CamerasTimer;
         public static OptionItem CamerasMaxTimer;
+        public static OptionItem CamerasTimerNotifyMode;
         public static OptionItem DisableSkeldDevices;
         public static OptionItem DisableSkeldAdmin;
         public static OptionItem DisableSkeldCamera;
@@ -448,6 +449,13 @@ namespace TownOfHost
                 new(1, 120, 1), 10,
                 TabGroup.MainSettings,
                 false).SetParent(CamerasTimer).SetGameMode(CustomGameMode.Standard).SetValueFormat(OptionFormat.Seconds);
+            CamerasTimerNotifyMode = StringOptionItem.Create(
+                101282,
+                "CamerasTimerNotifyMode",
+                EnumHelper.GetAllNames<DeviceTimer.NotifyMode>(),
+                0,
+                TabGroup.MainSettings,
+                false).SetParent(CamerasTimer).SetGameMode(CustomGameMode.Standard);
 
             DisableSkeldDevices = BooleanOptionItem.Create(101210, "DisableSkeldDevices", false, TabGroup.MainSettings, false).SetParent(DisableDevices)
                 .SetGameMode(CustomGameMode.Standard);

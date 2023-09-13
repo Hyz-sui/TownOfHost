@@ -199,4 +199,6 @@ public static class DeviceTimer
             Utils.NotifyRoles(SpecifySeer: player);
         }
     }
+
+    public enum NotifyMode { MeetingChat, ProximityName, DontNotify, }
 }
