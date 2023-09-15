@@ -174,7 +174,7 @@ namespace TownOfHost
                     button.GetComponent<PassiveButton>().OnClick = new();
                     button.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
                     {
-                        Application.OpenURL("https://github.com/tukasa0001/TownOfHost/releases/latest");
+                        Application.OpenURL("https://github.com/Hyz-sui/TownOfHost-H/releases/latest");
                         Application.Quit();
                     }));
                 }
