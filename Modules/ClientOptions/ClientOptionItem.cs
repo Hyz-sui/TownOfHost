@@ -50,7 +50,7 @@ public sealed class ClientOptionItem : ClientActionItem
             return;
         }
 
-        var color = Config.Value ? Color.green : Color.red;
+        var color = Config.Value ? CustomPalette.EnabledGreen : CustomPalette.DisabledRed;
         ToggleButton.Background.color = color;
         if (ToggleButton.Rollover != null)
         {
