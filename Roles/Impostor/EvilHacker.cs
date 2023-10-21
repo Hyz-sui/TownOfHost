@@ -89,13 +89,20 @@ public sealed class EvilHacker : RoleBase, IImpostor, IKillFlashSeeable
 
     private static void SetupOptionItems()
     {
-        OptionCanSeeDeadMark = BooleanOptionItem.Create(RoleInfo, 10, OptionName.EvilHackerCanSeeDeadMark, true, false);
-        OptionCanSeeImpostorMark = BooleanOptionItem.Create(RoleInfo, 11, OptionName.EvilHackerCanSeeImpostorMark, true, false);
-        OptionCanSeeKillFlash = BooleanOptionItem.Create(RoleInfo, 12, OptionName.EvilHackerCanSeeKillFlash, true, false);
-        OptionCanSeeMurderRoom = BooleanOptionItem.Create(RoleInfo, 13, OptionName.EvilHackerCanSeeMurderRoom, true, false, OptionCanSeeKillFlash);
-        OptionCanSeeImpostorArrow = BooleanOptionItem.Create(RoleInfo, 14, OptionName.EvilHackerCanSeeImpostorArrow, true, false);
-        OptionInheritAbility = BooleanOptionItem.Create(RoleInfo, 15, OptionName.EvilHackerInheritAbility, true, false);
-        OptionSkipUnoccupiedRooms = BooleanOptionItem.Create(RoleInfo, 16, OptionName.EvilHackerSkipUnoccupiedRooms, false, false);
+        OptionCanSeeDeadMark = BooleanOptionItem.Create(RoleInfo, 10, OptionName.EvilHackerCanSeeDeadMark, true, false)
+            .SetHidden(false);
+        OptionCanSeeImpostorMark = BooleanOptionItem.Create(RoleInfo, 11, OptionName.EvilHackerCanSeeImpostorMark, true, false)
+            .SetHidden(false);
+        OptionCanSeeKillFlash = BooleanOptionItem.Create(RoleInfo, 12, OptionName.EvilHackerCanSeeKillFlash, true, false)
+            .SetHidden(false);
+        OptionCanSeeMurderRoom = BooleanOptionItem.Create(RoleInfo, 13, OptionName.EvilHackerCanSeeMurderRoom, true, false, OptionCanSeeKillFlash)
+            .SetHidden(false);
+        OptionCanSeeImpostorArrow = BooleanOptionItem.Create(RoleInfo, 14, OptionName.EvilHackerCanSeeImpostorArrow, true, false)
+            .SetHidden(false);
+        OptionInheritAbility = BooleanOptionItem.Create(RoleInfo, 15, OptionName.EvilHackerInheritAbility, true, false)
+            .SetHidden(false);
+        OptionSkipUnoccupiedRooms = BooleanOptionItem.Create(RoleInfo, 16, OptionName.EvilHackerSkipUnoccupiedRooms, false, false)
+            .SetHidden(false);
     }
     /// <summary>相方がキルした部屋を通知する設定がオンなら各プレイヤーに通知を行う</summary>
     private static void HandleMurderRoomNotify(MurderInfo info)

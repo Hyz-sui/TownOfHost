@@ -77,7 +77,7 @@ namespace TownOfHost
             ValueFormat = OptionFormat.None;
             GameMode = CustomGameMode.All;
             IsHeader = false;
-            IsHidden = false;
+            IsHidden = true;
 
             // オブジェクト初期化
             Children = new();

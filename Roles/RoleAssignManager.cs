@@ -24,9 +24,11 @@ namespace TownOfHost.Roles
                 { { "%roleType%", GetString( $"CustomRoleTypes.{roleTypes}") } };
 
                 var minOption = IntegerOptionItem.Create(idStart + id + 1, "RoleTypeMin", new(0, maxCount, 1), 0, TabGroup.MainSettings, false)
+                    .SetHidden(false)
                     .SetParent(parent)
                     .SetValueFormat(OptionFormat.Players);
                 var maxOption = IntegerOptionItem.Create(idStart + id + 2, "RoleTypeMax", new(0, maxCount, 1), 0, TabGroup.MainSettings, false)
+                    .SetHidden(false)
                     .SetParent(parent)
                     .SetValueFormat(OptionFormat.Players);
 
@@ -61,6 +63,7 @@ namespace TownOfHost.Roles
         public static void SetupOptionItem()
         {
             OptionAssignMode = StringOptionItem.Create(idStart, "AssignMode", AssignModeSelections, 0, TabGroup.MainSettings, false)
+                .SetHidden(false)
                 .SetHeader(true);
 
             assignMode = () => (AssignAlgorithm)OptionAssignMode.GetInt();

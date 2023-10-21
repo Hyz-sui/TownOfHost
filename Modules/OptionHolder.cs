@@ -274,12 +274,14 @@ namespace TownOfHost
 
             // プリセット
             _ = PresetOptionItem.Create(0, TabGroup.MainSettings)
+                .SetHidden(false)
                 .SetColor(new Color32(204, 204, 0, 255))
                 .SetHeader(true)
                 .SetGameMode(CustomGameMode.All);
 
             // ゲームモード
             GameMode = StringOptionItem.Create(1, "GameMode", gameModes, 0, TabGroup.MainSettings, false)
+                .SetHidden(false)
                 .SetHeader(true)
                 .SetGameMode(CustomGameMode.All);
 
@@ -324,25 +326,35 @@ namespace TownOfHost
             });
             // Madmate Common Options
             MadmateCanFixLightsOut = BooleanOptionItem.Create(15010, "MadmateCanFixLightsOut", false, TabGroup.ImpostorRoles, false)
+                .SetHidden(false)
                 .SetHeader(true);
-            MadmateCanFixComms = BooleanOptionItem.Create(15011, "MadmateCanFixComms", false, TabGroup.ImpostorRoles, false);
+            MadmateCanFixComms = BooleanOptionItem.Create(15011, "MadmateCanFixComms", false, TabGroup.ImpostorRoles, false)
+                .SetHidden(false);
 
             ModdedMadmateCantOpenSabConsoles = BooleanOptionItem.Create(
                 15020,
                 "ModdedMadCantOpen",
                 true,
                 TabGroup.ImpostorRoles,
-                false);
+                false)
+                .SetHidden(false);
             ModdedMadmateCantOpenSabConsoles.SetWikiPage("マッド系役職の変更点#配電盤事故防止オプション");
 
-            MadmateHasImpostorVision = BooleanOptionItem.Create(15012, "MadmateHasImpostorVision", true, TabGroup.ImpostorRoles, false);
-            MadmateCanSeeKillFlash = BooleanOptionItem.Create(15015, "MadmateCanSeeKillFlash", false, TabGroup.ImpostorRoles, false);
-            MadmateCanSeeOtherVotes = BooleanOptionItem.Create(15016, "MadmateCanSeeOtherVotes", false, TabGroup.ImpostorRoles, false);
-            MadmateCanSeeDeathReason = BooleanOptionItem.Create(15017, "MadmateCanSeeDeathReason", false, TabGroup.ImpostorRoles, false);
-            MadmateRevengeCrewmate = BooleanOptionItem.Create(15018, "MadmateExileCrewmate", true, TabGroup.ImpostorRoles, false);
+            MadmateHasImpostorVision = BooleanOptionItem.Create(15012, "MadmateHasImpostorVision", true, TabGroup.ImpostorRoles, false)
+                .SetHidden(false);
+            MadmateCanSeeKillFlash = BooleanOptionItem.Create(15015, "MadmateCanSeeKillFlash", false, TabGroup.ImpostorRoles, false)
+                .SetHidden(false);
+            MadmateCanSeeOtherVotes = BooleanOptionItem.Create(15016, "MadmateCanSeeOtherVotes", false, TabGroup.ImpostorRoles, false)
+                .SetHidden(false);
+            MadmateCanSeeDeathReason = BooleanOptionItem.Create(15017, "MadmateCanSeeDeathReason", false, TabGroup.ImpostorRoles, false)
+                .SetHidden(false);
+            MadmateRevengeCrewmate = BooleanOptionItem.Create(15018, "MadmateExileCrewmate", true, TabGroup.ImpostorRoles, false)
+                .SetHidden(false);
             MadmateVentCooldown = FloatOptionItem.Create(15213, "MadmateVentCooldown", new(0f, 180f, 5f), 0f, TabGroup.ImpostorRoles, false)
+                .SetHidden(false)
                 .SetValueFormat(OptionFormat.Seconds);
             MadmateVentMaxTime = FloatOptionItem.Create(15214, "MadmateVentMaxTime", new(0f, 180f, 5f), 0f, TabGroup.ImpostorRoles, false)
+                .SetHidden(false)
                 .SetValueFormat(OptionFormat.Seconds);
 
             // Add-Ons
@@ -353,6 +365,7 @@ namespace TownOfHost
             #endregion
 
             KillFlashDuration = FloatOptionItem.Create(90000, "KillFlashDuration", new(0.1f, 0.45f, 0.05f), 0.3f, TabGroup.MainSettings, false)
+                .SetHidden(false)
                 .SetHeader(true)
                 .SetValueFormat(OptionFormat.Seconds)
                 .SetGameMode(CustomGameMode.Standard);
@@ -373,12 +386,14 @@ namespace TownOfHost
 
             // リアクターの時間制御
             SabotageTimeControl = BooleanOptionItem.Create(100800, "SabotageTimeControl", true, TabGroup.MainSettings, false)
+                .SetHidden(false)
                 .SetHeader(true)
                 .SetGameMode(CustomGameMode.Standard);
             PolusReactorTimeLimit = FloatOptionItem.Create(100801, "PolusReactorTimeLimit", new(1f, 60f, 1f), 30f, TabGroup.MainSettings, false).SetParent(SabotageTimeControl)
                 .SetValueFormat(OptionFormat.Seconds)
                 .SetGameMode(CustomGameMode.Standard);
             AirshipReactorTimeLimit = FloatOptionItem.Create(100802, "AirshipReactorTimeLimit", new(1f, 90f, 1f), 60f, TabGroup.MainSettings, false).SetParent(SabotageTimeControl)
+                .SetHidden(false)
                 .SetValueFormat(OptionFormat.Seconds)
                 .SetGameMode(CustomGameMode.Standard);
 
@@ -432,6 +447,7 @@ namespace TownOfHost
 
             //デバイス無効化
             DisableDevices = BooleanOptionItem.Create(101200, "DisableDevices", true, TabGroup.MainSettings, false)
+                .SetHidden(false)
                 .SetHeader(true)
                 .SetGameMode(CustomGameMode.Standard);
 
@@ -440,14 +456,16 @@ namespace TownOfHost
                 "CamerasTimer",
                 true,
                 TabGroup.MainSettings,
-                false).SetParent(DisableDevices).SetGameMode(CustomGameMode.Standard);
+                false).SetParent(DisableDevices).SetGameMode(CustomGameMode.Standard)
+                .SetHidden(false);
             CamerasTimer.SetWikiPage("カメラの時間制限");
             CamerasMaxTimer = IntegerOptionItem.Create(
                 101281,
                 "CamerasMaxTimer",
                 new(1, 120, 1), 10,
                 TabGroup.MainSettings,
-                false).SetParent(CamerasTimer).SetGameMode(CustomGameMode.Standard).SetValueFormat(OptionFormat.Seconds);
+                false).SetParent(CamerasTimer).SetGameMode(CustomGameMode.Standard).SetValueFormat(OptionFormat.Seconds)
+                .SetHidden(false);
 
             DisableSkeldDevices = BooleanOptionItem.Create(101210, "DisableSkeldDevices", false, TabGroup.MainSettings, false).SetParent(DisableDevices)
                 .SetGameMode(CustomGameMode.Standard);
@@ -470,10 +488,13 @@ namespace TownOfHost
             DisablePolusVital = BooleanOptionItem.Create(101233, "DisablePolusVital", false, TabGroup.MainSettings, false).SetParent(DisablePolusDevices)
                 .SetGameMode(CustomGameMode.Standard);
             DisableAirshipDevices = BooleanOptionItem.Create(101240, "DisableAirshipDevices", true, TabGroup.MainSettings, false).SetParent(DisableDevices)
+                .SetHidden(false)
                 .SetGameMode(CustomGameMode.Standard);
             DisableAirshipCockpitAdmin = BooleanOptionItem.Create(101241, "DisableAirshipCockpitAdmin", true, TabGroup.MainSettings, false).SetParent(DisableAirshipDevices)
+                .SetHidden(false)
                 .SetGameMode(CustomGameMode.Standard);
             DisableAirshipRecordsAdmin = BooleanOptionItem.Create(101242, "DisableAirshipRecordsAdmin", true, TabGroup.MainSettings, false).SetParent(DisableAirshipDevices)
+                .SetHidden(false)
                 .SetGameMode(CustomGameMode.Standard);
             DisableAirshipCamera = BooleanOptionItem.Create(101243, "DisableAirshipCamera", false, TabGroup.MainSettings, false).SetParent(DisableAirshipDevices)
                 .SetGameMode(CustomGameMode.Standard);
@@ -509,9 +530,11 @@ namespace TownOfHost
 
             // ランダムスポーン
             RandomSpawn = BooleanOptionItem.Create(101300, "RandomSpawn", true, TabGroup.MainSettings, false)
+                .SetHidden(false)
                 .SetHeader(true)
                 .SetGameMode(CustomGameMode.All);
             AirshipAdditionalSpawn = BooleanOptionItem.Create(101301, "AirshipAdditionalSpawn", false, TabGroup.MainSettings, false).SetParent(RandomSpawn)
+                .SetHidden(false)
                 .SetGameMode(CustomGameMode.All);
 
             // ボタン回数同期
@@ -569,16 +592,22 @@ namespace TownOfHost
                 .SetHeader(true)
                 .SetGameMode(CustomGameMode.All);
             DisableTaskWin = BooleanOptionItem.Create(900_001, "DisableTaskWin", false, TabGroup.MainSettings, false)
+                .SetHidden(false)
                 .SetGameMode(CustomGameMode.All);
             NoGameEnd = BooleanOptionItem.Create(900_002, "NoGameEnd", false, TabGroup.MainSettings, false)
+                .SetHidden(false)
                 .SetGameMode(CustomGameMode.All);
             GhostCanSeeOtherRoles = BooleanOptionItem.Create(900_010, "GhostCanSeeOtherRoles", true, TabGroup.MainSettings, false)
+                .SetHidden(false)
                 .SetGameMode(CustomGameMode.All);
             GhostCanSeeOtherTasks = BooleanOptionItem.Create(900_015, "GhostCanSeeOtherTasks", true, TabGroup.MainSettings, false)
+                .SetHidden(false)
                 .SetGameMode(CustomGameMode.All);
             GhostCanSeeOtherVotes = BooleanOptionItem.Create(900_011, "GhostCanSeeOtherVotes", true, TabGroup.MainSettings, false)
+                .SetHidden(false)
                 .SetGameMode(CustomGameMode.All);
             GhostCanSeeDeathReason = BooleanOptionItem.Create(900_014, "GhostCanSeeDeathReason", false, TabGroup.MainSettings, false)
+                .SetHidden(false)
                 .SetGameMode(CustomGameMode.All);
             GhostIgnoreTasks = BooleanOptionItem.Create(900_012, "GhostIgnoreTasks", false, TabGroup.MainSettings, false)
                 .SetGameMode(CustomGameMode.All);
@@ -587,30 +616,38 @@ namespace TownOfHost
 
             // プリセット対象外
             AutoDisplayLastResult = BooleanOptionItem.Create(1_000_000, "AutoDisplayLastResult", true, TabGroup.MainSettings, false)
+                .SetHidden(false)
                 .SetHeader(true)
                 .SetGameMode(CustomGameMode.All);
             AutoDisplayKillLog = BooleanOptionItem.Create(1_000_006, "AutoDisplayKillLog", true, TabGroup.MainSettings, false)
+                .SetHidden(false)
                 .SetGameMode(CustomGameMode.All);
             SuffixMode = StringOptionItem.Create(1_000_001, "SuffixMode", suffixModes, 0, TabGroup.MainSettings, true)
+                .SetHidden(false)
                 .SetGameMode(CustomGameMode.All);
             HideGameSettings = BooleanOptionItem.Create(1_000_002, "HideGameSettings", false, TabGroup.MainSettings, false)
                 .SetGameMode(CustomGameMode.All);
             ColorNameMode = BooleanOptionItem.Create(1_000_003, "ColorNameMode", false, TabGroup.MainSettings, false)
                 .SetGameMode(CustomGameMode.All);
             ChangeNameToRoleInfo = BooleanOptionItem.Create(1_000_004, "ChangeNameToRoleInfo", false, TabGroup.MainSettings, false)
+                .SetHidden(false)
                 .SetGameMode(CustomGameMode.All);
             RoleAssigningAlgorithm = StringOptionItem.Create(1_000_005, "RoleAssigningAlgorithm", RoleAssigningAlgorithms, 0, TabGroup.MainSettings, true)
+                .SetHidden(false)
                 .SetGameMode(CustomGameMode.All)
                 .RegisterUpdateValueEvent(
                     (object obj, OptionItem.UpdateValueEventArgs args) => IRandom.SetInstanceById(args.CurrentValue)
                 );
 
             ApplyDenyNameList = BooleanOptionItem.Create(1_000_100, "ApplyDenyNameList", true, TabGroup.MainSettings, true)
+                .SetHidden(false)
                 .SetHeader(true)
                 .SetGameMode(CustomGameMode.All);
             KickPlayerFriendCodeNotExist = BooleanOptionItem.Create(1_000_101, "KickPlayerFriendCodeNotExist", false, TabGroup.MainSettings, true)
+                .SetHidden(false)
                 .SetGameMode(CustomGameMode.All);
             ApplyBanList = BooleanOptionItem.Create(1_000_110, "ApplyBanList", true, TabGroup.MainSettings, true)
+                .SetHidden(false)
                 .SetGameMode(CustomGameMode.All);
 
             DebugModeManager.SetupCustomOption();
@@ -638,6 +675,13 @@ namespace TownOfHost
                 .SetValueFormat(OptionFormat.Players)
                 .SetGameMode(customGameMode);
 
+            // 使えるようにする予定の役職
+            if (role is CustomRoles.EvilHacker or CustomRoles.MadSnitch or CustomRoles.Sheriff)
+            {
+                spawnOption.SetHidden(false);
+                countOption.SetHidden(false);
+            }
+
             CustomRoleSpawnChances.Add(role, spawnOption);
             CustomRoleCounts.Add(role, countOption);
         }
@@ -657,15 +701,19 @@ namespace TownOfHost
                 this.Role = role;
                 Dictionary<string, string> replacementDic = new() { { "%role%", Utils.GetRoleName(role) } };
                 doOverride = BooleanOptionItem.Create(idStart++, "doOverride", false, tab, false).SetParent(CustomRoleSpawnChances[role])
+                    .SetHidden(false)
                     .SetValueFormat(OptionFormat.None);
                 doOverride.ReplacementDictionary = replacementDic;
                 assignCommonTasks = BooleanOptionItem.Create(idStart++, "assignCommonTasks", true, tab, false).SetParent(doOverride)
+                    .SetHidden(false)
                     .SetValueFormat(OptionFormat.None);
                 assignCommonTasks.ReplacementDictionary = replacementDic;
                 numLongTasks = IntegerOptionItem.Create(idStart++, "roleLongTasksNum", new(0, 99, 1), 3, tab, false).SetParent(doOverride)
+                    .SetHidden(false)
                     .SetValueFormat(OptionFormat.Pieces);
                 numLongTasks.ReplacementDictionary = replacementDic;
                 numShortTasks = IntegerOptionItem.Create(idStart++, "roleShortTasksNum", new(0, 99, 1), 3, tab, false).SetParent(doOverride)
+                    .SetHidden(false)
                     .SetValueFormat(OptionFormat.Pieces);
                 numShortTasks.ReplacementDictionary = replacementDic;
 
