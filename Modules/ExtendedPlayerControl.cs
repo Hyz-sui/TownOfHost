@@ -599,5 +599,7 @@ namespace TownOfHost
             }
             return !state.IsDead;
         }
+
+        public const MurderResultFlags SuccessFlags = MurderResultFlags.Succeeded | MurderResultFlags.DecisionByHost;
     }
 }
