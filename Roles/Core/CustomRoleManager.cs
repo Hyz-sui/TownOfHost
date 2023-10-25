@@ -49,7 +49,11 @@ public static class CustomRoleManager
         appearanceKiller.ResetKillCooldown();
 
         // 無効なキルをブロックする処理 必ず最初に実行する
-        if (!CheckMurderPatch.CheckForInvalidMurdering(info)) return;
+        if (!CheckMurderPatch.CheckForInvalidMurdering(info))
+        {
+            appearanceKiller.RpcMurderPlayer(appearanceTarget, false);
+            return;
+        }
 
         var killerRole = attemptKiller.GetRoleClass();
         var targetRole = attemptTarget.GetRoleClass();
@@ -62,7 +66,11 @@ public static class CustomRoleManager
                 // ターゲットのキルチェック処理実行
                 if (targetRole != null)
                 {
-                    if (!targetRole.OnCheckMurderAsTarget(info)) return;
+                    if (!targetRole.OnCheckMurderAsTarget(info))
+                    {
+                        appearanceKiller.RpcMurderPlayer(appearanceTarget, false);
+                        return;
+                    }
                 }
             }
             // キラーのキルチェック処理実行
@@ -80,6 +88,7 @@ public static class CustomRoleManager
         {
             if (!info.CanKill) Logger.Info($"{appearanceTarget.GetNameWithRole()}をキル出来ない。", "CheckMurder");
             if (!info.DoKill) Logger.Info($"{appearanceKiller.GetNameWithRole()}はキルしない。", "CheckMurder");
+            appearanceKiller.RpcMurderPlayer(appearanceTarget, false);
         }
     }
     /// <summary>
