@@ -150,8 +150,13 @@ namespace TownOfHost
         {
             //キルフラッシュ(ブラックアウト+リアクターフラッシュ)の処理
             bool ReactorCheck = false; //リアクターフラッシュの確認
-            if (Main.NormalOptions.MapId == 2) ReactorCheck = IsActive(SystemTypes.Laboratory);
-            else ReactorCheck = IsActive(SystemTypes.Reactor);
+            var systemtypes = (MapNames)Main.NormalOptions.MapId switch
+            {
+                MapNames.Polus => SystemTypes.Laboratory,
+                MapNames.Airship => SystemTypes.HeliSabotage,
+                _ => SystemTypes.Reactor,
+            };
+            ReactorCheck = IsActive(systemtypes);
 
             var Duration = Options.KillFlashDuration.GetFloat();
             if (ReactorCheck) Duration += 0.2f; //リアクター中はブラックアウトを長くする

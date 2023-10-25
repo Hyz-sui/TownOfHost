@@ -353,8 +353,12 @@ namespace TownOfHost
         {
             if (pc == null || !AmongUsClient.Instance.AmHost || pc.AmOwner) return;
 
-            var systemtypes = SystemTypes.Reactor;
-            if (Main.NormalOptions.MapId == 2) systemtypes = SystemTypes.Laboratory;
+            var systemtypes = (MapNames)Main.NormalOptions.MapId switch
+            {
+                MapNames.Polus => SystemTypes.Laboratory,
+                MapNames.Airship => SystemTypes.HeliSabotage,
+                _ => SystemTypes.Reactor,
+            };
 
             _ = new LateTask(() =>
             {
@@ -378,8 +382,12 @@ namespace TownOfHost
             if (pc == null) return;
             int clientId = pc.GetClientId();
             // Logger.Info($"{pc}", "ReactorFlash");
-            var systemtypes = SystemTypes.Reactor;
-            if (Main.NormalOptions.MapId == 2) systemtypes = SystemTypes.Laboratory;
+            var systemtypes = (MapNames)Main.NormalOptions.MapId switch
+            {
+                MapNames.Polus => SystemTypes.Laboratory,
+                MapNames.Airship => SystemTypes.HeliSabotage,
+                _ => SystemTypes.Reactor,
+            };
             float FlashDuration = Options.KillFlashDuration.GetFloat();
 
             pc.RpcDesyncRepairSystem(systemtypes, 128);
