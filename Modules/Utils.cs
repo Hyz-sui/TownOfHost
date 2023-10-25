@@ -44,8 +44,7 @@ namespace TownOfHost
                         if (mapId == 2) return false;
                         else if (mapId == 4)
                         {
-                            var HeliSabotageSystem = ShipStatus.Instance.Systems[type].Cast<HeliSabotageSystem>();
-                            return HeliSabotageSystem != null && HeliSabotageSystem.IsActive;
+                            return IsActive(SystemTypes.HeliSabotage);
                         }
                         else
                         {
@@ -78,6 +77,10 @@ namespace TownOfHost
                             return HudOverrideSystemType != null && HudOverrideSystemType.IsActive;
                         }
                     }
+                case SystemTypes.HeliSabotage:
+                    var HeliSabotageSystem = ShipStatus.Instance.Systems[type].Cast<HeliSabotageSystem>();
+                    return HeliSabotageSystem != null && HeliSabotageSystem.IsActive;
+
                 default:
                     return false;
             }
