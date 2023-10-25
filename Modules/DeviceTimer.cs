@@ -14,7 +14,7 @@ namespace TownOfHost.Modules
             private set => camerasRanOut = value;
         }
         private static bool camerasRanOut;
-        private static int NumPlayersWatchingCamera => playersWatchingCamera.Count;
+        private static int NumPlayersWatchingCamera => ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Security, out var systemType) ? systemType.TryCast<SecurityCameraSystemType>(out var cameraSystem) ? cameraSystem.PlayersUsing.Count : 0 : 0;
         private static HashSet<byte> playersWatchingCamera;
         private static bool isEnabled;
         private static float camerasRemaining;
