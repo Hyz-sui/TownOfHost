@@ -73,6 +73,7 @@ public sealed class SabotageMaster : RoleBase
     }
     public override bool OnSabotage(PlayerControl player, SystemTypes systemType, byte amount)
     {
+        /*
         if (!Is(player)) return true;
         var shipStatus = ShipStatus.Instance;
         if (SkillLimit > 0 && UsedSkillCount >= SkillLimit) return true;
@@ -175,6 +176,7 @@ public sealed class SabotageMaster : RoleBase
                 DoorsProgressing = false;
                 break;
         }
+        */
         return true;
     }
 }
