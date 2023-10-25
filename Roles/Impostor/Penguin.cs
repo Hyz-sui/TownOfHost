@@ -210,7 +210,7 @@ class Penguin : RoleBase, IImpostor
                     {
                         var sId = abductVictim.NetTransform.lastSequenceId + 5;
                         abductVictim.NetTransform.SnapTo(Player.transform.position, (ushort)sId);
-                        Player.MurderPlayer(abductVictim);
+                        Player.MurderPlayer(abductVictim, ExtendedPlayerControl.SuccessFlags);
 
                         var sender = CustomRpcSender.Create("PenguinMurder");
                         {
@@ -223,6 +223,7 @@ class Penguin : RoleBase, IImpostor
                             sender.AutoStartRpc(Player.NetId, (byte)RpcCalls.MurderPlayer);
                             {
                                 sender.WriteNetObject(abductVictim);
+                                sender.Write((int)ExtendedPlayerControl.SuccessFlags);
                             }
                             sender.EndRpc();
                         }

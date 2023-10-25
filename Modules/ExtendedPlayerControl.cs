@@ -179,7 +179,7 @@ namespace TownOfHost
             if (killer.AmOwner)
             {
                 killer.ProtectPlayer(target, colorId);
-                killer.MurderPlayer(target);
+                killer.MurderPlayer(target, SuccessFlags);
             }
             // Other Clients
             if (killer.PlayerId != 0)
@@ -192,6 +192,7 @@ namespace TownOfHost
                     .EndRpc();
                 sender.StartRpc(killer.NetId, (byte)RpcCalls.MurderPlayer)
                     .WriteNetObject((InnerNetObject)target)
+                    .Write((int)SuccessFlags)
                     .EndRpc();
                 sender.EndMessage();
                 sender.SendMessage();
@@ -219,12 +220,13 @@ namespace TownOfHost
             if (target == null) target = killer;
             if (killer.AmOwner)
             {
-                killer.MurderPlayer(target);
+                killer.MurderPlayer(target, SuccessFlags);
             }
             else
             {
                 MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable, killer.GetClientId());
                 messageWriter.WriteNetObject(target);
+                messageWriter.Write((int)SuccessFlags);
                 AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
             }
         }
@@ -448,10 +450,11 @@ namespace TownOfHost
             if (target == null) target = killer;
             if (AmongUsClient.Instance.AmClient)
             {
-                killer.MurderPlayer(target);
+                killer.MurderPlayer(target, SuccessFlags);
             }
             MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.None, -1);
             messageWriter.WriteNetObject(target);
+            messageWriter.Write((int)SuccessFlags);
             AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
             Utils.NotifyRoles();
         }

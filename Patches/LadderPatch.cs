@@ -51,10 +51,11 @@ namespace TownOfHost
                         .EndRpc();
                         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.MurderPlayer)
                                 .WriteNetObject(player)
+                                .Write((int)ExtendedPlayerControl.SuccessFlags)
                         .EndRpc();
                         sender.SendMessage();
                         player.NetTransform.SnapTo(targetPos);
-                        player.MurderPlayer(player);
+                        player.MurderPlayer(player, ExtendedPlayerControl.SuccessFlags);
                         var state = PlayerState.GetByPlayerId(player.PlayerId);
                         state.DeathReason = CustomDeathReason.Fall;
                         state.SetDead();
