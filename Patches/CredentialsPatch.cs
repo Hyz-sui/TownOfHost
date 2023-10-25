@@ -32,6 +32,7 @@ namespace TownOfHost
                 if (GameStates.IsLobby)
                 {
                     sb.AppendLine().Append("TOH: ").Append(Main.PluginVersion);
+                    sb.AppendLine().Append("<color=#f90><size=130%>これはエアシップ向けのアルファ版です!</size></color>\nFungle含むその他マップでの動作は一切検証されていません");
                 }
 
                 if (Options.NoGameEnd.GetBool()) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("NoGameEnd")));
