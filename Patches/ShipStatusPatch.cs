@@ -39,8 +39,6 @@ namespace TownOfHost
     {
         public static void Postfix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
         {
-            var newReader = MessageReader.Get(reader);
-            var amount = newReader.ReadByte();
             RepairSystemPatch.Postfix();
         }
     }
