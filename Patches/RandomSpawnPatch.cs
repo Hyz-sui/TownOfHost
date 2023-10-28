@@ -30,9 +30,10 @@ namespace TownOfHost
                     }
                     if (player.Is(CustomRoles.GM)) return; //GMは対象外に
 
+                    Logger.Info($"{player.GetNameWithRole()}", "SnapTo");
                     NumOfTP[player.PlayerId]++;
 
-                    if (NumOfTP[player.PlayerId] == 1)
+                    if (!player.AmOwner && NumOfTP[player.PlayerId] == 1)
                     {
                         if (Main.NormalOptions.MapId != 4) return; //マップがエアシップじゃなかったらreturn
                         if (player.Is(CustomRoles.Penguin))
@@ -50,11 +51,7 @@ namespace TownOfHost
         }
         public static void TP(CustomNetworkTransform nt, Vector2 location)
         {
-            if (AmongUsClient.Instance.AmHost) nt.SnapTo(location);
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(nt.NetId, (byte)RpcCalls.SnapTo, SendOption.None);
-            NetHelpers.WriteVector2(location, writer);
-            writer.Write(nt.lastSequenceId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            nt.RpcSnapTo(location);
         }
 
         public abstract class SpawnMap
