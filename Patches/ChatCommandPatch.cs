@@ -131,7 +131,6 @@ namespace TownOfHost
                                 cancelVal = "/dis";
                                 break;
                         }
-                        ShipStatus.Instance.RpcRepairSystem(SystemTypes.Admin, 0);
                         break;
 
                     case "/h":
@@ -207,9 +206,15 @@ namespace TownOfHost
                     case "/m":
                     case "/myrole":
                         canceled = true;
-                        var role = PlayerControl.LocalPlayer.GetCustomRole();
                         if (GameStates.IsInGame)
-                            HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, GetString(role.ToString()) + PlayerControl.LocalPlayer.GetRoleInfo(true));
+                        {
+                            var role = PlayerControl.LocalPlayer.GetCustomRole();
+                            HudManager.Instance.Chat.AddChat(
+                                PlayerControl.LocalPlayer,
+                                role.GetRoleInfo()?.Description?.FullFormatHelp ??
+                                // roleInfoがない役職
+                                GetString(role.ToString()) + PlayerControl.LocalPlayer.GetRoleInfo(true));
+                        }
                         break;
 
                     case "/t":
@@ -312,7 +317,16 @@ namespace TownOfHost
 
                 if (String.Compare(role, roleName, true) == 0 || String.Compare(role, roleShort, true) == 0)
                 {
-                    Utils.SendMessage(GetString(roleName) + GetString($"{roleName}InfoLong"));
+                    var roleInfo = r.Key.GetRoleInfo();
+                    if (roleInfo != null && roleInfo.Description != null)
+                    {
+                        Utils.SendMessage(roleInfo.Description.FullFormatHelp, removeTags: false);
+                    }
+                    // RoleInfoがない役職は従来の処理
+                    else
+                    {
+                        Utils.SendMessage(GetString(roleName) + GetString($"{roleName}InfoLong"));
+                    }
                     return;
                 }
 
@@ -392,9 +406,19 @@ namespace TownOfHost
 
                 case "/m":
                 case "/myrole":
-                    var role = player.GetCustomRole();
                     if (GameStates.IsInGame)
-                        Utils.SendMessage(GetString(role.ToString()) + player.GetRoleInfo(true), player.PlayerId);
+                    {
+                        var role = player.GetCustomRole();
+                        if (role.GetRoleInfo()?.Description is { } description)
+                        {
+                            Utils.SendMessage(description.FullFormatHelp, player.PlayerId, removeTags: false);
+                        }
+                        // roleInfoがない役職
+                        else
+                        {
+                            Utils.SendMessage(GetString(role.ToString()) + player.GetRoleInfo(true), player.PlayerId);
+                        }
+                    }
                     break;
 
                 case "/t":
@@ -473,7 +497,7 @@ namespace TownOfHost
             if (AmongUsClient.Instance.AmClient && DestroyableSingleton<HudManager>.Instance)
                 DestroyableSingleton<HudManager>.Instance.Chat.AddChat(__instance, chatText);
             if (chatText.Contains("who", StringComparison.OrdinalIgnoreCase))
-                DestroyableSingleton<Telemetry>.Instance.SendWho();
+                DestroyableSingleton<UnityTelemetry>.Instance.SendWho();
             MessageWriter messageWriter = AmongUsClient.Instance.StartRpc(__instance.NetId, (byte)RpcCalls.SendChat, SendOption.None);
             messageWriter.Write(chatText);
             messageWriter.EndMessage();
