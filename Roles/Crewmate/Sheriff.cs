@@ -75,11 +75,9 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
     }
     public static void SetUpNeutralOptions(int idOffset)
     {
-        foreach (var neutral in CustomRolesHelper.AllRoles.Where(x => x.IsNeutral()).ToArray())
+        foreach (var neutral in CustomRolesHelper.AllStandardRoles.Where(x => x.IsNeutral()).ToArray())
         {
-            if (neutral is CustomRoles.SchrodingerCat
-                        or CustomRoles.HASFox
-                        or CustomRoles.HASTroll) continue;
+            if (neutral is CustomRoles.SchrodingerCat) continue;
             SetUpKillTargetOption(neutral, idOffset, true, CanKillNeutrals);
             idOffset++;
         }
@@ -119,9 +117,6 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
         var playerId = Player.PlayerId;
         CurrentKillCooldown = KillCooldown.GetFloat();
 
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
-
         ShotLimit = ShotLimitOpt.GetInt();
         Logger.Info($"{Utils.GetPlayerById(playerId)?.GetNameWithRole()} : 残り{ShotLimit}発", "Sheriff");
     }
@@ -141,7 +136,8 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
         => Player.IsAlive()
         && (CanKillAllAlive.GetBool() || GameStates.AlreadyDied)
         && ShotLimit > 0;
-    public override bool OnInvokeSabotage(SystemTypes systemType) => false;
+    public bool CanUseImpostorVentButton() => false;
+    public bool CanUseSabotageButton() => false;
     public override void ApplyGameOptions(IGameOptions opt)
     {
         opt.SetVision(false);

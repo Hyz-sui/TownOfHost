@@ -13,13 +13,20 @@ namespace TownOfHost.Patches
                 __instance.SetFilter((int)HauntMenuMinigame.HauntFilters.Crewmate);
             }
         }
+    }
 
-        [HarmonyPatch(typeof(HauntMenuMinigame), nameof(HauntMenuMinigame.SetFilterText)), HarmonyPrefix]
-        public static bool SetFilterTextPrefix(HauntMenuMinigame __instance)
+    [HarmonyPatch(typeof(HauntMenuMinigame), nameof(HauntMenuMinigame.SetFilterText))]
+    public static class HauntMenuMinigameSetFilterTextPatch
+    {
+        public static bool Prefix(HauntMenuMinigame __instance)
         {
-            __instance.FilterText.text = __instance.HauntTarget.GetTrueRoleName();
-
-            return false;
+            if (__instance.HauntTarget != null && Options.GhostCanSeeOtherRoles.GetBool())
+            {
+                // 役職表示をカスタムロール名で上書き
+                __instance.FilterText.text = Utils.GetDisplayRoleName(PlayerControl.LocalPlayer, __instance.HauntTarget);
+                return false;
+            }
+            return true;
         }
     }
 }

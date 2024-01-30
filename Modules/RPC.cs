@@ -12,9 +12,9 @@ namespace TownOfHost
 {
     public enum CustomRPC
     {
-        VersionCheck = 60,
-        RequestRetryVersionCheck = 61,
-        SyncCustomSettings = 80,
+        VersionCheck = 80,
+        RequestRetryVersionCheck = 81,
+        SyncCustomSettings = 100,
         SetDeathReason,
         EndGame,
         PlaySound,
@@ -123,7 +123,7 @@ namespace TownOfHost
                     foreach (var co in OptionItem.AllOptions)
                     {
                         //すべてのカスタムオプションについてインデックス値で受信
-                        co.SetValue(reader.ReadInt32());
+                        co.SetValue(reader.ReadPackedInt32());
                     }
                     break;
                 case CustomRPC.SetDeathReason:
@@ -174,11 +174,11 @@ namespace TownOfHost
         public static void SyncCustomSettingsRPC()
         {
             if (!AmongUsClient.Instance.AmHost) return;
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, 80, Hazel.SendOption.Reliable, -1);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncCustomSettings, SendOption.Reliable, -1);
             foreach (var co in OptionItem.AllOptions)
             {
                 //すべてのカスタムオプションについてインデックス値で送信
-                writer.Write(co.GetValue());
+                writer.WritePacked(co.GetValue());
             }
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }

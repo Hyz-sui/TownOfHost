@@ -1,7 +1,7 @@
 using System;
-using System.Linq;
 using UnityEngine;
 using AmongUs.GameOptions;
+using TownOfHost.Roles.Core.Descriptions;
 
 using static TownOfHost.Options;
 
@@ -23,25 +23,16 @@ public class SimpleRoleInfo
     public bool IsEnable = false;
     public OptionCreatorDelegate OptionCreator;
     public string ChatCommand;
-    public bool RequireResetCam;
+    /// <summary>本人視点のみインポスターに見える役職</summary>
+    public bool IsDesyncImpostor;
     private Func<AudioClip> introSound;
     public AudioClip IntroSound => introSound?.Invoke();
     private Func<bool> canMakeMadmate;
     public bool CanMakeMadmate => canMakeMadmate?.Invoke() == true;
     public readonly string WikiPage = null;
-    /// <summary>
-    /// 人数設定の最小人数, 最大人数, 一単位数
-    /// </summary>
-    public IntegerValueRule AssignCountRule;
-    /// <summary>
-    /// 人数設定に対し何人単位でアサインするか
-    /// 役職の抽選回数 = 設定人数 / AssignUnitCount
-    /// </summary>
-    public int AssignUnitCount => AssignCountRule?.Step ?? 1;
-    /// <summary>
-    /// 実際にアサインされる役職の内訳
-    /// </summary>
-    public CustomRoles[] AssignUnitRoles;
+    public RoleAssignInfo AssignInfo { get; }
+    /// <summary>役職の説明関係</summary>
+    public RoleDescription Description { get; private set; }
 
     private SimpleRoleInfo(
         Type classType,
@@ -54,13 +45,12 @@ public class SimpleRoleInfo
         OptionCreatorDelegate optionCreator,
         string chatCommand,
         string colorCode,
-        bool requireResetCam,
+        bool isDesyncImpostor,
         TabGroup tab,
         Func<AudioClip> introSound,
         Func<bool> canMakeMadmate,
         string wikiPage,
-        IntegerValueRule assignCountRule,
-        CustomRoles[] assignUnitRoles
+        RoleAssignInfo assignInfo
     )
     {
         ClassType = classType;
@@ -71,13 +61,12 @@ public class SimpleRoleInfo
         CountType = countType;
         ConfigId = configId;
         OptionCreator = optionCreator;
-        RequireResetCam = requireResetCam;
+        IsDesyncImpostor = isDesyncImpostor;
         this.introSound = introSound;
         this.canMakeMadmate = canMakeMadmate;
         ChatCommand = chatCommand;
         WikiPage = wikiPage;
-        AssignCountRule = assignCountRule;
-        AssignUnitRoles = assignUnitRoles;
+        AssignInfo = assignInfo;
 
         if (colorCode == "")
             colorCode = customRoleType switch
@@ -113,51 +102,47 @@ public class SimpleRoleInfo
         OptionCreatorDelegate optionCreator,
         string chatCommand,
         string colorCode = "",
-        bool requireResetCam = false,
+        bool isDesyncImpostor = false,
         TabGroup tab = TabGroup.MainSettings,
         Func<AudioClip> introSound = null,
         Func<bool> canMakeMadmate = null,
         CountTypes? countType = null,
         string wikiPage = null,
-        IntegerValueRule assignCountRule = null,
-        CustomRoles[] assignUnitRoles = null
+        RoleAssignInfo assignInfo = null
     )
     {
         countType ??= customRoleType == CustomRoleTypes.Impostor ?
             CountTypes.Impostor :
             CountTypes.Crew;
-        assignCountRule ??= customRoleType == CustomRoleTypes.Impostor ?
-            new(1, 3, 1) :
-            new(1, 15, 1);
-        assignUnitRoles ??= Enumerable.Repeat(roleName, assignCountRule.Step).ToArray();
+        assignInfo ??= new RoleAssignInfo(roleName, customRoleType);
 
-        return
-            new(
-                classType,
-                createInstance,
-                roleName,
-                baseRoleType,
-                customRoleType,
-                countType.Value,
-                configId,
-                optionCreator,
-                chatCommand,
-                colorCode,
-                requireResetCam,
-                tab,
-                introSound,
-                canMakeMadmate,
-                wikiPage,
-                assignCountRule,
-                assignUnitRoles
-            );
+        var roleInfo = new SimpleRoleInfo(
+            classType,
+            createInstance,
+            roleName,
+            baseRoleType,
+            customRoleType,
+            countType.Value,
+            configId,
+            optionCreator,
+            chatCommand,
+            colorCode,
+            isDesyncImpostor,
+            tab,
+            introSound,
+            canMakeMadmate,
+            wikiPage,
+            assignInfo);
+        roleInfo.Description = new SingleRoleDescription(roleInfo);
+        return roleInfo;
     }
     public static SimpleRoleInfo CreateForVanilla(
         Type classType,
         Func<PlayerControl, RoleBase> createInstance,
         RoleTypes baseRoleType,
         string colorCode = "",
-        bool canMakeMadmate = false
+        bool canMakeMadmate = false,
+        RoleAssignInfo assignInfo = null
     )
     {
         CustomRoles roleName;
@@ -193,26 +178,25 @@ public class SimpleRoleInfo
                 customRoleType = CustomRoleTypes.Crewmate;
                 break;
         }
-        return
-            new(
-                classType,
-                createInstance,
-                roleName,
-                () => baseRoleType,
-                customRoleType,
-                countType,
-                -1,
-                null,
-                null,
-                colorCode,
-                false,
-                TabGroup.MainSettings,
-                null,
-                () => canMakeMadmate,
-                null,
-                new(1, 15, 1),
-                new CustomRoles[1] { roleName }
-            );
+        var roleInfo = new SimpleRoleInfo(
+            classType,
+            createInstance,
+            roleName,
+            () => baseRoleType,
+            customRoleType,
+            countType,
+            -1,
+            null,
+            null,
+            colorCode,
+            false,
+            TabGroup.MainSettings,
+            null,
+            () => canMakeMadmate,
+            null,
+            assignInfo ?? new(roleName, customRoleType));
+        roleInfo.Description = new VanillaRoleDescription(roleInfo, baseRoleType);
+        return roleInfo;
     }
     public delegate void OptionCreatorDelegate();
 }

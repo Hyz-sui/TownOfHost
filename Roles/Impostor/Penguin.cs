@@ -223,6 +223,7 @@ class Penguin : RoleBase, IImpostor
                             sender.AutoStartRpc(Player.NetId, (byte)RpcCalls.MurderPlayer);
                             {
                                 sender.WriteNetObject(abductVictim);
+                                sender.Write((int)ExtendedPlayerControl.SucceededFlags);
                             }
                             sender.EndRpc();
                         }
@@ -237,14 +238,14 @@ class Penguin : RoleBase, IImpostor
                 var position = Player.transform.position;
                 if (Player.PlayerId != 0)
                 {
-                    RandomSpawn.TP(AbductVictim.NetTransform, position);
+                    AbductVictim.RpcSnapTo(position);
                 }
                 else
                 {
                     _ = new LateTask(() =>
                     {
                         if (AbductVictim != null)
-                            RandomSpawn.TP(AbductVictim.NetTransform, position);
+                            AbductVictim.RpcSnapTo(position);
                     }
                     , 0.25f, "");
                 }

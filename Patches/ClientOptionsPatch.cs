@@ -16,7 +16,6 @@ namespace TownOfHost
         private static ClientActionItem ShowLobbySummary;
         private static ClientActionItem CopyGameCodeOnCreateLobby;
         private static ClientActionItem HauntMenuFocusCrewmate;
-        private static ClientOptionItem PutBackWinTextPosition;
 
         public static void Postfix(OptionsMenuBehaviour __instance)
         {
@@ -54,10 +53,6 @@ namespace TownOfHost
             if (HauntMenuFocusCrewmate == null || HauntMenuFocusCrewmate.ToggleButton == null)
             {
                 HauntMenuFocusCrewmate = ClientOptionItem.Create("HauntFocusCrew", Main.HauntMenuFocusCrewmate, __instance);
-            }
-            if (PutBackWinTextPosition == null || PutBackWinTextPosition.ToggleButton == null)
-            {
-                PutBackWinTextPosition = ClientOptionItem.Create("PutBackWinTextPosition", Main.PutBackWinTextPosition, __instance);
             }
             if (UnloadMod == null || UnloadMod.ToggleButton == null)
             {
