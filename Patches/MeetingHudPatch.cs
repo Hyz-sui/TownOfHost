@@ -196,7 +196,8 @@ public static class MeetingHudPatch
             if (AmongUsClient.Instance.AmHost)
             {
                 AntiBlackout.SetIsDead();
-                Main.AllPlayerControls.Do(pc => RandomSpawn.CustomNetworkTransformPatch.NumOfTP[pc.PlayerId] = 0);
+                Main.AllPlayerControls.Do(pc => RandomSpawn.FirstTP[pc.PlayerId] = true);
+                RandomSpawn.FastSpawnPosition.Clear();
             }
             // MeetingVoteManagerを通さずに会議が終了した場合の後処理
             MeetingVoteManager.Instance?.Destroy();
