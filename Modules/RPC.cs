@@ -19,26 +19,12 @@ namespace TownOfHost
         EndGame,
         PlaySound,
         SetCustomRole,
-        SetBountyTarget,
-        WitchSync,
-        SetSheriffShotLimit,
-        SetDousedPlayer,
         SetNameColorData,
-        SniperSync,
         SetLoversPlayers,
-        SetExecutionerTarget,
-        SetCurrentDousingTarget,
-        SetEvilTrackerTarget,
         SetRealKiller,
-        UpdateCamerasUsable,
         ChangeMainRole,
-        SyncPuppet,
-        SetSchrodingerCatTeam,
-        StealthDarken,
-        EvilHackerCreateMurderNotify,
-        PenguinSync,
-        MareSync,
-        SyncPlagueDoctor,
+        UpdateCamerasUsable,
+        CustomRoleSync,
     }
     public enum Sounds
     {
@@ -162,8 +148,8 @@ namespace TownOfHost
                 case CustomRPC.ChangeMainRole:
                     PlayerState.GetByPlayerId(reader.ReadByte()).ChangeMainRole((CustomRoles)reader.ReadPackedInt32());
                     break;
-                default:
-                    CustomRoleManager.DispatchRpc(reader, rpcType);
+                case CustomRPC.CustomRoleSync:
+                    CustomRoleManager.DispatchRpc(reader);
                     break;
             }
         }
