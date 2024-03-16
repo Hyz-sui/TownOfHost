@@ -119,6 +119,7 @@ public sealed class EvilHacker : RoleBase, IImpostor, IKillFlashSeeable
         var builder = new StringBuilder(512);
 
         // 送信するメッセージを生成
+        var previous = -1;
         foreach (var admin in admins)
         {
             var entry = admin.Value;
@@ -131,6 +132,24 @@ public sealed class EvilHacker : RoleBase, IImpostor, IKillFlashSeeable
             {
                 builder.Append(ImpostorMark);
             }
+            // 色分けは無人をスキップしない場合のみ
+            if (!skipUnoccupiedRooms)
+            {
+                switch (previous, entry.TotalPlayers)
+                {
+                    // 1部屋目で今の部屋が無人の場合
+                    case (-1, 0):
+                    // 前の部屋が有人で今の部屋が無人の場合
+                    case ( > 0, 0):
+                        // グレー
+                        builder.Append(GrayTag);
+                        break;
+                    // 前の部屋が無人で今の部屋が有人の場合
+                    case (0, > 0):
+                        builder.Append(ColorCloseTag);
+                        break;
+                }
+            }
             // 部屋名と合計プレイヤー数を表記
             builder.Append(DestroyableSingleton<TranslationController>.Instance.GetString(entry.Room));
             builder.Append(": ");
@@ -142,6 +161,7 @@ public sealed class EvilHacker : RoleBase, IImpostor, IKillFlashSeeable
                 builder.Append('×').Append(entry.NumDeadBodies).Append(')');
             }
             builder.Append('\n');
+            previous = entry.TotalPlayers;
         }
 
         // 送信
@@ -171,16 +191,13 @@ public sealed class EvilHacker : RoleBase, IImpostor, IKillFlashSeeable
         CreateMurderNotify(room);
         if (AmongUsClient.Instance.AmHost)
         {
-            using var sender = CreateSender(CustomRPC.EvilHackerCreateMurderNotify);
+            using var sender = CreateSender();
             sender.Writer.Write((byte)room);
         }
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType == CustomRPC.EvilHackerCreateMurderNotify)
-        {
-            CreateMurderNotify((SystemTypes)reader.ReadByte());
-        }
+        CreateMurderNotify((SystemTypes)reader.ReadByte());
     }
     /// <summary>
     /// 名前の下にキル発生通知を出す
@@ -272,6 +289,8 @@ public sealed class EvilHacker : RoleBase, IImpostor, IKillFlashSeeable
     private static readonly string ImpostorMark = "★".Color(Palette.ImpostorRed);
     /// <summary>相方がキルしたときに名前の下に通知を表示する長さ</summary>
     private static readonly TimeSpan NotifyDuration = TimeSpan.FromSeconds(10);
+    private const string GrayTag = "<color=#777>";
+    private const string ColorCloseTag = "</color>";
 
     private readonly struct MurderNotify
     {
