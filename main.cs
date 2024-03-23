@@ -54,13 +54,13 @@ namespace TownOfHost
         // ==========
         //Sorry for many Japanese comments.
 
-        public static readonly string ForkVersion = "2024.3.5.1";
+        public static readonly string ForkVersion = "2024.3.5.2";
         public static readonly Version ParsedForkVersion = Version.Parse(ForkVersion);
 
         public const string PluginGuid = "com.emptybottle.townofhost";
-        public const string PluginVersion = "5.1.5";
+        public const string PluginVersion = "5.1.6";
         // サポートされている最低のAmongUsバージョン
-        public static readonly string LowestSupportedVersion = "2023.10.24";
+        public static readonly string LowestSupportedVersion = "2024.3.5";
         // このバージョンのみで公開ルームを無効にする場合
         public static readonly bool IsPublicAvailableOnThisVersion = false;
         public Harmony Harmony { get; } = new Harmony(PluginGuid);
