@@ -13,6 +13,7 @@
 "EvilHackerInheritAbility","InheritAbility","死亡時､生存インポスターに能力を引き継ぐ","","","","",""
 "EvilHackerSkipUnoccupiedRooms","EvilHackerSkipUnoccupiedRooms","アドミン情報で誰もいない部屋を省略する","","","","",""
 "DiscordResult","Discord Result","Discordに試合結果を送信","","","","",""
+"DiscordHistory","Discord History","Discordにゲーム記録を送信","","","","",""
 "ShowLobbySummary","Show Lobby Summary","ロビーで前の試合の結果を表示","","","","",""
 "CopyCode","Copy Code","部屋建て時にコードを自動でコピー","","","","",""
 "HauntFocusCrew","Haunt Focus crew","憑依開始時に生存者にフォーカス","","","","",""
