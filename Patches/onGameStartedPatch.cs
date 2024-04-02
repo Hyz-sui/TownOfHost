@@ -11,6 +11,8 @@ using TownOfHost.Roles;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.AddOns.Common;
 using static TownOfHost.Translator;
+using TownOfHost.Modules.GameEventHistory;
+using TownOfHost.Modules.GameEventHistory.Events;
 
 namespace TownOfHost
 {
@@ -104,6 +106,8 @@ namespace TownOfHost
             MeetingStates.MeetingCalled = false;
             MeetingStates.FirstMeeting = true;
             GameStates.AlreadyDied = false;
+
+            EventHistory.CurrentInstance?.AddEvent(new GameStartEvent());
         }
     }
     [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SelectRoles))]

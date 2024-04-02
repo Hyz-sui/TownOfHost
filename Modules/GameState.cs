@@ -9,6 +9,8 @@ using AmongUs.GameOptions;
 
 using TownOfHost.Attributes;
 using TownOfHost.Roles.Core;
+using TownOfHost.Modules.GameEventHistory;
+using TownOfHost.Modules.GameEventHistory.Events;
 
 namespace TownOfHost
 {
@@ -98,9 +100,12 @@ namespace TownOfHost
         }
         public void ChangeMainRole(CustomRoles role)
         {
+            var player = Utils.GetPlayerById(PlayerId);
+
+            EventHistory.CurrentInstance?.AddEvent(new RoleChangeEvent(new(player), role));
+
             this.PreviousRoles.Add(this.MainRole);
             this.SetMainRole(role);
-            var player = Utils.GetPlayerById(PlayerId);
             player.GetRoleClass()?.Dispose();
             CustomRoleManager.CreateInstance(role, player);
         }

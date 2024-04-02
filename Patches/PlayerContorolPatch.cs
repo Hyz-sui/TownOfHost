@@ -12,6 +12,8 @@ using TownOfHost.Roles;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
 using TownOfHost.Roles.AddOns.Crewmate;
+using TownOfHost.Modules.GameEventHistory;
+using TownOfHost.Modules.GameEventHistory.Events;
 
 namespace TownOfHost
 {
@@ -151,6 +153,8 @@ namespace TownOfHost
 
             if (isSucceeded)
             {
+                EventHistory.CurrentInstance?.AddEvent(new MurderEvent(new(__instance), new(target), target.GetPlainShipRoom().RoomId));
+
                 if (target.shapeshifting)
                 {
                     //シェイプシフトアニメーション中
@@ -370,6 +374,8 @@ namespace TownOfHost
             //=============================================
             //以下、ボタンが押されることが確定したものとする。
             //=============================================
+
+            EventHistory.CurrentInstance?.AddEvent(target == null ? new MeetingCallEvent(new(__instance)) : new MeetingCallEvent(new(__instance), new(target.Object)));
 
             foreach (var role in CustomRoleManager.AllActiveRoles.Values)
             {
@@ -689,6 +695,12 @@ namespace TownOfHost
             //属性クラスの扱いを決定するまで仮置き
             ret &= Workhorse.OnCompleteTask(pc);
             Utils.NotifyRoles();
+
+            if (taskState.IsTaskFinished && Utils.HasTasks(__instance.Data))
+            {
+                EventHistory.CurrentInstance?.AddEvent(new CrewTaskFinishEvent(new(__instance)));
+            }
+
             return ret;
         }
         public static void Postfix()

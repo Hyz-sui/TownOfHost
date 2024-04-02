@@ -10,6 +10,8 @@ using TownOfHost.Modules;
 using TownOfHost.Roles.Core;
 using TownOfHost.Templates;
 using static TownOfHost.Translator;
+using TownOfHost.Modules.GameEventHistory;
+using TownOfHost.Modules.GameEventHistory.Events;
 
 namespace TownOfHost
 {
@@ -121,6 +123,9 @@ namespace TownOfHost
         public static void Postfix(EndGameManager __instance)
         {
             if (!Main.playerVersion.ContainsKey(0)) return;
+
+            EventHistory.CurrentInstance?.AddEvent(new GameEndEvent());
+
             //#######################################
             //          ==勝利陣営表示==
             //#######################################

@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using TownOfHost.Roles.Core;
+using TownOfHost.Modules.GameEventHistory;
+using TownOfHost.Modules.GameEventHistory.Events;
 
 namespace TownOfHost.Modules;
 
@@ -112,6 +114,9 @@ public class MeetingVoteManager
     public void EndMeeting(bool applyVoteMode = true)
     {
         var result = CountVotes(applyVoteMode);
+
+        EventHistory.CurrentInstance?.AddEvent(result.Exiled == null ? new MeetingEndEvent() : new MeetingEndEvent(new(result.Exiled.Object)));
+
         var logName = result.Exiled == null ? (result.IsTie ? "同数" : "スキップ") : result.Exiled.Object.GetNameWithRole();
         logger.Info($"追放者: {logName} で会議を終了します");
 
