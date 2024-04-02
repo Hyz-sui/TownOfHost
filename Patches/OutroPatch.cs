@@ -254,22 +254,30 @@ namespace TownOfHost
             //         ==Discordに結果を送信==
             //#######################################
 
-            if (PlayerControl.LocalPlayer.PlayerId == 0 && Main.SendResultToDiscord.Value)
+            if (PlayerControl.LocalPlayer.PlayerId == 0)
             {
                 if (CustomWinnerHolder.WinnerTeam == CustomWinner.Draw)
                     Logger.Info("廃村のため試合結果の送信をキャンセル", "Webhook");
                 else
                 {
-                    var resultMessage = "";
-                    foreach (var id in Main.winnerList)
+                    if (Main.SendResultToDiscord.Value)
                     {
-                        resultMessage += Utils.ColorIdToDiscordEmoji(Palette.PlayerColors.IndexOf(Main.PlayerColors[id]), !PlayerState.GetByPlayerId(id).IsDead) + ":star:" + EndGamePatch.SummaryText[id].RemoveHtmlTags() + "\n";
+                        var resultMessage = "";
+                        foreach (var id in Main.winnerList)
+                        {
+                            resultMessage += Utils.ColorIdToDiscordEmoji(Palette.PlayerColors.IndexOf(Main.PlayerColors[id]), !PlayerState.GetByPlayerId(id).IsDead) + ":star:" + EndGamePatch.SummaryText[id].RemoveHtmlTags() + "\n";
+                        }
+                        foreach (var id in cloneRoles)
+                        {
+                            resultMessage += Utils.ColorIdToDiscordEmoji(Palette.PlayerColors.IndexOf(Main.PlayerColors[id]), !PlayerState.GetByPlayerId(id).IsDead) + "\u3000" + EndGamePatch.SummaryText[id].RemoveHtmlTags() + "\n";
+                        }
+                        Utils.SendWebhook(resultMessage, GetString("LastResult"));
                     }
-                    foreach (var id in cloneRoles)
+                    if (Main.SendHistoryToDiscord.Value)
                     {
-                        resultMessage += Utils.ColorIdToDiscordEmoji(Palette.PlayerColors.IndexOf(Main.PlayerColors[id]), !PlayerState.GetByPlayerId(id).IsDead) + "\u3000" + EndGamePatch.SummaryText[id].RemoveHtmlTags() + "\n";
+                        var historyMessage = EventHistory.CurrentInstance.ToDiscordString();
+                        Utils.SendWebhook(historyMessage, "ゲーム記録");
                     }
-                    Utils.SendWebhook(resultMessage, GetString("LastResult"));
                 }
             }
 
