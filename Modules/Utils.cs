@@ -1151,7 +1151,7 @@ namespace TownOfHost
             {
                 { "content", text },
                 { "username", userName },
-                { "avatar_url", "https://raw.githubusercontent.com/tukasa0001/TownOfHost/main/Resources/TabIcon_MainSettings.png" }
+                { "avatar_url", "https://raw.githubusercontent.com/Hyz-sui/TownOfHost-H/images-H/Images/discord-avatar.png" }
             };
             using StreamReader sr = new("WebhookUrl.txt", Encoding.UTF8);
             string webhookUrl = sr.ReadLine();
