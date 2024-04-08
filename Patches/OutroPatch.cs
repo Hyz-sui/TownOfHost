@@ -124,8 +124,6 @@ namespace TownOfHost
         {
             if (!Main.playerVersion.ContainsKey(0)) return;
 
-            EventHistory.CurrentInstance?.AddEvent(new GameEndEvent());
-
             //#######################################
             //          ==勝利陣営表示==
             //#######################################
@@ -197,6 +195,8 @@ namespace TownOfHost
                 WinnerText.text = $"<color={CustomWinnerColor}>{CustomWinnerText}{AdditionalWinnerText}{GetString("Win")}</color>";
             }
             LastWinsText = WinnerText.text.RemoveHtmlTags();
+
+            EventHistory.CurrentInstance?.AddEvent(new GameEndEvent(LastWinsText));
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
