@@ -13,6 +13,7 @@ namespace TownOfHost
         private static ClientActionItem UnloadMod;
         private static ClientActionItem DumpLog;
         private static ClientActionItem SendResultToDiscord;
+        private static ClientActionItem SendHistoryToDiscord;
         private static ClientActionItem ShowLobbySummary;
         private static ClientActionItem CopyGameCodeOnCreateLobby;
         private static ClientActionItem HauntMenuFocusCrewmate;
@@ -35,6 +36,10 @@ namespace TownOfHost
             if (SendResultToDiscord == null || SendResultToDiscord.ToggleButton == null)
             {
                 SendResultToDiscord = ClientOptionItem.Create("DiscordResult", Main.SendResultToDiscord, __instance);
+            }
+            if (SendHistoryToDiscord == null || SendHistoryToDiscord.ToggleButton == null)
+            {
+                SendHistoryToDiscord = ClientOptionItem.Create("DiscordHistory", Main.SendHistoryToDiscord, __instance);
             }
             if (ShowLobbySummary == null || ShowLobbySummary.ToggleButton == null)
             {
