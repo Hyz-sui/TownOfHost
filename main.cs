@@ -16,6 +16,7 @@ using AmongUs.GameOptions;
 using TownOfHost.Attributes;
 using TownOfHost.Modules;
 using TownOfHost.Roles.Core;
+using TownOfHost.Modules.Webhook;
 
 [assembly: AssemblyFileVersionAttribute(TownOfHost.Main.PluginVersion)]
 [assembly: AssemblyInformationalVersionAttribute(TownOfHost.Main.PluginVersion)]
@@ -241,12 +242,16 @@ namespace TownOfHost
 
             ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
 
-            if (!File.Exists("WebhookUrl.txt"))
-                Utils.MakeWebhookUrlFile();
+            WebhookManager.Instance.CreateConfigFileIfNecessary();
 
             SystemEnvironment.SetEnvironmentVariables();
 
             Harmony.PatchAll();
+        }
+        public override bool Unload()
+        {
+            WebhookManager.Instance.Dispose();
+            return false;
         }
     }
     public enum CustomDeathReason
