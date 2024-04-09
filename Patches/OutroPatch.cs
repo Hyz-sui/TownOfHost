@@ -12,6 +12,7 @@ using TownOfHost.Templates;
 using static TownOfHost.Translator;
 using TownOfHost.Modules.GameEventHistory;
 using TownOfHost.Modules.GameEventHistory.Events;
+using TownOfHost.Modules.Webhook;
 
 namespace TownOfHost
 {
@@ -257,26 +258,42 @@ namespace TownOfHost
             if (PlayerControl.LocalPlayer.PlayerId == 0)
             {
                 if (CustomWinnerHolder.WinnerTeam == CustomWinner.Draw)
+                {
                     Logger.Info("廃村のため試合結果の送信をキャンセル", "Webhook");
+                }
                 else
                 {
+                    var resultMessageBuilder = new WebhookMessageBuilder()
+                    {
+                        UserName = "試合結果",
+                    };
                     if (Main.SendResultToDiscord.Value)
                     {
-                        var resultMessage = "";
+                        resultMessageBuilder.ContentBuilder.AppendLine("### 各プレイヤーの最終結果");
                         foreach (var id in Main.winnerList)
                         {
-                            resultMessage += Utils.ColorIdToDiscordEmoji(Palette.PlayerColors.IndexOf(Main.PlayerColors[id]), !PlayerState.GetByPlayerId(id).IsDead) + ":star:" + EndGamePatch.SummaryText[id].RemoveHtmlTags() + "\n";
+                            resultMessageBuilder.ContentBuilder.Append(Utils.ColorIdToDiscordEmoji(Palette.PlayerColors.IndexOf(Main.PlayerColors[id]), !PlayerState.GetByPlayerId(id).IsDead));
+                            resultMessageBuilder.ContentBuilder.Append(":star:");
+                            resultMessageBuilder.ContentBuilder.Append(EndGamePatch.SummaryText[id].RemoveHtmlTags());
+                            resultMessageBuilder.ContentBuilder.AppendLine();
                         }
                         foreach (var id in cloneRoles)
                         {
-                            resultMessage += Utils.ColorIdToDiscordEmoji(Palette.PlayerColors.IndexOf(Main.PlayerColors[id]), !PlayerState.GetByPlayerId(id).IsDead) + "\u3000" + EndGamePatch.SummaryText[id].RemoveHtmlTags() + "\n";
+                            resultMessageBuilder.ContentBuilder.Append(Utils.ColorIdToDiscordEmoji(Palette.PlayerColors.IndexOf(Main.PlayerColors[id]), !PlayerState.GetByPlayerId(id).IsDead));
+                            resultMessageBuilder.ContentBuilder.Append('\u3000');
+                            resultMessageBuilder.ContentBuilder.Append(EndGamePatch.SummaryText[id].RemoveHtmlTags());
+                            resultMessageBuilder.ContentBuilder.AppendLine();
                         }
-                        Utils.SendWebhook(resultMessage, GetString("LastResult"));
                     }
                     if (Main.SendHistoryToDiscord.Value)
                     {
-                        var historyMessage = EventHistory.CurrentInstance.ToDiscordString();
-                        Utils.SendWebhook(historyMessage, "ゲーム記録");
+                        resultMessageBuilder.ContentBuilder.AppendLine("### 記録");
+                        EventHistory.CurrentInstance.AppendDiscordString(resultMessageBuilder.ContentBuilder);
+                    }
+
+                    if (resultMessageBuilder.ContentBuilder.Length > 0)
+                    {
+                        WebhookManager.Instance.StartSend(resultMessageBuilder);
                     }
                 }
             }
