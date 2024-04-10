@@ -16,6 +16,7 @@ using AmongUs.GameOptions;
 using TownOfHost.Attributes;
 using TownOfHost.Modules;
 using TownOfHost.Roles.Core;
+using TownOfHost.Modules.Webhook;
 
 [assembly: AssemblyFileVersionAttribute(TownOfHost.Main.PluginVersion)]
 [assembly: AssemblyInformationalVersionAttribute(TownOfHost.Main.PluginVersion)]
@@ -54,7 +55,7 @@ namespace TownOfHost
         // ==========
         //Sorry for many Japanese comments.
 
-        public static readonly string ForkVersion = "2024.3.5.2";
+        public static readonly string ForkVersion = "2024.3.5.3";
         public static readonly Version ParsedForkVersion = Version.Parse(ForkVersion);
 
         public const string PluginGuid = "com.emptybottle.townofhost";
@@ -78,6 +79,7 @@ namespace TownOfHost
         public static ConfigEntry<bool> ForceJapanese { get; private set; }
         public static ConfigEntry<bool> JapaneseRoleName { get; private set; }
         public static ConfigEntry<bool> SendResultToDiscord { get; private set; }
+        public static ConfigEntry<bool> SendHistoryToDiscord { get; private set; }
         public static ConfigEntry<bool> ShowLobbySummary { get; private set; }
         public static ConfigEntry<bool> CopyGameCodeOnCreateLobby { get; private set; }
         public static ConfigEntry<bool> HauntMenuFocusCrewmate { get; private set; }
@@ -143,6 +145,7 @@ namespace TownOfHost
             ForceJapanese = Config.Bind("Client Options", "Force Japanese", false);
             JapaneseRoleName = Config.Bind("Client Options", "Japanese Role Name", true);
             SendResultToDiscord = Config.Bind("Client Options", "Send Game Result To Discord", false);
+            SendHistoryToDiscord = Config.Bind("Client Options", "Send Game History To Discord", false);
             ShowLobbySummary = Config.Bind("Client Options", "Show Lobby Summary", true);
             CopyGameCodeOnCreateLobby = Config.Bind("Client Options", "Copy Game Code On Create Lobby", true);
             HauntMenuFocusCrewmate = Config.Bind("Client Options", "Haunt Menu Focuses Crewmate", true);
@@ -239,12 +242,16 @@ namespace TownOfHost
 
             ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
 
-            if (!File.Exists("WebhookUrl.txt"))
-                Utils.MakeWebhookUrlFile();
+            WebhookManager.Instance.CreateConfigFileIfNecessary();
 
             SystemEnvironment.SetEnvironmentVariables();
 
             Harmony.PatchAll();
+        }
+        public override bool Unload()
+        {
+            WebhookManager.Instance.Dispose();
+            return false;
         }
     }
     public enum CustomDeathReason

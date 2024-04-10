@@ -11,6 +11,8 @@ using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Neutral;
 using TownOfHost.Roles.Core.Interfaces;
 using static TownOfHost.Translator;
+using TownOfHost.Modules.GameEventHistory;
+using TownOfHost.Modules.GameEventHistory.Events;
 
 namespace TownOfHost;
 
@@ -227,6 +229,9 @@ public static class MeetingHudPatch
         if (player == null) return;
         var target = PickRevengeTarget(player, deathReason);
         if (target == null) return;
+
+        EventHistory.CurrentInstance?.AddEvent(new RevengeEvent(new(player), new(target)));
+
         TryAddAfterMeetingDeathPlayers(CustomDeathReason.Revenge, target.PlayerId);
         target.SetRealKiller(player);
         Logger.Info($"{player.GetNameWithRole()}の道連れ先:{target.GetNameWithRole()}", "RevengeOnExile");
