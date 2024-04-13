@@ -29,9 +29,7 @@ public sealed class WebhookManager : IDisposable
             logger.Warn("URL設定が正しくありません");
             return;
         }
-        var message = builder.ContentBuilder.ToString();
-        var content = new WebhookRequest(message, builder.UserName, builder.AvatarUrl);
-        var sendTask = SendAsync(content, url);
+        var sendTask = SendAsync(builder, url);
         sendTask.ContinueWith(task =>
         {
             if (task.Exception is { } aggregateException)
@@ -81,7 +79,39 @@ public sealed class WebhookManager : IDisposable
         }
         return webhookUrlRegex.IsMatch(url);
     }
-    public async Task SendAsync(WebhookRequest webhookRequest, string url, CancellationToken cancellationToken = default)
+    public async Task SendAsync(WebhookMessageBuilder builder, string url, CancellationToken cancellationToken = default)
+    {
+        var fullMessage = builder.ContentBuilder.ToString();
+        if (fullMessage.Length <= MaxContentLength)
+        {
+            await SendInnerAsync(fullMessage, builder.UserName, builder.AvatarUrl, url, cancellationToken);
+            return;
+        }
+        // 改行を区切りとして，上限文字数を超えないように分割して送信する
+        // 1行で上限を超えているケースは考慮しない
+        var lines = fullMessage.Split(Environment.NewLine);
+        var partBuilder = new StringBuilder();
+        foreach (var line in lines)
+        {
+            if (partBuilder.Length + line.Length > MaxContentLength)
+            {
+                await SendInnerAsync(partBuilder.ToString(), builder.UserName, builder.AvatarUrl, url, cancellationToken);
+                partBuilder.Clear();
+                await Task.Delay(1000, cancellationToken);
+            }
+            partBuilder.AppendLine(line);
+        }
+        if (partBuilder.Length > 0)
+        {
+            await SendInnerAsync(partBuilder.ToString(), builder.UserName, builder.AvatarUrl, url, cancellationToken);
+        }
+    }
+    private async Task SendInnerAsync(string message, string userName, string avatarUrl, string url, CancellationToken cancellationToken = default)
+    {
+        var content = new WebhookRequest(message, userName, avatarUrl);
+        await SendAsync(content, url, cancellationToken);
+    }
+    private async Task SendAsync(WebhookRequest webhookRequest, string url, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -124,4 +154,6 @@ public sealed class WebhookManager : IDisposable
         new("WebhookUrl.txt");
 #endif
     private readonly Regex webhookUrlRegex = new("^(https://(ptb.|canary.)?discord(app)?.com/api/webhooks/)");
+    // 上限2,000文字．文字数カウントの実装が違うかもしれないけどよくわからないので余裕をもたせる
+    private const int MaxContentLength = 1950;
 }
