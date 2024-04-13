@@ -153,7 +153,10 @@ namespace TownOfHost
 
             if (isSucceeded)
             {
-                EventHistory.CurrentInstance?.AddEvent(new MurderEvent(new(__instance), new(target), target.GetPlainShipRoom().RoomId));
+                if (AmongUsClient.Instance.AmHost)
+                {
+                    EventHistory.CurrentInstance?.AddEvent(new MurderEvent(new(__instance), new(target), target.GetPlainShipRoom()?.RoomId ?? SystemTypes.Hallway));
+                }
 
                 if (target.shapeshifting)
                 {
