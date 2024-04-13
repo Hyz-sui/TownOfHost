@@ -107,7 +107,10 @@ namespace TownOfHost
             MeetingStates.FirstMeeting = true;
             GameStates.AlreadyDied = false;
 
-            EventHistory.CurrentInstance?.AddEvent(new GameStartEvent());
+            if (AmongUsClient.Instance.AmHost)
+            {
+                EventHistory.CurrentInstance?.AddEvent(new GameStartEvent());
+            }
         }
     }
     [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SelectRoles))]

@@ -102,7 +102,10 @@ namespace TownOfHost
         {
             var player = Utils.GetPlayerById(PlayerId);
 
-            EventHistory.CurrentInstance?.AddEvent(new RoleChangeEvent(new(player), role));
+            if (AmongUsClient.Instance.AmHost)
+            {
+                EventHistory.CurrentInstance?.AddEvent(new RoleChangeEvent(new(player), role));
+            }
 
             this.PreviousRoles.Add(this.MainRole);
             this.SetMainRole(role);
