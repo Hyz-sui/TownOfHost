@@ -120,6 +120,7 @@ public sealed class EvilHacker : RoleBase, IImpostor, IKillFlashSeeable
 
         // 送信するメッセージを生成
         var previous = -1;
+        builder.Append("<size=70%>");
         foreach (var admin in admins)
         {
             var entry = admin.Value;
