@@ -197,7 +197,10 @@ namespace TownOfHost
             }
             LastWinsText = WinnerText.text.RemoveHtmlTags();
 
-            EventHistory.CurrentInstance?.AddEvent(new GameEndEvent(LastWinsText));
+            if (AmongUsClient.Instance.AmHost)
+            {
+                EventHistory.CurrentInstance?.AddEvent(new GameEndEvent(LastWinsText));
+            }
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

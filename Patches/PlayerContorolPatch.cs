@@ -153,7 +153,10 @@ namespace TownOfHost
 
             if (isSucceeded)
             {
-                EventHistory.CurrentInstance?.AddEvent(new MurderEvent(new(__instance), new(target), target.GetPlainShipRoom().RoomId));
+                if (AmongUsClient.Instance.AmHost)
+                {
+                    EventHistory.CurrentInstance?.AddEvent(new MurderEvent(new(__instance), new(target), target.GetPlainShipRoom()?.RoomId ?? SystemTypes.Hallway));
+                }
 
                 if (target.shapeshifting)
                 {
@@ -696,7 +699,7 @@ namespace TownOfHost
             ret &= Workhorse.OnCompleteTask(pc);
             Utils.NotifyRoles();
 
-            if (taskState.IsTaskFinished && Utils.HasTasks(__instance.Data))
+            if (taskState.IsTaskFinished && AmongUsClient.Instance.AmHost && Utils.HasTasks(__instance.Data))
             {
                 EventHistory.CurrentInstance?.AddEvent(new CrewTaskFinishEvent(new(__instance)));
             }
