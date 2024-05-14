@@ -1,6 +1,7 @@
 using System;
 
 using HarmonyLib;
+using TownOfHost.Objects;
 using TownOfHost.Templates;
 using UnityEngine;
 
@@ -17,6 +18,7 @@ namespace TownOfHost
         public static void StartPostfix(MainMenuManager __instance)
         {
             SimpleButton.SetBase(__instance.quitButton);
+            Prefabs.SimpleButton = __instance.quitButton;
             //Discordボタンを生成
             if (SimpleButton.IsNullOrDestroyed(discordButton))
             {
