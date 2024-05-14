@@ -16,6 +16,8 @@ using TMPro;
 using static TownOfHost.Translator;
 using TownOfHost.Roles;
 using TownOfHost.Modules.Webhook;
+using System.Collections;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 
 namespace TownOfHost
 {
@@ -29,6 +31,8 @@ namespace TownOfHost
         public static int CurrentGameId = 32;
         public static WebhookMessageBuilder LastResultMessage { get; set; } = null;
         private static FlatButton SendWebhookButton;
+        private const string SendWebhookButtonLabel = "Discordに結果を送信";
+        private static WebhookManager.OnCompleteArgs? completedWebhookResult;
 
         [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Start))]
         public class GameStartManagerStartPatch
@@ -87,10 +91,11 @@ namespace TownOfHost
                         new(127, 138, 239, byte.MaxValue),
                         () =>
                         {
-                            SendWebhookButton.Button.gameObject.SetActive(false);
-                            WebhookManager.Instance.StartSend(LastResultMessage);
+                            SendWebhookButton.Label.text = "送信中...";
+                            SendWebhookButton.ButtonCollider.enabled = false;
+                            WebhookManager.Instance.StartSend(LastResultMessage, args => completedWebhookResult = args);
                         },
-                        "Discordに結果を送信",
+                        SendWebhookButtonLabel,
                         new(2f, 0.5f))
                     {
                         FontSize = 2.5f,
@@ -246,6 +251,62 @@ namespace TownOfHost
                     && Main.version.CompareTo(version.version) == 0
                     && version.tag == $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})"
                     && version.forkVersion == Main.ForkVersion;
+            }
+
+            [HarmonyPostfix, HarmonyPriority(Priority.Low)]
+            public static void Postfix2(GameStartManager __instance)
+            {
+                if (completedWebhookResult.HasValue)
+                {
+                    OnSendComplete(__instance, completedWebhookResult.Value);
+                    completedWebhookResult = null;
+                }
+            }
+            private static void OnSendComplete(GameStartManager __instance, WebhookManager.OnCompleteArgs args)
+            {
+                if (!FlatButton.IsNullOrDestroyed(SendWebhookButton))
+                {
+                    if (args.HasFailure)
+                    {
+                        SendWebhookButton.Button.StartCoroutine(CoShowFailedAndReactivate(SendWebhookButton).WrapToIl2Cpp());
+                    }
+                    else
+                    {
+                        SendWebhookButton.Button.StartCoroutine(CoShowSucceededAndHide(SendWebhookButton).WrapToIl2Cpp());
+                    }
+                }
+                var notifyText = Object.Instantiate(Prefabs.SimpleText, __instance.transform);
+                notifyText.name = "DiscordResultNotify";
+                notifyText.text = args.HasFailure ? $"送信に失敗しました\n\n<size=70%>{args.FailureReason.Message}" : "送信に成功しました";
+                notifyText.color = Color.white;
+                notifyText.outlineWidth = 0.07f;
+                notifyText.outlineColor = args.HasFailure ? CustomPalette.FailedRed : CustomPalette.SucceededBlue;
+                notifyText.fontSize = notifyText.fontSizeMax = notifyText.fontSizeMin = 4f;
+                notifyText.transform.localPosition = new(0f, 2f, -10f);
+                notifyText.gameObject.SetActive(true);
+                __instance.StartCoroutine(Effects.Lerp(args.HasFailure ? 10f : 3f, new Action<float>(t =>
+                {
+                    var alpha = 1f - t;
+                    if (alpha <= 0f)
+                    {
+                        Object.Destroy(notifyText.gameObject);
+                        return;
+                    }
+                    notifyText.color = new Color(1f, 1f, 1f, alpha);
+                })));
+            }
+            private static IEnumerator CoShowSucceededAndHide(FlatButton button)
+            {
+                button.Label.text = "送信完了!";
+                yield return new WaitForSeconds(5f);
+                button.Button.gameObject.SetActive(false);
+            }
+            private static IEnumerator CoShowFailedAndReactivate(FlatButton button)
+            {
+                button.Label.text = "送信失敗";
+                yield return new WaitForSeconds(5f);
+                button.Label.text = SendWebhookButtonLabel;
+                button.ButtonCollider.enabled = true;
             }
         }
 

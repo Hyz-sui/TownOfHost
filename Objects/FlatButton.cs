@@ -13,7 +13,7 @@ public sealed class FlatButton
         Label = Button.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
         NormalRenderer = Button.inactiveSprites.GetComponent<SpriteRenderer>();
         HoverRenderer = Button.activeSprites.GetComponent<SpriteRenderer>();
-        buttonCollider = Button.GetComponent<BoxCollider2D>();
+        ButtonCollider = Button.GetComponent<BoxCollider2D>();
 
         var container = Label.transform.parent;
         Object.Destroy(Label.GetComponent<AspectPosition>());
@@ -36,12 +36,12 @@ public sealed class FlatButton
     public TextMeshPro Label { get; }
     public SpriteRenderer NormalRenderer { get; }
     public SpriteRenderer HoverRenderer { get; }
-    private readonly BoxCollider2D buttonCollider;
+    public BoxCollider2D ButtonCollider { get; }
     private Vector2 _scale;
     public Vector2 Scale
     {
         get => _scale;
-        set => _scale = NormalRenderer.size = HoverRenderer.size = buttonCollider.size = value;
+        set => _scale = NormalRenderer.size = HoverRenderer.size = ButtonCollider.size = value;
     }
     private float _fontSize;
     public float FontSize
@@ -65,6 +65,7 @@ public sealed class FlatButton
 
         Object.Destroy(button.GetComponent<AspectScaledAsset>());
 
+        // 初回だけちょっと重いのどうにかしたい
         var texture = new Texture2D(normalRenderer.sprite.texture.width, normalRenderer.sprite.texture.height, TextureFormat.ARGB32, false);
         for (var x = 0; x < texture.width; x++)
         {
@@ -85,4 +86,6 @@ public sealed class FlatButton
         Object.DontDestroyOnLoad(button);
         return button;
     }
+
+    public static bool IsNullOrDestroyed(FlatButton flatButton) => flatButton == null || flatButton.Button == null;
 }
