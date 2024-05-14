@@ -15,6 +15,7 @@ using TownOfHost.Objects;
 using TMPro;
 using static TownOfHost.Translator;
 using TownOfHost.Roles;
+using TownOfHost.Modules.Webhook;
 
 namespace TownOfHost
 {
@@ -26,6 +27,8 @@ namespace TownOfHost
         private static TextMeshPro timerText;
         private static SpriteRenderer cancelButton;
         public static int CurrentGameId = 32;
+        public static WebhookMessageBuilder LastResultMessage { get; set; } = null;
+        private static FlatButton SendWebhookButton;
 
         [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Start))]
         public class GameStartManagerStartPatch
@@ -73,6 +76,26 @@ namespace TownOfHost
                 cancelButton.gameObject.SetActive(false);
 
                 LobbySummary.Show();
+
+                if (LastResultMessage != null)
+                {
+                    SendWebhookButton = new(
+                        __instance.transform,
+                        "SendWebhookButton",
+                        new(4.4f, 3.6f, -1f),
+                        new(88, 101, 242, byte.MaxValue),
+                        new(127, 138, 239, byte.MaxValue),
+                        () =>
+                        {
+                            SendWebhookButton.Button.gameObject.SetActive(false);
+                            WebhookManager.Instance.StartSend(LastResultMessage);
+                        },
+                        "Discordに結果を送信",
+                        new(2f, 0.5f))
+                    {
+                        FontSize = 2.5f,
+                    };
+                }
 
                 if (
                     AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame &&
@@ -297,6 +320,17 @@ namespace TownOfHost
                 }
             }
         }
+
+        [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.OnDestroy))]
+        public static class OnDestroyPatch
+        {
+            public static void Postfix()
+            {
+                LobbySummary.Hide();
+                LastResultMessage = null;
+                SendWebhookButton = null;
+            }
+        }
     }
 
     [HarmonyPatch(typeof(TextBoxTMP), nameof(TextBoxTMP.SetText))]
@@ -315,15 +349,6 @@ namespace TownOfHost
         {
             __result = Main.NormalOptions.NumImpostors;
             return false;
-        }
-    }
-
-    [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.OnDestroy))]
-    public static class GameStartManagerOnDestroyPatch
-    {
-        public static void Postfix()
-        {
-            LobbySummary.Hide();
         }
     }
 }
