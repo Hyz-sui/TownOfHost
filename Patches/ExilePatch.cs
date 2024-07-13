@@ -9,7 +9,7 @@ namespace TownOfHost
 {
     class ExileControllerWrapUpPatch
     {
-        public static GameData.PlayerInfo AntiBlackout_LastExiled;
+        public static NetworkedPlayerInfo AntiBlackout_LastExiled;
         [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
         class BaseExileControllerPatch
         {
@@ -41,7 +41,7 @@ namespace TownOfHost
                 }
             }
         }
-        static void WrapUpPostfix(GameData.PlayerInfo exiled)
+        static void WrapUpPostfix(NetworkedPlayerInfo exiled)
         {
             if (AntiBlackout.OverrideExiledPlayer)
             {
@@ -114,7 +114,7 @@ namespace TownOfHost
             Utils.NotifyRoles();
         }
 
-        static void WrapUpFinalizer(GameData.PlayerInfo exiled)
+        static void WrapUpFinalizer(NetworkedPlayerInfo exiled)
         {
             //WrapUpPostfixで例外が発生しても、この部分だけは確実に実行されます。
             if (AmongUsClient.Instance.AmHost)
