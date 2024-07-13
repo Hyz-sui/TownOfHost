@@ -17,6 +17,8 @@ namespace TownOfHost
     public static class CredentialsPatch
     {
         public static SpriteRenderer TohLogo { get; private set; }
+        private static TextMeshPro pingTrackerCredential = null;
+        private static AspectPosition pingTrackerCredentialAspectPos = null;
 
         [HarmonyPatch(typeof(PingTracker), nameof(PingTracker.Update))]
         class PingTrackerUpdatePatch
@@ -24,11 +26,26 @@ namespace TownOfHost
             static StringBuilder sb = new();
             static void Postfix(PingTracker __instance)
             {
-                __instance.text.alignment = TextAlignmentOptions.TopRight;
+                if (pingTrackerCredential == null)
+                {
+                    var uselessPingTracker = Object.Instantiate(__instance, __instance.transform.parent);
+                    pingTrackerCredential = uselessPingTracker.GetComponent<TextMeshPro>();
+                    Object.Destroy(uselessPingTracker);
+                    pingTrackerCredential.alignment = TextAlignmentOptions.TopRight;
+                    pingTrackerCredential.color = new(1f, 1f, 1f, 0.7f);
+                    pingTrackerCredential.rectTransform.pivot = new(1f, 1f);  // 中心を右上角に設定
+                    pingTrackerCredentialAspectPos = pingTrackerCredential.GetComponent<AspectPosition>();
+                    pingTrackerCredentialAspectPos.Alignment = AspectPosition.EdgeAlignments.RightTop;
+                }
+                if (pingTrackerCredentialAspectPos)
+                {
+                    pingTrackerCredentialAspectPos.DistanceFromEdge = DestroyableSingleton<HudManager>.InstanceExists && DestroyableSingleton<HudManager>.Instance.Chat.chatButton.gameObject.active
+                        ? new(2.5f, 0f, -800f)
+                        : new(1.8f, 0f, -800f);
+                }
 
                 sb.Clear();
-
-                sb.Append("\r\n").Append(Main.credentialsText);
+                sb.Append(Main.credentialsText);
                 if (GameStates.IsLobby)
                 {
                     sb.AppendLine().Append("TOH: ").Append(Main.PluginVersion);
@@ -40,18 +57,13 @@ namespace TownOfHost
                 if (!GameStates.IsModHost) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("Warning.NoModHost")));
                 if (DebugModeManager.IsDebugMode) sb.Append("\r\n").Append(Utils.ColorString(Color.green, "デバッグモード"));
 
-                var offset_x = 1.2f; //右端からのオフセット
-                if (HudManager.InstanceExists && HudManager._instance.Chat.chatButton.active) offset_x += 0.8f; //チャットボタンがある場合の追加オフセット
-                if (FriendsListManager.InstanceExists && FriendsListManager._instance.FriendsListButton.Button.active) offset_x += 0.8f; //フレンドリストボタンがある場合の追加オフセット
-                __instance.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(offset_x, 0f, 0f);
-
                 if (GameStates.IsLobby)
                 {
                     if (Options.IsStandardHAS && !CustomRoles.Sheriff.IsEnable() && !CustomRoles.SerialKiller.IsEnable() && CustomRoles.Egoist.IsEnable())
                         sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("Warning.EgoistCannotWin")));
                 }
 
-                __instance.text.text += sb.ToString();
+                pingTrackerCredential.text = sb.ToString();
             }
         }
         [HarmonyPatch(typeof(VersionShower), nameof(VersionShower.Start))]
@@ -62,7 +74,11 @@ namespace TownOfHost
             {
                 Prefabs.SimpleText = __instance.text;
                 TMPTemplate.SetBase(__instance.text);
-                Main.credentialsText = $"<color={Main.ModColor}>{Main.ModName}</color> {Main.ForkVersion}";
+                Main.credentialsText = $"<color={Main.ModColor}>{Main.ModName}</color> v{Main.ForkVersion}";
+                if (Main.IsPrerelease)
+                {
+                    Main.credentialsText += $"\r\n<#F39C12><size=120%>{GetString("Prerelease")}</size></color>";
+                }
 #if DEBUG
                 Main.credentialsText += $"\r\n<color={Main.ModColor}>{ThisAssembly.Git.Branch}({ThisAssembly.Git.Commit})</color>";
 #endif
