@@ -11,8 +11,8 @@
 <a href="https://github.com/Hyz-sui/TownOfHost-H/wiki">
 <img alt="Static Badge" src="https://img.shields.io/badge/Wiki-%23000?style=for-the-badge&logo=github&logoColor=%23ff9">
 </a>
-<a href="https://twitter.com/Hyze_suisui">
-<img alt="Static Badge" src="https://img.shields.io/badge/Twitter-%23000?style=for-the-badge&logo=twitter&logoColor=%2300bfff">
+<a href="https://bsky.app/profile/did:plc:plvfzwfp73ezywxils6e6u2n">
+<img alt="Static Badge" src="https://img.shields.io/badge/Bluesky-%23000?style=for-the-badge&logo=bluesky&logoColor=%230285ff">
 </a>
 </div>
 <!-- markdownlint-enable MD033 -->
