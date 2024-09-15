@@ -17,11 +17,11 @@ namespace TownOfHost
             {
                 try
                 {
-                    WrapUpPostfix(__instance.exiled);
+                    WrapUpPostfix(__instance.initData.networkedPlayer);
                 }
                 finally
                 {
-                    WrapUpFinalizer(__instance.exiled);
+                    WrapUpFinalizer(__instance.initData.networkedPlayer);
                 }
             }
         }
@@ -33,11 +33,11 @@ namespace TownOfHost
             {
                 try
                 {
-                    WrapUpPostfix(__instance.exiled);
+                    WrapUpPostfix(__instance.initData.networkedPlayer);
                 }
                 finally
                 {
-                    WrapUpFinalizer(__instance.exiled);
+                    WrapUpFinalizer(__instance.initData.networkedPlayer);
                 }
             }
         }
