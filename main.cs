@@ -55,13 +55,13 @@ namespace TownOfHost
         // ==========
         //Sorry for many Japanese comments.
 
-        public static readonly string ForkVersion = "2024.6.18.0";
+        public static readonly string ForkVersion = "2024.9.4.0";
         public static readonly Version ParsedForkVersion = Version.Parse(ForkVersion);
 
         public const string PluginGuid = "com.emptybottle.townofhost";
-        public const string PluginVersion = "5.1.7";
+        public const string PluginVersion = "5.1.8";
         // サポートされている最低のAmongUsバージョン
-        public static readonly string LowestSupportedVersion = "2024.6.18";
+        public static readonly string LowestSupportedVersion = "2024.8.13";
         // このバージョンのみで公開ルームを無効にする場合
         public static readonly bool IsPublicAvailableOnThisVersion = false;
         // プレリリースかどうか
