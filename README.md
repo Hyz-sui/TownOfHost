@@ -32,7 +32,7 @@ If you don't understand Japanese and want to play AMONG US (i.e., you are not lo
 
 - 公開ルームは**永遠に**封印
 - 知人以外からの質問やバグ報告等は[Issues](https://github.com/Hyz-sui/TownOfHost-H/issues/new)で**のみ**受け付けています  
-  TwitterやDiscord等では受け付けていません
+  製作者のSNSアカウントやDiscord等では受け付けていません
   - 既存の説明を読めばわかるもの，低レベルなもの，日本語のコミュニケーションが怪しいもの，聞く相手を間違ってるもの等々には基本対応しません
 - 11人2狼村(0-2イビルハッカー, 1シェリフ, 1マッド)以外の役職構成や特定の設定の組み合わせで発生するバグ等については低優先度で扱います
 - 多言語対応はしていませんし，する予定もありません
