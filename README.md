@@ -17,6 +17,17 @@
 </div>
 <!-- markdownlint-enable MD033 -->
 
+<details><p><summary>English (Click)</summary></p>
+
+**TownOfHost-H** is a fork of [Town Of Host](https://github.com/tukasa0001/TownOfHost), a host-only mod for AMONG US.  
+Everything is made for Japanese players and is all in Japanese.
+
+If you don't understand Japanese and want to play AMONG US (i.e., you are not looking for resources or knowledge for software development), there is nothing here that you want. I recommend you to use [Town Of Host](https://github.com/tukasa0001/TownOfHost) or any other mod instead.
+
+----
+
+</details>
+
 各機能や詳細な説明は[wiki](https://github.com/Hyz-sui/TownOfHost-H/wiki)を，フォーク元から変更されていない機能については[TownOfHostのreadme](https://github.com/tukasa0001/TownOfHost/blob/main/README.md#town-of-host)を参照してください
 
 - 公開ルームは**永遠に**封印
