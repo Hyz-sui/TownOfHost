@@ -22,22 +22,31 @@ public sealed class WebhookManager : IDisposable
     private static readonly ILogHandler logger = Logger.Handler(nameof(WebhookManager));
     private bool disposedValue;
 
-    public void StartSend(WebhookMessageBuilder builder)
+    public void StartSend(WebhookMessageBuilder builder, Action<OnCompleteArgs> onComplete = default)
     {
-        if (!TryReadUrl(out var url))
+        try
         {
-            logger.Warn("URL設定が正しくありません");
-            return;
-        }
-        var sendTask = SendAsync(builder, url);
-        sendTask.ContinueWith(task =>
-        {
-            if (task.Exception is { } aggregateException)
+            if (!TryReadUrl(out var url))
             {
-                logger.Warn("送信中に例外が発生しました");
-                logger.Exception(aggregateException.InnerException);
+                logger.Warn("URL設定が正しくありません");
+                onComplete?.Invoke(new(true, FailureReason.InvalidUrl));
+                return;
             }
-        });
+            var sendTask = SendAsync(builder, url, onComplete);
+            sendTask.ContinueWith(task =>
+            {
+                if (task.Exception is { } aggregateException)
+                {
+                    logger.Warn("送信中に例外が発生しました");
+                    logger.Exception(aggregateException.InnerException);
+                }
+            });
+        }
+        catch
+        {
+            onComplete?.Invoke(new(true, FailureReason.Exception));
+            throw;
+        }
     }
     private bool TryReadUrl(out string url)
     {
@@ -79,39 +88,71 @@ public sealed class WebhookManager : IDisposable
         }
         return webhookUrlRegex.IsMatch(url);
     }
-    public async Task SendAsync(WebhookMessageBuilder builder, string url, CancellationToken cancellationToken = default)
+    public async Task SendAsync(WebhookMessageBuilder builder, string url, Action<OnCompleteArgs> onComplete = default, CancellationToken cancellationToken = default)
     {
-        var fullMessage = builder.ContentBuilder.ToString();
-        if (fullMessage.Length <= MaxContentLength)
+        try
         {
-            await SendInnerAsync(fullMessage, builder.UserName, builder.AvatarUrl, url, cancellationToken);
-            return;
-        }
-        // 改行を区切りとして，上限文字数を超えないように分割して送信する
-        // 1行で上限を超えているケースは考慮しない
-        var lines = fullMessage.Split(Environment.NewLine);
-        var partBuilder = new StringBuilder();
-        foreach (var line in lines)
-        {
-            if (partBuilder.Length + line.Length > MaxContentLength)
+            var fullMessage = builder.ContentBuilder.ToString();
+            if (fullMessage.Length <= MaxContentLength)
             {
-                await SendInnerAsync(partBuilder.ToString(), builder.UserName, builder.AvatarUrl, url, cancellationToken);
-                partBuilder.Clear();
-                await Task.Delay(1000, cancellationToken);
+                if (await SendInnerAsync(fullMessage, builder.UserName, builder.AvatarUrl, url, cancellationToken))
+                {
+                    onComplete?.Invoke(new(false));
+                }
+                else
+                {
+                    onComplete?.Invoke(new(true, FailureReason.Network));
+                }
+                return;
             }
-            partBuilder.AppendLine(line);
+
+            var hasFailure = false;
+            // 改行を区切りとして，上限文字数を超えないように分割して送信する
+            // 1行で上限を超えているケースは考慮しない
+            var lines = fullMessage.Split(Environment.NewLine);
+            var partBuilder = new StringBuilder();
+            foreach (var line in lines)
+            {
+                if (partBuilder.Length + line.Length > MaxContentLength)
+                {
+                    if (!await SendInnerAsync(partBuilder.ToString(), builder.UserName, builder.AvatarUrl, url, cancellationToken))
+                    {
+                        hasFailure = true;
+                    }
+                    partBuilder.Clear();
+                    await Task.Delay(1000, cancellationToken);
+                }
+                partBuilder.AppendLine(line);
+            }
+            if (partBuilder.Length > 0)
+            {
+                if (!await SendInnerAsync(partBuilder.ToString(), builder.UserName, builder.AvatarUrl, url, cancellationToken))
+                {
+                    hasFailure = true;
+                }
+            }
+
+            if (hasFailure)
+            {
+                onComplete?.Invoke(new(true, FailureReason.Network));
+            }
+            else
+            {
+                onComplete?.Invoke(new(false));
+            }
         }
-        if (partBuilder.Length > 0)
+        catch
         {
-            await SendInnerAsync(partBuilder.ToString(), builder.UserName, builder.AvatarUrl, url, cancellationToken);
+            onComplete?.Invoke(new(true, FailureReason.Exception));
+            throw;
         }
     }
-    private async Task SendInnerAsync(string message, string userName, string avatarUrl, string url, CancellationToken cancellationToken = default)
+    private async Task<bool> SendInnerAsync(string message, string userName, string avatarUrl, string url, CancellationToken cancellationToken = default)
     {
         var content = new WebhookRequest(message, userName, avatarUrl);
-        await SendAsync(content, url, cancellationToken);
+        return await SendAsync(content, url, cancellationToken);
     }
-    private async Task SendAsync(WebhookRequest webhookRequest, string url, CancellationToken cancellationToken = default)
+    private async Task<bool> SendAsync(WebhookRequest webhookRequest, string url, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -120,12 +161,15 @@ public sealed class WebhookManager : IDisposable
             if (!response.IsSuccessStatusCode)
             {
                 logger.Warn("送信に失敗");
+                return false;
             }
+            return true;
         }
         catch (TaskCanceledException taskCanceledException)
         {
             logger.Warn("送信はキャンセルされました");
             logger.Exception(taskCanceledException);
+            return false;
         }
     }
 
@@ -145,6 +189,21 @@ public sealed class WebhookManager : IDisposable
         // このコードを変更しないでください。クリーンアップ コードを 'Dispose(bool disposing)' メソッドに記述します
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
+    }
+
+    public readonly struct OnCompleteArgs(bool hasFailure, FailureReason failureReason = default)
+    {
+        public bool HasFailure { get; } = hasFailure;
+        public FailureReason FailureReason { get; } = failureReason;
+    }
+    public readonly struct FailureReason(string message)
+    {
+        public string Message { get; } = message;
+
+        public static FailureReason InvalidUrl { get; } = new("URL設定が正しくありません。設定を確認してください");
+        public static FailureReason Exception { get; } = new("処理中にエラーが発生しました");
+        public static FailureReason Network { get; } = new("送信を完了できませんでした。\nネットワーク品質、Modの不具合、Discord側の問題が原因の可能性があります");
+
     }
 
     public FileInfo WebhookUrlFile { get; } =

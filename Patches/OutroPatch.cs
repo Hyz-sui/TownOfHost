@@ -296,7 +296,7 @@ namespace TownOfHost
 
                     if (resultMessageBuilder.ContentBuilder.Length > 0)
                     {
-                        WebhookManager.Instance.StartSend(resultMessageBuilder);
+                        GameStartManagerPatch.LastResultMessage = resultMessageBuilder;
                     }
                 }
             }
